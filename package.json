@@ -1,0 +1,24 @@
+{
+  "name": "readit",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"vite build --watch\" \"vite preview --strictPort true\"",
+    "build": "vite build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.13.1",
+  "devDependencies": {
+    "@types/node": "^24.5.0",
+    "@types/tampermonkey": "^5.0.4",
+    "concurrently": "^9.2.1",
+    "vite": "^7.1.5"
+  },
+  "dependencies": {
+    "nano-jsx": "^0.1.0"
+  }
+}
