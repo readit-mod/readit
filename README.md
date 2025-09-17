@@ -1,6 +1,6 @@
 # ReadIt
 
-> A lightweight, modern system that extends Reddit functionality with plugin support.  
+ A lightweight, modern system that extends Reddit functionality with plugin support.  
 
 ---
 
