@@ -1,9 +1,16 @@
 import { defineConfig } from "vite";
 import path from "path";
+import pkg from "package.json";
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
+
+const packageJsonPath = resolve(__dirname, 'package.json');
+const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
 
 export default defineConfig({
     esbuild:{
-        jsxImportSource:"nano-jsx/esm"
+        jsxImportSource:"nano-jsx/esm",
+        banner: readFileSync(resolve(__dirname, "readit.meta.js"), 'utf-8').replace("%version%", packageJson.version)
     },
     build: {
         target: "esnext",
@@ -11,7 +18,7 @@ export default defineConfig({
         lib: {
             entry: "src/index.ts",
             name: "ReadIt",
-            fileName: () => "readit.js",
+            fileName: () => "readit.user.js",
             formats: ["iife"],
         },
         rollupOptions: {

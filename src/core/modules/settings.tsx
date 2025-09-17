@@ -1,14 +1,15 @@
 import Nano from "nano-jsx";
 import { SettingsModal } from "@/core/components/SettingsModal";
 import { SettingsButton } from "@/core/components/SettingsButton";
-import { readit } from "./readit";
+import { ReadIt } from "@/core/modules/readit";
+import { TileProps } from "@/lib/types";
 
 export class Settings {
   modalContainer: HTMLElement;
   visible = false;
-  tiles: string[] = [];
+  tiles: TileProps[] = [];
 
-  constructor() {
+  constructor(private readit: ReadIt) {
     this.modalContainer = document.createElement("div");
     document.body.appendChild(this.modalContainer);
 
@@ -58,13 +59,13 @@ export class Settings {
     const originalRender = proto.render;
     proto.render = function (...args) {
       const result = originalRender.call(this, ...args);
-      readit?.settings?.injectButton?.(); // re-inject after Lit render
+      this.readit?.settings?.injectButton?.(); // re-inject after Lit render
       return result;
     };
     proto.__readitPatched = true;
   }
 
-  addTile(content: string) {
+  registerSettingsTile(content: TileProps) {
     this.tiles.push(content);
     this.render();
   }

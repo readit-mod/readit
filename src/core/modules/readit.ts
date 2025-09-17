@@ -2,7 +2,7 @@ import { Posts } from "@/core/modules/posts";
 import { Plugins } from "@/core/modules/plugins";
 import { Settings } from "@/core/modules/settings";
 
-class ReadIt {
+export class ReadIt {
   version: string;
   posts: Posts;
   plugins: Plugins;
@@ -10,11 +10,16 @@ class ReadIt {
   constructor() {
     this.version = GM_info.script.version;
 
-    this.posts = new Posts();
-    this.settings = new Settings();
-    this.plugins = new Plugins();
+    this.posts = new Posts(this);
+    this.settings = new Settings(this);
+    this.plugins = new Plugins(this);
 
     this.plugins.loadPlugins();
+    this.settings.registerSettingsTile({
+        title: "ReadIt Version",
+        description: this.version
+    })
+    
   }
 }
 

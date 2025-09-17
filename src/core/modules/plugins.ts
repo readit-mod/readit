@@ -1,9 +1,9 @@
 import type { ReadItPlugin } from "@/lib/types";
-import { readit } from "@/core/modules/readit";
 import { importProxied } from "@/core/utils";
+import { ReadIt } from "./readit";
 
 export class Plugins {
-  constructor() {
+  constructor(private readit: ReadIt) {
     if (localStorage.getItem("plugins") == null)
       localStorage.setItem("plugins", "[]");
     const plugins = JSON.parse(localStorage.getItem("plugins")!);
@@ -21,11 +21,11 @@ export class Plugins {
     this.loadedPluginList.push({ name, description });
   }
 
-  loadPlugins() {
+  async loadPlugins() {
     console.log(this.unloadedPluginList);
-    this.unloadedPluginList.forEach((plugin) => {
+    this.unloadedPluginList.forEach(async (plugin) => {
       try {
-        this.loadPlugin(plugin.url);
+        await this.loadPlugin(plugin.url);
       } catch (e) {
         console.error("Plugin execution failed, URL:", plugin.url, e);
       }
@@ -37,7 +37,7 @@ export class Plugins {
       const module = await importProxied(url);
 
       if (module.default) {
-        module.default(readit); // pass your instance into plugin
+        module.default(this.readit); // pass readit instance into plugin
       }
     } catch (e) {
       console.error("Failed to load plugin:", e);

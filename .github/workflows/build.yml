@@ -1,0 +1,46 @@
+name: Build and Push to External Repo
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build project
+        run: pnpm build
+
+      - name: Clone external repo
+        run: |
+          git clone https://github-actions:${{ secrets.DEPLOY_TOKEN }}@github.com/tralwdwdd/readit-builds.git external-repo
+          cd external-repo
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Sync dist
+        run: |
+          rsync -av --delete dist/ external-repo/
+
+      - name: Commit and push changes
+        run: |
+          cd external-repo
+          git add -A
+          git commit -m "Builds for https://github.com/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}" || echo "No changes to commit"
+          git push --force https://github-actions:${{ secrets.DEPLOY_TOKEN }}@github.com/tralwdwdd/readit-builds.git

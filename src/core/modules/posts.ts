@@ -1,10 +1,12 @@
+import { ReadIt } from "./readit";
+
 export class Posts {
   selector = "shreddit-post, shreddit-ad-post";
   postCallbacks: ((posts: Element[]) => void)[] = [];
   _queuedPosts = new Set<Element>();
   _rafScheduled = false;
 
-  constructor() {
+  constructor(private readit: ReadIt) {
     // MutationObserver for dynamically added posts/ads
     const observer = new MutationObserver((mutations: MutationRecord[]) => {
       for (const m of mutations) {

@@ -1,9 +1,11 @@
 import { Component } from "nano-jsx";
+import { SettingsTile } from "@/core/components/SettingsTile"
+import { TileProps } from "@/lib/types";
 
 export class SettingsModal extends Component<{
   visible: boolean;
   onClose: () => void;
-  items: string[];
+  items: TileProps[];
 }> {
   render() {
     const { visible, onClose, items } = this.props;
@@ -28,9 +30,10 @@ export class SettingsModal extends Component<{
             background: "var(--color-neutral-background)",
             padding: "20px",
             borderRadius: "8px",
-            minWidth: "400px",
-            minHeight: "300px",
             position: "relative",
+            color: "var(--color-neutral-content-strong)",
+            height: "85%",
+            width: "85%"
           }}
         >
           <span
@@ -49,7 +52,7 @@ export class SettingsModal extends Component<{
           <h2>ReadIt Settings</h2>
           <div id="settings-tile-container">
             {items.map((i) => (
-              <p>{i}</p>
+              <SettingsTile title={i.title} description={i.description} />
             ))}
           </div>
         </div>
