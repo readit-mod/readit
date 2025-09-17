@@ -12,7 +12,7 @@
 
 ## Installation
 
-[Press this link to install ReadIt (requires Tampermonkey)](https://raw.githubusercontent.com/tralwdwdd/readit-builds/refs/heads/master/readit.user.js)  
+[Press this link to install ReadIt (requires Tampermonkey)](https://raw.githubusercontent.com/tralwdwdd/readit-builds/refs/heads/main/readit.user.js)  
 
 ---
 
