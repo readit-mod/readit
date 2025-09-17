@@ -32,9 +32,9 @@ jobs:
         run: |
           git clone https://github-actions:${{ secrets.DEPLOY_TOKEN }}@github.com/tralwdwdd/readit-builds.git external-repo
 
-      - name: Sync dist
+      - name: Copy build file
         run: |
-          rsync -av --delete dist/ external-repo/
+          cp dist/readit.user.js external-repo/
 
       - name: Commit and push changes
         run: |
