@@ -10,5 +10,5 @@
 // @grant        unsafeWindow
 // ==/UserScript==
 
-// This code has been bundled, for source code go to https://github.com/readit
+// This code has been bundled, for source code go to https://github.com/tralwdwd/readit
 
