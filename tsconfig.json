@@ -9,6 +9,7 @@
     "module": "es2022",
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
-    "jsxImportSource": "nano-jsx/esm"
+    "jsxImportSource": "nano-jsx/esm",
+    "types": ["vite/client", "tampermonkey"]
   }
 }

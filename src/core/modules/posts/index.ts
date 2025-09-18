@@ -1,4 +1,4 @@
-import { ReadIt } from "./readit";
+import { ReadIt } from "@/core/modules/readit";
 
 export class Posts {
   selector = "shreddit-post, shreddit-ad-post";
