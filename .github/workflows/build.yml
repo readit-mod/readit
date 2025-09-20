@@ -30,7 +30,7 @@ jobs:
 
       - name: Clone external repo
         run: |
-          git clone https://github-actions:${{ secrets.DEPLOY_TOKEN }}@github.com/tralwdwdd/readit-builds.git external-repo
+          git clone https://github-actions:${{ secrets.DEPLOY_TOKEN }}@github.com/readit-mod/builds.git external-repo
 
       - name: Copy build file
         run: |
