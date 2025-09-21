@@ -46,7 +46,7 @@ export class Plugins {
     try {
       const module = await importProxied(url);
 
-      const config: ReadItPlugin = module.default()
+      const config: ReadItPlugin = module.default
       this.loadedPluginList.push(config)
       config.onLoad(ctx) // Pass in the API context
     } catch (e) {
