@@ -28,7 +28,27 @@ jobs:
       - name: Build project
         run: pnpm build
       
+      - name: Check if version already exists
+        id: check_version
+        run: |
+          PACKAGE_VERSION=$(node -p "require('./plugins/package.json').version")
+          
+          echo "Checking version $PACKAGE_VERSION..."
+          
+          REGISTRY_VERSION=$(npm view your-package-name version || echo "0.0.0")
+          
+          if [ "$PACKAGE_VERSION" = "$REGISTRY_VERSION" ]; then
+            echo "Version $PACKAGE_VERSION already exists. Skipping publish."
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "Version $PACKAGE_VERSION is new. Proceeding with publish."
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - name: Publish plugin package to npm
+        if: steps.check_version.outputs.skip == 'false'
         run: |
           cd plugins
           pnpm publish --no-git-checks --access public
