@@ -35,7 +35,7 @@ jobs:
           
           echo "Checking version $PACKAGE_VERSION..."
           
-          REGISTRY_VERSION=$(npm view your-package-name version || echo "0.0.0")
+          REGISTRY_VERSION=$(npm view @readit-mod/plugins version || echo "0.0.0")
           
           if [ "$PACKAGE_VERSION" = "$REGISTRY_VERSION" ]; then
             echo "Version $PACKAGE_VERSION already exists. Skipping publish."
