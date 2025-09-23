@@ -25,6 +25,12 @@ importers:
         specifier: ^7.1.5
         version: 7.1.5(@types/node@24.5.0)
 
+  dist/test:
+    dependencies:
+      '@readit-mod/plugins':
+        specifier: ^1.0.0
+        version: 1.0.0
+
 packages:
 
   '@esbuild/aix-ppc64@0.25.9':
@@ -182,6 +188,9 @@ packages:
     engines: {node: '>=18'}
     cpu: [x64]
     os: [win32]
+
+  '@readit-mod/plugins@1.0.0':
+    resolution: {integrity: sha512-6odwJIZo8nzfF7hLZGfvSvwWlJuKTb/vPxSMlJIQ/3JI0BNIscMGvp9BoOVbBU8hPB+EvJX5mUl3uli843j94w==}
 
   '@rollup/rollup-android-arm-eabi@4.50.2':
     resolution: {integrity: sha512-uLN8NAiFVIRKX9ZQha8wy6UUs06UNSZ32xj6giK/rmMXAgKahwExvK6SsmgU5/brh4w/nSgj8e0k3c1HBQpa0A==}
@@ -568,6 +577,8 @@ snapshots:
 
   '@esbuild/win32-x64@0.25.9':
     optional: true
+
+  '@readit-mod/plugins@1.0.0': {}
 
   '@rollup/rollup-android-arm-eabi@4.50.2':
     optional: true

@@ -27,6 +27,13 @@ jobs:
 
       - name: Build project
         run: pnpm build
+      
+      - name: Publish plugin package to npm
+        run: |
+          cd plugins
+          pnpm publish --no-git-checks --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Clone external repo
         run: |

@@ -14,5 +14,4 @@ export type TileProps = {
   icon?: string;
 }
 
-// This acts as type safety for plugins.
-export const definePlugin = (config: ReadItPlugin) => config;
+export const definePlugin: (config: ReadItPlugin) => ReadItPlugin;
