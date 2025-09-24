@@ -20,7 +20,7 @@ export class Plugins {
 
   async loadPlugins() {
     console.log(this.unloadedPluginList);
-    this.loadBuiltins();
+    await this.loadBuiltins();
     this.unloadedPluginList.forEach(async (plugin) => {
       try {
         await this.loadPlugin(plugin.url);
@@ -30,25 +30,25 @@ export class Plugins {
     });
   }
 
-  loadBuiltins() {
+  async loadBuiltins() {
     const modules = import.meta.glob("./builtin/*/index.ts", {eager: true})
     for(const module of Object.values(modules)) {
       const plugin: ReadItPlugin = (module as any).default;
-      const ctx = createPluginContext(this.readit);
+      const ctx = createPluginContext(this.readit, plugin.id);
 
       this.loadedPluginList.push(plugin);
-      plugin.onLoad(ctx);
+      await plugin.onLoad(ctx);
     }
   }
 
   async loadPlugin(url: string) {
-    const ctx = createPluginContext(this.readit);
     try {
       const module = await importProxied(url);
 
       const config: ReadItPlugin = module.default
       this.loadedPluginList.push(config)
-      config.onLoad(ctx) // Pass in the API context
+      const ctx = createPluginContext(this.readit, config.id)
+      await config.onLoad(ctx) // Pass in the API context
     } catch (e) {
       console.error("Failed to load plugin:", e);
     }
