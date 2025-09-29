@@ -21,5 +21,6 @@ export default definePlugin({
             title: "Ads Blocked",
             description: `Total ads blocked: ${blocked}`,
         });
+        api.logging.info("Loaded successfully...");
     }
 })

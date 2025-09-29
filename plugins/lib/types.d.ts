@@ -11,12 +11,31 @@ export type TileProps = {
   title: string;
   description: string;
   icon?: string;
+  onClick?: () => void;
 }
 
-export const definePlugin: (config: ReadItPlugin) => ReadItPlugin;
+export type NavigationTileProps = TileProps & {
+  id: string;
+}
+
+export type SettingsPage = {
+  id: string;
+  title: string;
+  items: TileProps[];
+};
+
+export declare function definePlugin (config: ReadItPlugin): ReadItPlugin;
 
 export type SettingsAPI = {
     registerSettingsTile: (tile: TileProps) => void,
+    registerSettingsPage: (page: SettingsPage) => void,
+    registerNavigationTile: (tile: NavigationTileProps) => void,
+}
+
+export type LoggingAPI = {
+    info(message: string): void,
+    error(message: string): void,
+    warn(message: string): void,
 }
 
 export type PostsAPI = {

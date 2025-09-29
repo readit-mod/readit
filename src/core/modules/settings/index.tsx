@@ -2,12 +2,14 @@ import Nano from "nano-jsx";
 import { SettingsModal } from "@/core/components/SettingsModal";
 import { SettingsButton } from "@/core/components/SettingsButton";
 import { ReadIt } from "@/core/modules/readit";
-import { TileProps } from "@/lib/types";
+import { TileProps, SettingsPage, NavigationTileProps } from "@/lib/types";
 
 export class Settings {
   modalContainer: HTMLElement;
   visible = false;
   tiles: TileProps[] = [];
+  pages: SettingsPage[] = [];
+  activePage: string = "general";
 
   constructor(private readit: ReadIt) {
     this.modalContainer = document.createElement("div");
@@ -70,12 +72,38 @@ export class Settings {
     this.render();
   }
 
+  registerSettingsPage(page: SettingsPage) {
+    this.pages.push(page);
+    this.render();
+  }
+
+  registerNavigationTile(tile: NavigationTileProps){
+    this.tiles.push({
+      title: tile.title,
+      description: tile.description,
+      icon: tile.icon,
+      onClick: () => {
+        this.activePage = tile.id;
+        this.render();
+      }
+    });
+    this.render();
+  }
+
+  goBack() {
+    this.activePage = "general";
+    this.render();
+  }
+
   render() {
     Nano.render(
       <SettingsModal
         visible={this.visible}
         onClose={this.close}
         items={this.tiles}
+        pages={this.pages}
+        activePage={this.activePage}
+        onGoBack={()=> this.goBack()}
       />,
       this.modalContainer
     );

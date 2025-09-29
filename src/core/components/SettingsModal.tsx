@@ -1,14 +1,28 @@
 import { Component } from "nano-jsx";
-import { SettingsTile } from "@/core/components/SettingsTile"
-import { TileProps } from "@/lib/types";
+import { SettingsTile } from "@/core/components/SettingsTile";
+import { TileProps, SettingsPage } from "@/lib/types";
 
 export class SettingsModal extends Component<{
   visible: boolean;
   onClose: () => void;
-  items: TileProps[];
+  pages?: SettingsPage[];
+  items?: TileProps[];
+  activePage?: string;
+  onGoBack?: () => void;
 }> {
   render() {
-    const { visible, onClose, items } = this.props;
+    const { visible, onClose, pages, items, activePage, onGoBack } = this.props;
+    pages.unshift(
+      {
+        id: "general",
+        title: "General",
+        items: items || [],
+      }
+    );
+
+    const currentPage =
+      pages.find((p) => p.id === activePage) || pages[0];
+    const isFirstPage = currentPage.id === "general";
 
     return (
       <div
@@ -33,7 +47,7 @@ export class SettingsModal extends Component<{
             position: "relative",
             color: "var(--color-neutral-content-strong)",
             height: "85%",
-            width: "85%"
+            width: "85%",
           }}
         >
           <span
@@ -46,13 +60,30 @@ export class SettingsModal extends Component<{
             }}
             onClick={onClose}
           >
-            ×
+            x
           </span>
 
-          <h2>ReadIt Settings</h2>
+          <h2>ReadIt Settings - {currentPage.title}</h2>
+          {!isFirstPage && (
+            <span
+              style={{
+                userSelect: "text",
+                cursor: "pointer",
+                color: "#888",
+                display: "inline-block",
+                marginBottom: "10px",
+                transition: "color 0.2s",
+              }}
+              onMouseOver={e => (e.currentTarget.style.color = "#007bff")}
+              onMouseOut={e => (e.currentTarget.style.color = "#888")}
+              onClick={onGoBack}
+            >
+              ← Go Back
+            </span>
+          )}
           <div id="settings-tile-container">
-            {items.map((i) => (
-              <SettingsTile title={i.title} description={i.description} />
+            {currentPage.items.map((i) => (
+              <SettingsTile {...i} />
             ))}
           </div>
         </div>

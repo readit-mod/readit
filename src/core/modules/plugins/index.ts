@@ -34,7 +34,7 @@ export class Plugins {
     const modules = import.meta.glob("./builtin/*/index.ts", {eager: true})
     for(const module of Object.values(modules)) {
       const plugin: ReadItPlugin = (module as any).default;
-      const ctx = createPluginContext(this.readit, plugin.id);
+      const ctx = createPluginContext(this.readit, plugin);
 
       this.loadedPluginList.push(plugin);
       await plugin.onLoad(ctx);
@@ -47,19 +47,28 @@ export class Plugins {
 
       const config: ReadItPlugin = module.default
       this.loadedPluginList.push(config)
-      const ctx = createPluginContext(this.readit, config.id)
+      const ctx = createPluginContext(this.readit, config)
       await config.onLoad(ctx) // Pass in the API context
     } catch (e) {
       console.error("Failed to load plugin:", e);
     }
   }
 
-  addPlugin(url: string) {
-    if (localStorage.getItem("plugins") == null)
-      localStorage.setItem("plugins", "[]");
-    const plugins = JSON.parse(localStorage.getItem("plugins")!);
-    plugins.push({ url });
-    localStorage.setItem("plugins", JSON.stringify(plugins));
+  async addPlugin(url: string) {
+    const plugins = await this.readit.storage.get("core", "plugins", []);
+    plugins.push({url});
+    await this.readit.storage.set("core", "plugins", plugins);
     alert("New Plugins require a reload!");
+  }
+
+  onLoadedPlugins() {
+    this.readit.settings.registerSettingsTile({
+      title: "Add Plugin",
+      description: "Add a new plugin by RAW URL",
+      onClick: () => {
+        let url = prompt("Enter the valid RAW URL of the plugin:");
+        if (url) this.addPlugin(url);
+      }
+    })
   }
 }

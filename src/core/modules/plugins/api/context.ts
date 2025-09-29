@@ -1,8 +1,11 @@
 import { Settings } from "@/core/modules/settings"
 import { Posts } from "@/core/modules/posts"
 import { Storage } from "@/core/modules/storage"
+import { Logging } from "@/core/modules/logging"
 
-import { SettingsAPI, PostsAPI, PluginContext } from "@/core/modules/plugins/api/types"
+import { SettingsAPI, PostsAPI, PluginContext, StorageAPI, LoggingAPI } from "@/core/modules/plugins/api/types"
+import { ReadItPlugin } from "@/lib/types"
+import { ReadIt } from "@/core/modules/readit"
 
 export function createPostsAPI(internal: Posts): PostsAPI {
     return {
@@ -12,11 +15,21 @@ export function createPostsAPI(internal: Posts): PostsAPI {
 
 export function createSettingsAPI(internal: Settings): SettingsAPI {
     return {
-        registerSettingsTile: (tile) => internal.registerSettingsTile(tile)
+        registerSettingsTile: (tile) => internal.registerSettingsTile(tile),
+        registerSettingsPage: (page) => internal.registerSettingsPage(page),
+        registerNavigationTile: (tile) => internal.registerNavigationTile(tile),
     }
 }
 
-export function createStorageAPI(internal: Storage, id: string) {
+export function createLoggingAPI(internal: Logging, plugin: ReadItPlugin): LoggingAPI {
+    return {
+        info: (message: string) => internal.info(`[${plugin.name}] ${message}`),
+        error: (message: string) => internal.error(`[${plugin.name}] ${message}`),
+        warn: (message: string) => internal.warn(`[${plugin.name}] ${message}`),
+    }
+}
+
+export function createStorageAPI(internal: Storage, id: string): StorageAPI {
     return {
         async get<T = unknown>(key: string, defaultValue?: T): Promise<Awaited<T>> {
             return await  internal.get<T>(`plugin:${id}`, key, defaultValue);
@@ -33,10 +46,11 @@ export function createStorageAPI(internal: Storage, id: string) {
     }
 }
 
-export function createPluginContext(deps: {posts: Posts, settings: Settings, storage: Storage}, pluginId: string): PluginContext {
+export function createPluginContext(deps: ReadIt, plugin: ReadItPlugin): PluginContext {
     return {
         posts: createPostsAPI(deps.posts),
         settings: createSettingsAPI(deps.settings),
-        storage: createStorageAPI(deps.storage, pluginId),
+        storage: createStorageAPI(deps.storage, plugin.id),
+        logging: createLoggingAPI(deps.logging, plugin)
     }
 }

@@ -13,6 +13,17 @@ export type TileProps = {
   title: string;
   description: string;
   icon?: string;
+  onClick?: () => void;
+}
+
+export type NavigationTileProps = TileProps & {
+  id: string;
 }
 
 export const definePlugin: (config: ReadItPlugin) => ReadItPlugin;
+
+export type SettingsPage = {
+  id: string;
+  title: string;
+  items: TileProps[];
+};
