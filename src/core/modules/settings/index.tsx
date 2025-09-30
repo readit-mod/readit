@@ -16,7 +16,7 @@ export class Settings {
     document.body.appendChild(this.modalContainer);
 
     this.injectButton();
-    this.patchRenderMethod();
+    this.listenForNavigations();
     this.render();
   }
 
@@ -41,7 +41,7 @@ export class Settings {
   // Inject the button into navbar
   injectButton() {
     const container = document.querySelector(
-      "body > shreddit-app > reddit-header-large > reddit-header-action-items > header > nav > div.ps-lg.gap-xs.flex.items-center.justify-end > div:nth-child(2)"
+      "body > shreddit-app > reddit-header-large > reddit-header-action-items > header > nav > div.ps-lg.gap-xs.flex.items-center.justify-end "
     );
 
     if (!container || this.isSettingsVisible()) return;
@@ -51,20 +51,13 @@ export class Settings {
     Nano.render(<SettingsButton onClick={this.open} />, btnDiv);
   }
 
-  // Patch Lit render to survive rerenders
-  patchRenderMethod() {
-    const app = document.querySelector("shreddit-app") as any; // TS complains __proto__ doesn't exist on Element
-    if (!app) return;
-    const proto = app.__proto__;
-    if (proto.__readitPatched) return;
-
-    const originalRender = proto.render;
-    proto.render = function (...args) {
-      const result = originalRender.call(this, ...args);
-      this.readit?.settings?.injectButton?.(); // re-inject after Lit render
-      return result;
-    };
-    proto.__readitPatched = true;
+  // If the user clicks a post, comment, or subreddit link, the navbar re-renders and we lose our button.
+  listenForNavigations() {
+    (unsafeWindow as any).navigation.onnavigatesuccess = () => {
+      if (!this.isSettingsVisible()) {
+        this.injectButton();
+      }
+    }
   }
 
   registerSettingsTile(content: TileProps) {

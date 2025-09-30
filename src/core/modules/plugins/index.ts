@@ -62,13 +62,47 @@ export class Plugins {
   }
 
   onLoadedPlugins() {
-    this.readit.settings.registerSettingsTile({
+    this.readit.settings.registerSettingsPage({
+      id: "add-plugin",
       title: "Add Plugin",
-      description: "Add a new plugin by RAW URL",
-      onClick: () => {
-        let url = prompt("Enter the valid RAW URL of the plugin:");
-        if (url) this.addPlugin(url);
-      }
+      items: [
+        {
+          title: "Add with RAW URL",
+          description: "Add a new plugin by RAW URL",
+          onClick: () => {
+            let url = prompt("Enter the valid RAW URL of the plugin:");
+            if (url) this.addPlugin(url);
+          }
+        },
+        {
+          title: "Add from GitHub Repo",
+          description: "Add a new plugin by GitHub Repo URL",
+          onClick: () => {
+            let repo = prompt("Enter the GitHub Repo URL of the plugin")
+            if (repo) {
+              function toRawBuildsUrl(repoUrl) {
+                const match = repoUrl.match(/^https:\/\/github\.com\/([^/]+)\/([^/]+)(?:\/.*)?$/);
+                if (!match) {
+                  throw new Error("Invalid GitHub repo URL");
+                }
+                const [, user, repo] = match;
+                // Plugins should use and fork the readit-plugin template to make plugins.
+                // Builds are automatically generated and stored in the builds branch of the repo.
+                return `https://raw.githubusercontent.com/${user}/${repo}/builds/plugin.js`;
+              }
+              let rawUrl = toRawBuildsUrl(repo);
+              this.addPlugin(rawUrl);
+            }
+
+          }
+        }
+      ]
+    })
+    this.readit.settings.registerNavigationTile({
+      id: "add-plugin",
+      title: "Add Plugin",
+      description: "Add a new plugin to ReadIt",
+      icon: "➕"
     })
   }
 }
