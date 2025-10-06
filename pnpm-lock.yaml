@@ -35,9 +35,6 @@ importers:
       nano-jsx:
         specifier: ^0.1.0
         version: 0.1.0
-      vite-plugin-css-injected-by-js:
-        specifier: ^3.5.2
-        version: 3.5.2(vite@7.1.5(@types/node@24.5.0))
     devDependencies:
       '@types/node':
         specifier: latest
@@ -51,9 +48,6 @@ importers:
       vite:
         specifier: ^7.1.5
         version: 7.1.5(@types/node@24.5.0)
-      vite-plugin-monaco-editor:
-        specifier: ^1.1.0
-        version: 1.1.0(monaco-editor@0.53.0)
 
 packages:
 
@@ -370,9 +364,6 @@ packages:
   '@types/tampermonkey@5.0.4':
     resolution: {integrity: sha512-HEJ0O5CkDZSwIgd9Zip4xM8o7gZC8zBmJuH1YEXNINIC+aCWEXD10pnpo3NQG5IWHx+Xr4fMSGq1jqeKXH2lpA==}
 
-  '@types/trusted-types@1.0.6':
-    resolution: {integrity: sha512-230RC8sFeHoT6sSUlRO6a8cAnclO06eeiq1QDfiv2FGCLWFvvERWgwIQD4FWqD9A69BN7Lzee4OXwoMVnnsWDw==}
-
   '@uiw/codemirror-theme-vscode@4.25.2':
     resolution: {integrity: sha512-0vZAAtC65v64sYKtUMvgg9xPw1QlcnFTzGv8vZ5fD4SmSXFZWXTapjezwhGmvR7/UdAPFyh/4korgBnQo9ix3A==}
 
@@ -455,9 +446,6 @@ packages:
     resolution: {integrity: sha512-zymm5+u+sCsSWyD9qNaejV3DFvhCKclKdizYaJUuHA83RLjb7nSuGnddCHGv0hk+KY7BMAlsWeK4Ueg6EV6XQg==}
     engines: {node: '>=8'}
 
-  monaco-editor@0.53.0:
-    resolution: {integrity: sha512-0WNThgC6CMWNXXBxTbaYYcunj08iB5rnx4/G56UOPeL9UVIUGGHA1GR0EWIh9Ebabj7NpCRawQ5b0hfN1jQmYQ==}
-
   nano-jsx@0.1.0:
     resolution: {integrity: sha512-S4qJM9ayruMdDnn3hiHNK6kq0ZvCaNrDL3RD5jc4AVhmsW1Ufk3xE64Q6xrjAzq1Gff+6VZ5+Au8For4FT/6LA==}
     engines: {node: '>=16'}
@@ -530,16 +518,6 @@ packages:
 
   undici-types@7.12.0:
     resolution: {integrity: sha512-goOacqME2GYyOZZfb5Lgtu+1IDmAlAEu5xnD3+xTzS10hT0vzpf0SPjkXwAw9Jm+4n/mQGDP3LO8CPbYROeBfQ==}
-
-  vite-plugin-css-injected-by-js@3.5.2:
-    resolution: {integrity: sha512-2MpU/Y+SCZyWUB6ua3HbJCrgnF0KACAsmzOQt1UvRVJCGF6S8xdA3ZUhWcWdM9ivG4I5az8PnQmwwrkC2CAQrQ==}
-    peerDependencies:
-      vite: '>2.0.0-0'
-
-  vite-plugin-monaco-editor@1.1.0:
-    resolution: {integrity: sha512-IvtUqZotrRoVqwT0PBBDIZPNraya3BxN/bfcNfnxZ5rkJiGcNtO5eAOWWSgT7zullIAEqQwxMU83yL9J5k7gww==}
-    peerDependencies:
-      monaco-editor: '>=0.33.0'
 
   vite@7.1.5:
     resolution: {integrity: sha512-4cKBO9wR75r0BeIWWWId9XK9Lj6La5X846Zw9dFfzMRw38IlTk2iCcUt6hsyiDRcPidc55ZParFYDXi0nXOeLQ==}
@@ -825,8 +803,6 @@ snapshots:
 
   '@types/tampermonkey@5.0.4': {}
 
-  '@types/trusted-types@1.0.6': {}
-
   '@uiw/codemirror-theme-vscode@4.25.2(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.4)':
     dependencies:
       '@uiw/codemirror-themes': 4.25.2(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.4)
@@ -931,10 +907,6 @@ snapshots:
 
   is-fullwidth-code-point@3.0.0: {}
 
-  monaco-editor@0.53.0:
-    dependencies:
-      '@types/trusted-types': 1.0.6
-
   nano-jsx@0.1.0: {}
 
   nanoid@3.3.11: {}
@@ -1016,14 +988,6 @@ snapshots:
   tslib@2.8.1: {}
 
   undici-types@7.12.0: {}
-
-  vite-plugin-css-injected-by-js@3.5.2(vite@7.1.5(@types/node@24.5.0)):
-    dependencies:
-      vite: 7.1.5(@types/node@24.5.0)
-
-  vite-plugin-monaco-editor@1.1.0(monaco-editor@0.53.0):
-    dependencies:
-      monaco-editor: 0.53.0
 
   vite@7.1.5(@types/node@24.5.0):
     dependencies:
