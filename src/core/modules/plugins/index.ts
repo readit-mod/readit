@@ -5,10 +5,9 @@ import { createPluginContext } from "@/core/modules/plugins/api/context";
 
 export class Plugins {
   constructor(private readit: ReadIt) {
-    if (localStorage.getItem("plugins") == null)
-      localStorage.setItem("plugins", "[]");
-    const plugins = JSON.parse(localStorage.getItem("plugins")!);
-    this.unloadedPluginList = plugins;
+    this.readit.storage.get("core", "plugins", []).then((plugins: { url: string }[]) => {
+      this.unloadedPluginList = plugins;
+    })
   }
 
   unloadedPluginList = [];
@@ -19,16 +18,18 @@ export class Plugins {
   }
 
   async loadPlugins() {
-    console.log(this.unloadedPluginList);
-    await this.loadBuiltins();
-    this.unloadedPluginList.forEach(async (plugin) => {
+  console.log(this.unloadedPluginList);
+  await this.loadBuiltins();
+  await Promise.all(
+    this.unloadedPluginList.map(async (plugin) => {
       try {
         await this.loadPlugin(plugin.url);
       } catch (e) {
         console.error("Plugin execution failed, URL:", plugin.url, e);
       }
-    });
-  }
+    })
+  );
+}
 
   async loadBuiltins() {
     const modules = import.meta.glob("./builtin/*/index.ts", {eager: true})
@@ -58,7 +59,8 @@ export class Plugins {
     const plugins = await this.readit.storage.get("core", "plugins", []);
     plugins.push({url});
     await this.readit.storage.set("core", "plugins", plugins);
-    alert("New Plugins require a reload!");
+    alert("Plugin added! Page will now reload to apply changes.");
+    unsafeWindow.location.reload();
   }
 
   onLoadedPlugins() {
@@ -104,5 +106,27 @@ export class Plugins {
       description: "Add a new plugin to ReadIt",
       icon: "➕"
     })
+    this.readit.settings.registerSettingsPage({
+        id: "plugins",
+        title: "Plugins",
+        items: this.loadedPluginList.map((p) => ({
+          title: p.name,
+          description: p.version ? `v${p.version}` : "No version",
+        }))
+    })
+    
+    console.log(this.loadedPluginList);
+
+    this.readit.settings.registerNavigationTile({
+      id: "plugins",
+      title: "Plugins",
+      description: "Manage your installed plugins",
+      icon: "🧩",
+    })
+  }
+
+  async initPlugins() {
+    await this.loadPlugins();
+    this.onLoadedPlugins();
   }
 }

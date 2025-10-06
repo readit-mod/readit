@@ -6,7 +6,7 @@
 // @author       tralwdwd
 // @match        https://*.reddit.com/*
 // @icon         https://www.redditstatic.com/desktop2x/img/favicon/apple-icon-76x76.png
-// @run-at       document-end
+// @run-at       document-body
 // @downloadURL  https://raw.githubusercontent.com/readit-mod/builds/refs/heads/main/readit.user.js
 // @grant        GM.xmlHttpRequest
 // @grant        unsafeWindow

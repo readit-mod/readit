@@ -20,6 +20,7 @@ export default definePlugin({
         api.settings.registerSettingsTile({
             title: "Ads Blocked",
             description: `Total ads blocked: ${blocked}`,
+            icon: "🚫",
         });
         api.logging.info("Loaded successfully...");
     }

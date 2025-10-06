@@ -23,9 +23,14 @@ export type StorageAPI = {
     keys(): Promise<string[]>,
 }
 
+export type CssAPI = {
+    addRule(rule: string): void,
+}
+
 export type PluginContext = {
     settings: SettingsAPI,
     posts: PostsAPI,
     storage: StorageAPI,
     logging: LoggingAPI,
+    customcss: CssAPI,
 }

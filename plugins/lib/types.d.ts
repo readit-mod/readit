@@ -21,7 +21,13 @@ export type NavigationTileProps = TileProps & {
 export type SettingsPage = {
   id: string;
   title: string;
-  items: TileProps[];
+  items?: TileProps[];
+  pageComponent?: never
+} | {
+  id: string;
+  title: string;
+  items?: never;
+  pageComponent?: any;
 };
 
 export declare function definePlugin (config: ReadItPlugin): ReadItPlugin;
@@ -49,8 +55,16 @@ export type StorageAPI = {
     keys(): Promise<string[]>,
 }
 
+export type CssAPI = {
+    addRule(rule: string): void,
+}
+
 export type PluginContext = {
     settings: SettingsAPI,
     posts: PostsAPI,
     storage: StorageAPI,
+    logging: LoggingAPI,
+    customcss: CssAPI,
 }
+
+export declare const unsafeWindow: Window & typeof globalThis;

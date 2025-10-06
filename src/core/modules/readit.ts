@@ -3,6 +3,8 @@ import { Plugins } from "@/core/modules/plugins";
 import { Settings } from "@/core/modules/settings";
 import { Storage } from "@/core/modules/storage";
 import { Logging } from "@/core/modules/logging";
+import { CustomCss } from "@/core/modules/customcss";
+import { setupCustomCss } from "./customcss/settings";
 
 export class ReadIt {
   version: string;
@@ -11,6 +13,7 @@ export class ReadIt {
   plugins: Plugins;
   settings: Settings;
   storage: Storage;
+  customcss: CustomCss;
 
   constructor() {
     this.version = GM_info.script.version;
@@ -18,36 +21,25 @@ export class ReadIt {
     this.logging = new Logging(this);
     this.posts = new Posts(this);
     this.settings = new Settings(this);
-    this.plugins = new Plugins(this);
     this.storage = new Storage(this);
+    this.plugins = new Plugins(this);
+    this.customcss = new CustomCss(this);
 
-    this.plugins.loadPlugins();
     this.settings.registerSettingsTile({
         title: "ReadIt Version",
         description: this.version
     });
 
-    this.settings.registerSettingsPage({
-        id: "plugins",
-        title: "Plugins",
-        items: this.plugins.loadedPluginList.map((p) => ({
-          title: p.name,
-          description: p.version ? `v${p.version}` : "No version",
-        }))
-    })
+    setupCustomCss(this);
 
-    this.settings.registerNavigationTile({
-      id: "plugins",
-      title: "Plugins",
-      description: "Manage your installed plugins",
-      icon: "🧩",
-    })
-
-    this.plugins.onLoadedPlugins();
-
+    this.plugins.initPlugins();
   }
 }
 
 export const readit = new ReadIt();
 
-(unsafeWindow as any).readit = readit;
+Object.defineProperty(unsafeWindow, "readit", {
+  value: readit,
+  writable: false,
+  configurable: false,
+})

@@ -13,12 +13,21 @@
   "license": "ISC",
   "packageManager": "pnpm@10.13.1",
   "devDependencies": {
-    "@types/node": "^24.5.0",
+    "@types/node": "latest",
     "@types/tampermonkey": "^5.0.4",
     "concurrently": "^9.2.1",
-    "vite": "^7.1.5"
+    "vite": "^7.1.5",
+    "vite-plugin-monaco-editor": "^1.1.0"
   },
   "dependencies": {
+    "@babel/runtime": "^7.28.4",
+    "@codemirror/commands": "^6.9.0",
+    "@codemirror/lang-css": "^6.3.1",
+    "@codemirror/language": "^6.11.3",
+    "@codemirror/state": "^6.5.2",
+    "@codemirror/view": "^6.38.4",
+    "@uiw/codemirror-theme-vscode": "^4.25.2",
+    "codemirror": "^6.0.2",
     "nano-jsx": "^0.1.0"
   }
 }

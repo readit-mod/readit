@@ -82,9 +82,16 @@ export class SettingsModal extends Component<{
             </span>
           )}
           <div id="settings-tile-container">
-            {currentPage.items.map((i) => (
-              <SettingsTile {...i} />
-            ))}
+            {currentPage.pageComponent ?
+              (typeof currentPage.pageComponent === "function" ?
+                currentPage.pageComponent() :
+                <currentPage.pageComponent />)
+              :
+                currentPage.items.map((i) => (
+                  <SettingsTile {...i} />
+                ))
+              }
+            
           </div>
         </div>
       </div>

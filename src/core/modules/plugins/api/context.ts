@@ -2,8 +2,9 @@ import { Settings } from "@/core/modules/settings"
 import { Posts } from "@/core/modules/posts"
 import { Storage } from "@/core/modules/storage"
 import { Logging } from "@/core/modules/logging"
+import { CustomCss } from "../../customcss"
 
-import { SettingsAPI, PostsAPI, PluginContext, StorageAPI, LoggingAPI } from "@/core/modules/plugins/api/types"
+import { SettingsAPI, PostsAPI, PluginContext, StorageAPI, LoggingAPI, CssAPI } from "@/core/modules/plugins/api/types"
 import { ReadItPlugin } from "@/lib/types"
 import { ReadIt } from "@/core/modules/readit"
 
@@ -46,11 +47,21 @@ export function createStorageAPI(internal: Storage, id: string): StorageAPI {
     }
 }
 
+export function createCssAPI(internal: CustomCss): CssAPI{
+    let sheet = internal.createStyleSheet();
+    return {
+        addRule(rule: string) {
+            sheet.insertRule(rule, 0)
+        }
+    }
+}
+
 export function createPluginContext(deps: ReadIt, plugin: ReadItPlugin): PluginContext {
     return {
         posts: createPostsAPI(deps.posts),
         settings: createSettingsAPI(deps.settings),
         storage: createStorageAPI(deps.storage, plugin.id),
-        logging: createLoggingAPI(deps.logging, plugin)
+        logging: createLoggingAPI(deps.logging, plugin),
+        customcss: createCssAPI(deps.customcss),
     }
 }

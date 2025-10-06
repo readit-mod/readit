@@ -1,6 +1,5 @@
 import { defineConfig } from "vite";
 import path from "path";
-import pkg from "package.json";
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
