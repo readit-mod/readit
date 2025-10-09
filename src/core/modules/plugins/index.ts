@@ -18,8 +18,7 @@ export class Plugins {
   }
 
   async loadPlugins() {
-  console.log(this.unloadedPluginList);
-  await this.loadBuiltins();
+  setTimeout(async() => await this.loadBuiltins(), 0);
   await Promise.all(
     this.unloadedPluginList.map(async (plugin) => {
       try {

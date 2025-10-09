@@ -12,14 +12,12 @@ export class Settings {
   activePage: string = "general";
 
   constructor(private readit: ReadIt) {
-    document.addEventListener("DOMContentLoaded", () => {
       this.modalContainer = document.createElement("div");
       document.body.appendChild(this.modalContainer);
 
       this.injectButton();
       this.listenForNavigations();
       this.render();
-    });
   }
 
   // Check if button exists

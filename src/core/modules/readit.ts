@@ -30,7 +30,9 @@ export class ReadIt {
         description: this.version
     });
 
+    
     setupCustomCss(this);
+    
 
     this.plugins.initPlugins();
   }
@@ -38,7 +40,7 @@ export class ReadIt {
 
 export const readit = new ReadIt();
 
-Object.defineProperty(unsafeWindow, "readit", {
+Object.defineProperty(window, "readit", {
   value: readit,
   writable: false,
   configurable: false,

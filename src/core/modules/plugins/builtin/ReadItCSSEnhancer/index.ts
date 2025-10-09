@@ -11,14 +11,14 @@ export default definePlugin({
                 overflow-y: auto !important;
         }`)
         
-        api.customcss.addRule(`*::-webkit-scrollbar-thumb {
+        api.customcss.addRule(`::-webkit-scrollbar-thumb {
                 background: #888;
                 border-radius: 4px;
                 border: 2px solid #1a1a1a;
         }`)
 
         api.customcss.addRule(`
-            *::-webkit-scrollbar {
+            ::-webkit-scrollbar {
                 width: 8px;
                 height: 8px;
         }`)

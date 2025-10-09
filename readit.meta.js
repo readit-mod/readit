@@ -6,7 +6,7 @@
 // @author       tralwdwd
 // @match        https://*.reddit.com/*
 // @icon         https://www.redditstatic.com/desktop2x/img/favicon/apple-icon-76x76.png
-// @run-at       document-body
+// @run-at       document-end
 // @downloadURL  https://raw.githubusercontent.com/readit-mod/builds/refs/heads/main/readit.user.js
 // @grant        GM.xmlHttpRequest
 // @grant        unsafeWindow
@@ -16,3 +16,4 @@
 
 // This code has been bundled, for source code go to https://github.com/readit-mod/readit
 
+const window = unsafeWindow;

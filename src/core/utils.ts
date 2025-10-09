@@ -8,7 +8,7 @@ export async function importProxied(url: string) {
     });
   });
 
-  const blob = new Blob([jsContents], { type: "text/javascript" });
+  const blob = new Blob([`const window = unsafeWindow;${jsContents}`], { type: "text/javascript" });
   const blobUrl = URL.createObjectURL(blob);
 
   try {

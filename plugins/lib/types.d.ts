@@ -66,5 +66,3 @@ export type PluginContext = {
     logging: LoggingAPI,
     customcss: CssAPI,
 }
-
-export declare const unsafeWindow: Window & typeof globalThis;
