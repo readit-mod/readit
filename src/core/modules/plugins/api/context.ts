@@ -52,6 +52,9 @@ export function createCssAPI(internal: CustomCss): CssAPI{
     return {
         addRule(rule: string) {
             sheet.insertRule(rule, 0)
+        },
+        clearRules() {
+            sheet.replaceSync("");
         }
     }
 }

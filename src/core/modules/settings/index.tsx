@@ -9,6 +9,7 @@ export class Settings {
   visible = false;
   tiles: TileProps[] = [];
   pages: SettingsPage[] = [];
+  history: string[] = [];
   activePage: string = "general";
 
   constructor(private readit: ReadIt) {
@@ -38,6 +39,17 @@ export class Settings {
     this.render();
   };
 
+  goToPage = (id: string) => {
+    this.history.push(this.activePage);
+    this.activePage = id;
+    this.render();
+  }
+
+  goBack() {
+    this.activePage = this.history.pop() || "general";
+    this.render();
+  }
+
   // Inject the button into navbar
   injectButton() {
     const container = document.querySelector(
@@ -63,11 +75,25 @@ export class Settings {
   registerSettingsTile(content: TileProps) {
     this.tiles.push(content);
     this.render();
+    return () => {
+      const idx = this.tiles.indexOf(content);
+      if (idx !== -1) {
+        this.tiles.splice(idx, 1);
+        this.render();
+      }
+    };
   }
 
   registerSettingsPage(page: SettingsPage) {
     this.pages.push(page);
     this.render();
+    return () => {
+      const idx = this.pages.indexOf(page);
+      if (idx !== -1) {
+        this.pages.splice(idx, 1);
+        this.render();
+      }
+    };
   }
 
   registerNavigationTile(tile: NavigationTileProps){
@@ -76,16 +102,17 @@ export class Settings {
       description: tile.description,
       icon: tile.icon,
       onClick: () => {
-        this.activePage = tile.id;
-        this.render();
+        this.goToPage(tile.id);
       }
     });
     this.render();
-  }
-
-  goBack() {
-    this.activePage = "general";
-    this.render();
+    return () => {
+      const idx = this.tiles.indexOf(tile);
+      if (idx !== -1) {
+        this.tiles.splice(idx, 1);
+        this.render();
+      }
+    };
   }
 
   render() {

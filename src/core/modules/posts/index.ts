@@ -31,10 +31,16 @@ export class Posts {
     });
   }
 
-  registerOnPostsLoaded = (callback: (posts: Element[]) => void): void => {
+  registerOnPostsLoaded = (callback: (posts: Element[]) => void): () => void => {
     this.postCallbacks.push(callback);
     // each plugin scans the current post list as its loaded
     this._callbackInitialScan();
+    return () => {
+      const idx = this.postCallbacks.indexOf(callback);
+      if (idx !== -1) {
+        this.postCallbacks.splice(idx, 1);
+      }
+    };
   };
 
   _callbackInitialScan(): void {

@@ -7,7 +7,11 @@ export type ReadItPlugin = {
   id: string;
   version?: string;
 
+  enabled?: boolean;
+  _ctx?: PluginContext;
+
   onLoad: (ctx: PluginContext) => Promise<void>;
+  onUnload?: (ctx: PluginContext) => Promise<void>;
 };
 
 export type TileProps = {

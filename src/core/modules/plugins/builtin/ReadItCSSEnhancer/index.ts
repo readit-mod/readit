@@ -22,5 +22,9 @@ export default definePlugin({
                 width: 8px;
                 height: 8px;
         }`)
+    },
+    
+    onUnload: async (api) => {
+        api.customcss.clearRules();
     }
 })

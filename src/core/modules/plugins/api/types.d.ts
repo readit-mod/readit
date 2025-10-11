@@ -1,13 +1,13 @@
 import { NavigationTileProps, SettingsPage, TileProps } from "@/lib/types"
 
 export type SettingsAPI = {
-    registerSettingsTile: (tile: TileProps) => void,
+    registerSettingsTile: (tile: TileProps) => () => void,
     registerSettingsPage: (page: SettingsPage) => void,
     registerNavigationTile: (tile: NavigationTileProps) => void,
 }
 
 export type PostsAPI = {
-    registerLoadCallback: (cb: (posts: Element[]) => void) => void,
+    registerLoadCallback: (cb: (posts: Element[]) => void) => () => void,
 }
 
 export type LoggingAPI = {
@@ -25,6 +25,7 @@ export type StorageAPI = {
 
 export type CssAPI = {
     addRule(rule: string): void,
+    clearRules(): void,
 }
 
 export type PluginContext = {

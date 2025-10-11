@@ -1,5 +1,7 @@
 import { definePlugin } from "@/lib/plugin"
 
+let unsubscribe: (() => void) | null = null;
+
 export default definePlugin({
     name: "ReadIt Adblock",
     description: "Builtin plugin to remove ads from the website.",
@@ -8,7 +10,8 @@ export default definePlugin({
     onLoad: async (api) => {
         let blocked = await api.storage.get<number>("ads-blocked", 0);
 
-        api.posts.registerLoadCallback(async (posts) => {
+        
+        let unsubLoadCallback = api.posts.registerLoadCallback(async (posts) => {
             posts.forEach((post) => {
                 if(post.matches("shreddit-ad-post")) {
                     blocked++;
@@ -17,11 +20,20 @@ export default definePlugin({
             })
             await api.storage.set("ads-blocked", blocked);
         })
-        api.settings.registerSettingsTile({
+        let removeTile = api.settings.registerSettingsTile({
             title: "Ads Blocked",
             description: `Total ads blocked: ${blocked}`,
             icon: "🚫",
         });
+        unsubscribe = () => {
+            unsubLoadCallback();
+            removeTile();
+        } 
+        
         api.logging.info("Loaded successfully...");
+    },
+
+    onUnload: async (api) => {
+        unsubscribe?.();
     }
 })

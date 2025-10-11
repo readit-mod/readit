@@ -1,6 +1,7 @@
 import type { ReadItPlugin } from "@/lib/types";
 import { importProxied } from "@/core/utils";
 import { ReadIt } from "@/core/modules/readit";
+import PluginPage from "@/core/components/PluginPage";
 import { createPluginContext } from "@/core/modules/plugins/api/context";
 
 export class Plugins {
@@ -17,8 +18,36 @@ export class Plugins {
     return this.loadedPluginList;
   }
 
+  loadPluginByExport(plugin: ReadItPlugin) {
+    plugin.enabled = true // TODO: Add persistant enable/disable functionality using readit.storage
+    this.loadedPluginList.push(plugin)
+    const ctx = createPluginContext(this.readit, plugin)
+    plugin._ctx = ctx;
+    plugin.onLoad(ctx)
+
+    this.readit.settings.registerSettingsPage({
+      id: `plugin:${plugin.id}`,
+      title: plugin.name,
+      pageComponent: <PluginPage plugin={plugin} />
+    })
+  }
+
+  disablePlugin(plugin: ReadItPlugin) {
+    plugin.enabled = false;
+    if (plugin.onUnload) {
+      const ctx = plugin._ctx!;
+      plugin.onUnload(ctx);
+    }
+  }
+
+  enablePlugin(plugin: ReadItPlugin) {
+    plugin.enabled = true;
+    const ctx = plugin._ctx!;
+    plugin.onLoad(ctx);
+  }
+
   async loadPlugins() {
-  setTimeout(async() => await this.loadBuiltins(), 0);
+  await this.loadBuiltins();
   await Promise.all(
     this.unloadedPluginList.map(async (plugin) => {
       try {
@@ -34,10 +63,7 @@ export class Plugins {
     const modules = import.meta.glob("./builtin/*/index.ts", {eager: true})
     for(const module of Object.values(modules)) {
       const plugin: ReadItPlugin = (module as any).default;
-      const ctx = createPluginContext(this.readit, plugin);
-
-      this.loadedPluginList.push(plugin);
-      await plugin.onLoad(ctx);
+      this.loadPluginByExport(plugin);
     }
   }
 
@@ -45,10 +71,8 @@ export class Plugins {
     try {
       const module = await importProxied(url);
 
-      const config: ReadItPlugin = module.default
-      this.loadedPluginList.push(config)
-      const ctx = createPluginContext(this.readit, config)
-      await config.onLoad(ctx) // Pass in the API context
+      const plugin: ReadItPlugin = module.default
+      this.loadPluginByExport(plugin) // Pass in the API context
     } catch (e) {
       console.error("Failed to load plugin:", e);
     }
@@ -105,16 +129,20 @@ export class Plugins {
       description: "Add a new plugin to ReadIt",
       icon: "➕"
     })
+    console.log(this.loadedPluginList.map((p) => ({
+          title: p.name,
+          description: p.version ? `v${p.version}` : "No version",
+          onClick: () => this.readit.settings.goToPage(`plugin:${p.id}`)
+        })))
     this.readit.settings.registerSettingsPage({
         id: "plugins",
         title: "Plugins",
         items: this.loadedPluginList.map((p) => ({
           title: p.name,
           description: p.version ? `v${p.version}` : "No version",
+          onClick: () => this.readit.settings.goToPage(`plugin:${p.id}`)
         }))
     })
-    
-    console.log(this.loadedPluginList);
 
     this.readit.settings.registerNavigationTile({
       id: "plugins",

@@ -1,5 +1,8 @@
 import { definePlugin } from "@/lib/plugin";
 
+const originalFetch = window.fetch;
+const originalSendBeacon = window.navigator.sendBeacon;
+
 export default definePlugin({
     name: "ReadIt Tracking Blocker",
     description: "Builtin plugin to block tracking scripts.",
@@ -14,7 +17,7 @@ export default definePlugin({
         ]
 
         // Override fetch to block requests to these URLs
-        const originalFetch = window.fetch;
+        
 
         window.fetch = async (input: RequestInfo, init?: RequestInit): Promise<Response> => {
             let url = typeof input === "string" ? input : input.url;
@@ -25,8 +28,6 @@ export default definePlugin({
             return originalFetch(input, init);
         }
 
-        const originalSendBeacon = window.navigator.sendBeacon;
-
         // Some requests use navigator.sendBeacon
         window.navigator.sendBeacon = (url: string, data?: BodyInit | null): boolean => {
             if(blockedURLs.some(blocked => url.includes(blocked))) {
@@ -34,5 +35,10 @@ export default definePlugin({
             }
             return originalSendBeacon.call(unsafeWindow.navigator, url, data);
         }
+    },
+
+    onUnload: async () => {
+        window.fetch = originalFetch;
+        window.navigator.sendBeacon = originalSendBeacon;
     }
 });
