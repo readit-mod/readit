@@ -1,4 +1,4 @@
-import { Component } from "nano-jsx";
+import { useEffect, useRef } from 'preact/hooks';
 import { readit } from "@/core/modules/readit";
 import { EditorState } from "@codemirror/state";
 import { EditorView, basicSetup } from "codemirror";
@@ -8,47 +8,59 @@ import { indentUnit } from "@codemirror/language";
 import { css } from "@codemirror/lang-css";
 import { vscodeDark } from "@uiw/codemirror-theme-vscode";
 
-export class CSSEditor extends Component {
-  editor: EditorView | null = null;
-  containerRef: HTMLDivElement | null = null;
-  code: string = "";
+export function CSSEditor() {
+    const containerRef = useRef<HTMLDivElement>(null);
+    const editorRef = useRef<EditorView | null>(null);
 
-  async didMount() {
-    this.code = await readit.storage.get("core", "customcss", "");
+    useEffect(() => {
+        let editor: EditorView | null = null;
+        let disposed = false;
 
-    const onUpdate = EditorView.updateListener.of((v)=>{
-        if(v.docChanged) {
-            this.code = v.state.doc.toString();
-            readit.customcss.setRootStyle(this.code);
-            readit.storage.set("core", "customcss", this.code);
+        async function setupEditor() {
+            const code = await readit.storage.get('core', 'customcss', '');
+
+            if (disposed) return; // avoid setting up if unmounted early
+
+            const onUpdate = EditorView.updateListener.of((v) => {
+                if (v.docChanged) {
+                    const newCode = v.state.doc.toString();
+                    readit.customcss.setRootStyle(newCode);
+                    readit.storage.set('core', 'customcss', newCode);
+                }
+            });
+
+            const state = EditorState.create({
+                doc: code,
+                extensions: [
+                    vscodeDark,
+                    basicSetup,
+                    css(),
+                    onUpdate,
+                    indentUnit.of('    '),
+                    keymap.of([indentWithTab]),
+                ],
+            });
+
+            editor = new EditorView({
+                state,
+                parent: containerRef.current!,
+            });
+
+            editorRef.current = editor;
         }
-    });
 
-    const state = EditorState.create({
-    doc: this.code,
-    extensions: [
-      vscodeDark,
-      basicSetup,
-      css(),
-      onUpdate,
-      indentUnit.of("  "),
-      keymap.of([indentWithTab])
-    ],
-    });
+        setupEditor();
 
-    this.editor = new EditorView({
-      state,
-      parent: this.containerRef!,
-    });
+        return () => {
+            disposed = true;
+            editor?.destroy();
+        };
+    }, []);
 
-  }
-
-  render() {
     return (
-      <div
-        ref={(el) => (this.containerRef = el)}
-        style={{ width: "100%", height: "300px", border: "1px solid #333" }}
-      />
+        <div
+            ref={containerRef}
+            style={{ width: '100%', height: '300px', border: '1px solid #333' }}
+        />
     );
-  }
 }

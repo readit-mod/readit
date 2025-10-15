@@ -5,155 +5,156 @@ import PluginPage from "@/core/components/PluginPage";
 import { createPluginContext } from "@/core/modules/plugins/api/context";
 
 export class Plugins {
-  constructor(private readit: ReadIt) {
-    this.readit.storage.get("core", "plugins", []).then((plugins: { url: string }[]) => {
-      this.unloadedPluginList = plugins;
-    })
-  }
-
-  unloadedPluginList = [];
-  loadedPluginList: ReadItPlugin[] = [];
-
-  get pluginList() {
-    return this.loadedPluginList;
-  }
-
-  loadPluginByExport(plugin: ReadItPlugin) {
-    plugin.enabled = true // TODO: Add persistant enable/disable functionality using readit.storage
-    this.loadedPluginList.push(plugin)
-    const ctx = createPluginContext(this.readit, plugin)
-    plugin._ctx = ctx;
-    plugin.onLoad(ctx)
-
-    this.readit.settings.registerSettingsPage({
-      id: `plugin:${plugin.id}`,
-      title: plugin.name,
-      pageComponent: <PluginPage plugin={plugin} />
-    })
-  }
-
-  disablePlugin(plugin: ReadItPlugin) {
-    plugin.enabled = false;
-    if (plugin.onUnload) {
-      const ctx = plugin._ctx!;
-      plugin.onUnload(ctx);
+    constructor(private readit: ReadIt) {
+        this.readit.storage.get("core", "plugins", []).then((plugins: { url: string }[]) => {
+            this.unloadedPluginList = plugins;
+        })
     }
-  }
 
-  enablePlugin(plugin: ReadItPlugin) {
-    plugin.enabled = true;
-    const ctx = plugin._ctx!;
-    plugin.onLoad(ctx);
-  }
+    unloadedPluginList = [];
+    loadedPluginList: ReadItPlugin[] = [];
 
-  async loadPlugins() {
-  await this.loadBuiltins();
-  await Promise.all(
-    this.unloadedPluginList.map(async (plugin) => {
-      try {
-        await this.loadPlugin(plugin.url);
-      } catch (e) {
-        console.error("Plugin execution failed, URL:", plugin.url, e);
-      }
-    })
-  );
+    get pluginList() {
+        return this.loadedPluginList;
+    }
+
+    loadPluginByExport(plugin: ReadItPlugin) {
+        plugin.enabled = true // TODO: Add persistant enable/disable functionality using readit.storage
+        this.loadedPluginList.push(plugin)
+        const ctx = createPluginContext(this.readit, plugin)
+        plugin._ctx = ctx;
+        plugin.onLoad(ctx)
+
+        this.readit.settings.registerSettingsPage({
+            id: `plugin:${plugin.id}`,
+            title: plugin.name,
+            pageComponent: () => <PluginPage plugin={plugin} />
+        })
+    }
+
+    disablePlugin(plugin: ReadItPlugin) {
+        plugin.enabled = false;
+        if (plugin.onUnload) {
+            const ctx = plugin._ctx!;
+            ctx.cleanup();
+            plugin.onUnload(ctx);
+        }
+    }
+
+    enablePlugin(plugin: ReadItPlugin) {
+        plugin.enabled = true;
+        const ctx = plugin._ctx!;
+        plugin.onLoad(ctx);
+    }
+
+    async loadPlugins() {
+    await this.loadBuiltins();
+    await Promise.all(
+        this.unloadedPluginList.map(async (plugin) => {
+            try {
+                await this.loadPlugin(plugin.url);
+            } catch (e) {
+                console.error("Plugin execution failed, URL:", plugin.url, e);
+            }
+        })
+    );
 }
 
-  async loadBuiltins() {
-    const modules = import.meta.glob("./builtin/*/index.ts", {eager: true})
-    for(const module of Object.values(modules)) {
-      const plugin: ReadItPlugin = (module as any).default;
-      this.loadPluginByExport(plugin);
-    }
-  }
-
-  async loadPlugin(url: string) {
-    try {
-      const module = await importProxied(url);
-
-      const plugin: ReadItPlugin = module.default
-      this.loadPluginByExport(plugin) // Pass in the API context
-    } catch (e) {
-      console.error("Failed to load plugin:", e);
-    }
-  }
-
-  async addPlugin(url: string) {
-    const plugins = await this.readit.storage.get("core", "plugins", []);
-    plugins.push({url});
-    await this.readit.storage.set("core", "plugins", plugins);
-    alert("Plugin added! Page will now reload to apply changes.");
-    unsafeWindow.location.reload();
-  }
-
-  onLoadedPlugins() {
-    this.readit.settings.registerSettingsPage({
-      id: "add-plugin",
-      title: "Add Plugin",
-      items: [
-        {
-          title: "Add with RAW URL",
-          description: "Add a new plugin by RAW URL",
-          onClick: () => {
-            let url = prompt("Enter the valid RAW URL of the plugin:");
-            if (url) this.addPlugin(url);
-          }
-        },
-        {
-          title: "Add from GitHub Repo",
-          description: "Add a new plugin by GitHub Repo URL",
-          onClick: () => {
-            let repo = prompt("Enter the GitHub Repo URL of the plugin")
-            if (repo) {
-              function toRawBuildsUrl(repoUrl) {
-                const match = repoUrl.match(/^https:\/\/github\.com\/([^/]+)\/([^/]+)(?:\/.*)?$/);
-                if (!match) {
-                  throw new Error("Invalid GitHub repo URL");
-                }
-                const [, user, repo] = match;
-                // Plugins should use and fork the readit-plugin template to make plugins.
-                // Builds are automatically generated and stored in the builds branch of the repo.
-                return `https://raw.githubusercontent.com/${user}/${repo}/builds/plugin.js`;
-              }
-              let rawUrl = toRawBuildsUrl(repo);
-              this.addPlugin(rawUrl);
-            }
-
-          }
+    async loadBuiltins() {
+        const modules = import.meta.glob("./builtin/*/index.ts{,x}", {eager: true})
+        for(const module of Object.values(modules)) {
+            const plugin: ReadItPlugin = (module as any).default;
+            this.loadPluginByExport(plugin);
         }
-      ]
-    })
-    this.readit.settings.registerNavigationTile({
-      id: "add-plugin",
-      title: "Add Plugin",
-      description: "Add a new plugin to ReadIt",
-      icon: "➕"
-    })
-    console.log(this.loadedPluginList.map((p) => ({
-          title: p.name,
-          description: p.version ? `v${p.version}` : "No version",
-          onClick: () => this.readit.settings.goToPage(`plugin:${p.id}`)
-        })))
-    this.readit.settings.registerSettingsPage({
-        id: "plugins",
-        title: "Plugins",
-        items: this.loadedPluginList.map((p) => ({
-          title: p.name,
-          description: p.version ? `v${p.version}` : "No version",
-          onClick: () => this.readit.settings.goToPage(`plugin:${p.id}`)
-        }))
-    })
+    }
 
-    this.readit.settings.registerNavigationTile({
-      id: "plugins",
-      title: "Plugins",
-      description: "Manage your installed plugins",
-      icon: "🧩",
-    })
-  }
+    async loadPlugin(url: string) {
+        try {
+            const module = await importProxied(url);
 
-  async initPlugins() {
-    await this.loadPlugins();
-    this.onLoadedPlugins();
-  }
+            const plugin: ReadItPlugin = module.default
+            this.loadPluginByExport(plugin) // Pass in the API context
+        } catch (e) {
+            console.error("Failed to load plugin:", e);
+        }
+    }
+
+    async addPlugin(url: string) {
+        const plugins = await this.readit.storage.get("core", "plugins", []);
+        plugins.push({url});
+        await this.readit.storage.set("core", "plugins", plugins);
+        alert("Plugin added! Page will now reload to apply changes.");
+        unsafeWindow.location.reload();
+    }
+
+    onLoadedPlugins() {
+        this.readit.settings.registerSettingsPage({
+            id: "add-plugin",
+            title: "Add Plugin",
+            items: [
+                {
+                    title: "Add with RAW URL",
+                    description: "Add a new plugin by RAW URL",
+                    onClick: () => {
+                        let url = prompt("Enter the valid RAW URL of the plugin:");
+                        if (url) this.addPlugin(url);
+                    }
+                },
+                {
+                    title: "Add from GitHub Repo",
+                    description: "Add a new plugin by GitHub Repo URL",
+                    onClick: () => {
+                        let repo = prompt("Enter the GitHub Repo URL of the plugin")
+                        if (repo) {
+                            function toRawBuildsUrl(repoUrl) {
+                                const match = repoUrl.match(/^https:\/\/github\.com\/([^/]+)\/([^/]+)(?:\/.*)?$/);
+                                if (!match) {
+                                    throw new Error("Invalid GitHub repo URL");
+                                }
+                                const [, user, repo] = match;
+                                // Plugins should use and fork the readit-plugin template to make plugins.
+                                // Builds are automatically generated and stored in the builds branch of the repo.
+                                return `https://raw.githubusercontent.com/${user}/${repo}/builds/plugin.js`;
+                            }
+                            let rawUrl = toRawBuildsUrl(repo);
+                            this.addPlugin(rawUrl);
+                        }
+
+                    }
+                }
+            ]
+        })
+        this.readit.settings.registerNavigationTile({
+            id: "add-plugin",
+            title: "Add Plugin",
+            description: "Add a new plugin to ReadIt",
+            icon: "➕"
+        })
+        console.log(this.loadedPluginList.map((p) => ({
+                    title: p.name,
+                    description: p.version ? `v${p.version}` : "No version",
+                    onClick: () => this.readit.settings.goToPage(`plugin:${p.id}`)
+                })))
+        this.readit.settings.registerSettingsPage({
+                id: "plugins",
+                title: "Plugins",
+                items: this.loadedPluginList.map((p) => ({
+                    title: p.name,
+                    description: p.version ? `v${p.version}` : "No version",
+                    onClick: () => this.readit.settings.goToPage(`plugin:${p.id}`)
+                }))
+        })
+
+        this.readit.settings.registerNavigationTile({
+            id: "plugins",
+            title: "Plugins",
+            description: "Manage your installed plugins",
+            icon: "🧩",
+        })
+    }
+
+    async initPlugins() {
+        await this.loadPlugins();
+        this.onLoadedPlugins();
+    }
 }

@@ -2,9 +2,19 @@ import { Settings } from "@/core/modules/settings"
 import { Posts } from "@/core/modules/posts"
 import { Storage } from "@/core/modules/storage"
 import { Logging } from "@/core/modules/logging"
-import { CustomCss } from "../../customcss"
+import { CustomCss } from "@/core/modules/customcss"
 
-import { SettingsAPI, PostsAPI, PluginContext, StorageAPI, LoggingAPI, CssAPI } from "@/core/modules/plugins/api/types"
+import { render, FunctionalComponent } from "preact";
+
+import {
+    SettingsAPI,
+    PostsAPI, 
+    PluginContext, 
+    StorageAPI, 
+    LoggingAPI, 
+    CssAPI, 
+    DomAPI 
+} from "@/core/modules/plugins/api/types"
 import { ReadItPlugin } from "@/lib/types"
 import { ReadIt } from "@/core/modules/readit"
 
@@ -33,16 +43,16 @@ export function createLoggingAPI(internal: Logging, plugin: ReadItPlugin): Loggi
 export function createStorageAPI(internal: Storage, id: string): StorageAPI {
     return {
         async get<T = unknown>(key: string, defaultValue?: T): Promise<Awaited<T>> {
-            return await  internal.get<T>(`plugin:${id}`, key, defaultValue);
+                return await    internal.get<T>(`plugin:${id}`, key, defaultValue);
         },
         async set<T = unknown>(key: string, value: T): Promise<void> {
-            return await internal.set<T>(`plugin:${id}`, key, value);
+                return await internal.set<T>(`plugin:${id}`, key, value);
         },
         async delete(key: string): Promise<void> {
-            return await internal.delete(`plugin:${id}`, key);
+                return await internal.delete(`plugin:${id}`, key);
         },
         async keys(): Promise<string[]> {
-            return await internal.keys(`plugin:${id}`);
+                return await internal.keys(`plugin:${id}`);
         }
     }
 }
@@ -51,10 +61,18 @@ export function createCssAPI(internal: CustomCss): CssAPI{
     let sheet = internal.createStyleSheet();
     return {
         addRule(rule: string) {
-            sheet.insertRule(rule, 0)
+                sheet.insertRule(rule, 0)
         },
         clearRules() {
-            sheet.replaceSync("");
+                sheet.replaceSync("");
+        }
+    }
+}
+
+export function createDomApi(): DomAPI {
+    return {
+        render(component: FunctionalComponent, element: HTMLElement) {
+            render(component, element)
         }
     }
 }
@@ -66,5 +84,7 @@ export function createPluginContext(deps: ReadIt, plugin: ReadItPlugin): PluginC
         storage: createStorageAPI(deps.storage, plugin.id),
         logging: createLoggingAPI(deps.logging, plugin),
         customcss: createCssAPI(deps.customcss),
+        dom: createDomApi(),
+        cleanup: () => {}
     }
 }
