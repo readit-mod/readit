@@ -26,6 +26,9 @@ importers:
       '@codemirror/view':
         specifier: ^6.38.4
         version: 6.38.4
+      '@types/react':
+        specifier: 17.0.60
+        version: 17.0.60
       '@uiw/codemirror-theme-vscode':
         specifier: ^4.25.2
         version: 4.25.2(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.4)
@@ -35,6 +38,9 @@ importers:
       preact:
         specifier: ^10.27.2
         version: 10.27.2
+      react-error-boundary:
+        specifier: ^6.0.0
+        version: 6.0.0(react@19.2.0)
     devDependencies:
       '@preact/preset-vite':
         specifier: ^2.10.2
@@ -48,6 +54,9 @@ importers:
       concurrently:
         specifier: ^9.2.1
         version: 9.2.1
+      prettier:
+        specifier: 3.6.2
+        version: 3.6.2
       vite:
         specifier: ^7.1.5
         version: 7.1.5(@types/node@24.5.0)
@@ -500,6 +509,15 @@ packages:
   '@types/node@24.5.0':
     resolution: {integrity: sha512-y1dMvuvJspJiPSDZUQ+WMBvF7dpnEqN4x9DDC9ie5Fs/HUZJA3wFp7EhHoVaKX/iI0cRoECV8X2jL8zi0xrHCg==}
 
+  '@types/prop-types@15.7.15':
+    resolution: {integrity: sha512-F6bEyamV9jKGAFBEmlQnesRPGOQqS2+Uwi0Em15xenOxHaf2hv6L8YCVn3rPdPJOiJfPiCnLIRyvwVaqMY3MIw==}
+
+  '@types/react@17.0.60':
+    resolution: {integrity: sha512-pCH7bqWIfzHs3D+PDs3O/COCQJka+Kcw3RnO9rFA2zalqoXg7cNjJDh6mZ7oRtY1wmY4LVwDdAbA1F7Z8tv3BQ==}
+
+  '@types/scheduler@0.26.0':
+    resolution: {integrity: sha512-WFHp9YUJQ6CKshqoC37iOlHnQSmxNc795UhB26CyBBttrN9svdIrUjl/NjnNmfcwtncN0h/0PPAFWv9ovP8mLA==}
+
   '@types/tampermonkey@5.0.4':
     resolution: {integrity: sha512-HEJ0O5CkDZSwIgd9Zip4xM8o7gZC8zBmJuH1YEXNINIC+aCWEXD10pnpo3NQG5IWHx+Xr4fMSGq1jqeKXH2lpA==}
 
@@ -576,6 +594,9 @@ packages:
   css-what@6.2.2:
     resolution: {integrity: sha512-u/O3vwbptzhMs3L1fQE82ZSLHQQfto5gyZzwteVIEyeaY5Fc7R4dapF/BvRoSYFeqfBk4m0V1Vafq5Pjv25wvA==}
     engines: {node: '>= 6'}
+
+  csstype@3.1.3:
+    resolution: {integrity: sha512-M1uQkMl8rQK/szD0LNhtqxIPLpimGm8sOBwU7lLnCpSbTyY3yeU1Vc7l4KT5zT4s/yOxHH5O7tIuuLOCnLADRw==}
 
   debug@4.4.3:
     resolution: {integrity: sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==}
@@ -711,6 +732,20 @@ packages:
 
   preact@10.27.2:
     resolution: {integrity: sha512-5SYSgFKSyhCbk6SrXyMpqjb5+MQBgfvEKE/OC+PujcY34sOpqtr+0AZQtPYx5IA6VxynQ7rUPCtKzyovpj9Bpg==}
+
+  prettier@3.6.2:
+    resolution: {integrity: sha512-I7AIg5boAr5R0FFtJ6rCfD+LFsWHp81dolrFD8S79U9tb8Az2nGrJncnMSnys+bpQJfRUzqs9hnA81OAA3hCuQ==}
+    engines: {node: '>=14'}
+    hasBin: true
+
+  react-error-boundary@6.0.0:
+    resolution: {integrity: sha512-gdlJjD7NWr0IfkPlaREN2d9uUZUlksrfOx7SX62VRerwXbMY6ftGCIZua1VG1aXFNOimhISsTq+Owp725b9SiA==}
+    peerDependencies:
+      react: '>=16.13.1'
+
+  react@19.2.0:
+    resolution: {integrity: sha512-tmbWg6W31tQLeB5cdIBOicJDJRR2KzXsV7uSK9iNfLWQ5bIZfxuPEHp7M8wiHyHnn0DD1i7w3Zmin0FtkrwoCQ==}
+    engines: {node: '>=0.10.0'}
 
   require-directory@2.1.1:
     resolution: {integrity: sha512-fGxEI7+wsG9xrvdjsrlmL22OMTTiHRwAMroiEeMgq8gzoLC/PQr7RsRDSTLUg/bZAZtF+TVIkHc6/4RIKrui+Q==}
@@ -1265,6 +1300,16 @@ snapshots:
     dependencies:
       undici-types: 7.12.0
 
+  '@types/prop-types@15.7.15': {}
+
+  '@types/react@17.0.60':
+    dependencies:
+      '@types/prop-types': 15.7.15
+      '@types/scheduler': 0.26.0
+      csstype: 3.1.3
+
+  '@types/scheduler@0.26.0': {}
+
   '@types/tampermonkey@5.0.4': {}
 
   '@uiw/codemirror-theme-vscode@4.25.2(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.4)':
@@ -1354,6 +1399,8 @@ snapshots:
       nth-check: 2.1.1
 
   css-what@6.2.2: {}
+
+  csstype@3.1.3: {}
 
   debug@4.4.3:
     dependencies:
@@ -1477,6 +1524,15 @@ snapshots:
       source-map-js: 1.2.1
 
   preact@10.27.2: {}
+
+  prettier@3.6.2: {}
+
+  react-error-boundary@6.0.0(react@19.2.0):
+    dependencies:
+      '@babel/runtime': 7.28.4
+      react: 19.2.0
+
+  react@19.2.0: {}
 
   require-directory@2.1.1: {}
 

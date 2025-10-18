@@ -17,8 +17,12 @@ export class Posts {
                             this._queuedPosts.add(node);
                         }
                         // Or its descendants match
-                        const matchingDescendants = node.querySelectorAll(this.selector);
-                        matchingDescendants.forEach((p) => this._queuedPosts.add(p));
+                        const matchingDescendants = node.querySelectorAll(
+                            this.selector,
+                        );
+                        matchingDescendants.forEach((p) =>
+                            this._queuedPosts.add(p),
+                        );
                     }
                 }
             }
@@ -31,7 +35,9 @@ export class Posts {
         });
     }
 
-    registerOnPostsLoaded = (callback: (posts: Element[]) => void): () => void => {
+    registerOnPostsLoaded = (
+        callback: (posts: Element[]) => void,
+    ): (() => void) => {
         this.postCallbacks.push(callback);
         // each plugin scans the current post list as its loaded
         this._callbackInitialScan();

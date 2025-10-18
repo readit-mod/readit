@@ -1,24 +1,27 @@
 import { render } from "preact";
-import { SettingsModal } from "@/core/components/SettingsModal";
+import { SettingsContent } from "@/core/components/SettingsContent";
 import { SettingsButton } from "@/core/components/SettingsButton";
+import { Modal } from "@/core/components/Modal";
+import { ErrorBoundary } from "@/core/components/ErrorBoundary";
 import { ReadIt } from "@/core/modules/readit";
 import { TileProps, SettingsPage, NavigationTileProps } from "@/lib/types";
 
 export class Settings {
     modalContainer: HTMLElement;
     visible = false;
+    title: string;
     tiles: TileProps[] = [];
     pages: SettingsPage[] = [];
     history: string[] = [];
     activePage: string = "general";
 
     constructor(private readit: ReadIt) {
-            this.modalContainer = document.createElement("div");
-            document.body.appendChild(this.modalContainer);
+        this.modalContainer = document.createElement("div");
+        document.body.appendChild(this.modalContainer);
 
-            this.injectButton();
-            this.listenForNavigations();
-            this.render();
+        this.injectButton();
+        this.listenForNavigations();
+        this.render();
     }
 
     // Check if button exists
@@ -43,17 +46,17 @@ export class Settings {
         this.history.push(this.activePage);
         this.activePage = id;
         this.render();
-    }
+    };
 
-    goBack() {
+    goBack = () => {
         this.activePage = this.history.pop() || "general";
         this.render();
-    }
+    };
 
     // Inject the button into navbar
     injectButton() {
         const container = document.querySelector(
-            "body > shreddit-app > reddit-header-large > reddit-header-action-items > header > nav > div.ps-lg.gap-xs.flex.items-center.justify-end "
+            "body > shreddit-app > reddit-header-large > reddit-header-action-items > header > nav > div.ps-lg.gap-xs.flex.items-center.justify-end ",
         );
 
         if (!container || this.isSettingsVisible()) return;
@@ -69,7 +72,12 @@ export class Settings {
             if (!this.isSettingsVisible()) {
                 this.injectButton();
             }
-        }
+        };
+    }
+
+    setTitle(title: string) {
+        this.title = title;
+        this.render();
     }
 
     registerSettingsTile(content: TileProps) {
@@ -96,14 +104,14 @@ export class Settings {
         };
     }
 
-    registerNavigationTile(tile: NavigationTileProps){
+    registerNavigationTile(tile: NavigationTileProps) {
         this.tiles.push({
             title: tile.title,
             description: tile.description,
             icon: tile.icon,
             onClick: () => {
                 this.goToPage(tile.id);
-            }
+            },
         });
         this.render();
         return () => {
@@ -116,20 +124,22 @@ export class Settings {
     }
 
     render() {
-      try{
         render(
-            <SettingsModal
+            <Modal
+                title={this.title}
                 visible={this.visible}
                 onClose={this.close}
-                items={this.tiles}
-                pages={this.pages}
-                activePage={this.activePage}
-                onGoBack={()=> this.goBack()}
-            />,
-            this.modalContainer
+            >
+                <ErrorBoundary>
+                    <SettingsContent
+                        items={this.tiles}
+                        pages={this.pages}
+                        activePage={this.activePage}
+                        onGoBack={this.goBack}
+                    />
+                </ErrorBoundary>
+            </Modal>,
+            this.modalContainer,
         );
-      } catch (e) {
-        console.error(e)
-      }
     }
 }

@@ -12,6 +12,8 @@
 // @grant                unsafeWindow
 // @grant                GM.getValue
 // @grant                GM.setValue
+// @grant                GM_getValue
+// @grant                GM_setValue
 // ==/UserScript==
 
 // This code has been bundled, for source code go to https://github.com/readit-mod/readit

@@ -47,4 +47,3 @@ export function SettingsButton({ onClick }: { onClick: () => void }) {
         </span>
     );
 }
-

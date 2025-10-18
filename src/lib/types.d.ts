@@ -20,37 +20,39 @@ export type TileProps = {
     description: string;
     icon?: string;
     onClick?: () => void;
-}
+};
 
 export type NavigationTileProps = TileProps & {
     id: string;
-}
+};
 
 export const definePlugin: (config: ReadItPlugin) => ReadItPlugin;
 
-export type SettingsPage = {
-    id: string;
-    title: string;
-    items?: TileProps[];
-    pageComponent?: never
-} | {
-    id: string;
-    title: string;
-    items?: never;
-    pageComponent?: FunctionalComponent;
-};
+export type SettingsPage =
+    | {
+          id: string;
+          title: string;
+          items?: TileProps[];
+          pageComponent?: never;
+      }
+    | {
+          id: string;
+          title: string;
+          items?: never;
+          pageComponent?: FunctionalComponent;
+      };
 
 declare global {
     interface Window {
         readit: ReadIt;
     }
     namespace preact {
-      namespace JSX {
-        interface IntrinsicElements {
-          "faceplate-tracker": any;
-          "rpl-tooltip": any;
-          "faceplate-screen-reader-content": any;
+        namespace JSX {
+            interface IntrinsicElements {
+                "faceplate-tracker": any;
+                "rpl-tooltip": any;
+                "faceplate-screen-reader-content": any;
+            }
         }
     }
-  }
 }

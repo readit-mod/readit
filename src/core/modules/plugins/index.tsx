@@ -5,64 +5,135 @@ import PluginPage from "@/core/components/PluginPage";
 import { createPluginContext } from "@/core/modules/plugins/api/context";
 
 export class Plugins {
-    constructor(private readit: ReadIt) {
-        this.readit.storage.get("core", "plugins", []).then((plugins: { url: string }[]) => {
-            this.unloadedPluginList = plugins;
-        })
-    }
+    private unloadedPluginList: { url: string }[] = [];
+    private loadedPluginMap: Map<string, ReadItPlugin> = new Map();
 
-    unloadedPluginList = [];
-    loadedPluginList: ReadItPlugin[] = [];
+    constructor(private readit: ReadIt) {
+        this.readit.storage
+            .get("core", "plugins", [])
+            .then((plugins: { url: string }[]) => {
+                this.unloadedPluginList = plugins;
+            });
+    }
 
     get pluginList() {
-        return this.loadedPluginList;
+        return Array.from(this.loadedPluginMap.values());
     }
 
-    loadPluginByExport(plugin: ReadItPlugin) {
-        plugin.enabled = true // TODO: Add persistant enable/disable functionality using readit.storage
-        this.loadedPluginList.push(plugin)
-        const ctx = createPluginContext(this.readit, plugin)
+    getPluginById(id: string) {
+        return this.loadedPluginMap.get(id);
+    }
+
+    updatePlugin(id: string, updater: (plugin: ReadItPlugin) => void) {
+        const plugin = this.loadedPluginMap.get(id);
+        if (!plugin) return;
+        updater(plugin);
+        this.loadedPluginMap.set(id, plugin);
+    }
+
+    private loadPluginByExport(plugin: ReadItPlugin) {
+        if (this.loadedPluginMap.has(plugin.id)) return;
+
+        const rawCtx = createPluginContext(this.readit, plugin);
+        const ctx = new Proxy(rawCtx, {
+            set(target, prop: string, value) {
+                target[prop] = value;
+                return true;
+            },
+            get(target, prop: string) {
+                return target[prop];
+            },
+        });
+
         plugin._ctx = ctx;
-        plugin.onLoad(ctx)
+
+        const disabledPlugins = this.readit.storageSync.get<string[]>(
+            "core",
+            "disabledPlugins",
+            [],
+        );
+
+        if (disabledPlugins.includes(plugin.id)) {
+            plugin.enabled = false;
+        } else {
+            plugin.enabled = true;
+            plugin.onLoad?.(ctx);
+        }
 
         this.readit.settings.registerSettingsPage({
             id: `plugin:${plugin.id}`,
             title: plugin.name,
-            pageComponent: () => <PluginPage plugin={plugin} />
-        })
+            pageComponent: () => <PluginPage plugin={plugin} />,
+        });
+
+        this.loadedPluginMap.set(plugin.id, plugin);
     }
 
-    disablePlugin(plugin: ReadItPlugin) {
-        plugin.enabled = false;
-        if (plugin.onUnload) {
-            const ctx = plugin._ctx!;
-            ctx.cleanup();
-            plugin.onUnload(ctx);
+    async disablePlugin(plugin: ReadItPlugin) {
+        let disabledPlugins = await this.readit.storage.get<string[]>(
+            "core",
+            "disabledPlugins",
+            [],
+        );
+
+        if (!disabledPlugins.includes(plugin.id)) {
+            disabledPlugins.push(plugin.id);
         }
+
+        await this.readit.storage.set(
+            "core",
+            "disabledPlugins",
+            disabledPlugins,
+        );
+
+        plugin._ctx?._internalCleanup();
+        plugin.onUnload?.(plugin._ctx);
+
+        this.updatePlugin(plugin.id, (p) => {
+            p.enabled = false;
+        });
     }
 
     enablePlugin(plugin: ReadItPlugin) {
+        let disabledPlugins = this.readit.storageSync.get<string[]>(
+            "core",
+            "disabledPlugins",
+            [],
+        );
+
+        disabledPlugins = disabledPlugins.filter((id) => id !== plugin.id);
+        this.readit.storageSync.set("core", "disabledPlugins", disabledPlugins);
+
         plugin.enabled = true;
-        const ctx = plugin._ctx!;
-        plugin.onLoad(ctx);
+        plugin.onLoad(plugin._ctx);
+
+        this.updatePlugin(plugin.id, (p) => {
+            p.enabled = true;
+        });
     }
 
     async loadPlugins() {
-    await this.loadBuiltins();
-    await Promise.all(
-        this.unloadedPluginList.map(async (plugin) => {
-            try {
-                await this.loadPlugin(plugin.url);
-            } catch (e) {
-                console.error("Plugin execution failed, URL:", plugin.url, e);
-            }
-        })
-    );
-}
+        await this.loadBuiltins();
+        await Promise.all(
+            this.unloadedPluginList.map(async (plugin) => {
+                try {
+                    await this.loadPlugin(plugin.url);
+                } catch (e) {
+                    console.error(
+                        "Plugin execution failed, URL:",
+                        plugin.url,
+                        e,
+                    );
+                }
+            }),
+        );
+    }
 
     async loadBuiltins() {
-        const modules = import.meta.glob("./builtin/*/index.ts{,x}", {eager: true})
-        for(const module of Object.values(modules)) {
+        const modules = import.meta.glob("./builtin/*/index.ts{,x}", {
+            eager: true,
+        });
+        for (const module of Object.values(modules)) {
             const plugin: ReadItPlugin = (module as any).default;
             this.loadPluginByExport(plugin);
         }
@@ -71,9 +142,8 @@ export class Plugins {
     async loadPlugin(url: string) {
         try {
             const module = await importProxied(url);
-
-            const plugin: ReadItPlugin = module.default
-            this.loadPluginByExport(plugin) // Pass in the API context
+            const plugin: ReadItPlugin = module.default;
+            this.loadPluginByExport(plugin);
         } catch (e) {
             console.error("Failed to load plugin:", e);
         }
@@ -81,7 +151,7 @@ export class Plugins {
 
     async addPlugin(url: string) {
         const plugins = await this.readit.storage.get("core", "plugins", []);
-        plugins.push({url});
+        plugins.push({ url });
         await this.readit.storage.set("core", "plugins", plugins);
         alert("Plugin added! Page will now reload to apply changes.");
         unsafeWindow.location.reload();
@@ -96,61 +166,60 @@ export class Plugins {
                     title: "Add with RAW URL",
                     description: "Add a new plugin by RAW URL",
                     onClick: () => {
-                        let url = prompt("Enter the valid RAW URL of the plugin:");
+                        const url = prompt(
+                            "Enter the valid RAW URL of the plugin:",
+                        );
                         if (url) this.addPlugin(url);
-                    }
+                    },
                 },
                 {
                     title: "Add from GitHub Repo",
                     description: "Add a new plugin by GitHub Repo URL",
                     onClick: () => {
-                        let repo = prompt("Enter the GitHub Repo URL of the plugin")
+                        const repo = prompt(
+                            "Enter the GitHub Repo URL of the plugin",
+                        );
                         if (repo) {
-                            function toRawBuildsUrl(repoUrl) {
-                                const match = repoUrl.match(/^https:\/\/github\.com\/([^/]+)\/([^/]+)(?:\/.*)?$/);
-                                if (!match) {
+                            function toRawBuildsUrl(repoUrl: string) {
+                                const match = repoUrl.match(
+                                    /^https:\/\/github\.com\/([^/]+)\/([^/]+)(?:\/.*)?$/,
+                                );
+                                if (!match)
                                     throw new Error("Invalid GitHub repo URL");
-                                }
                                 const [, user, repo] = match;
-                                // Plugins should use and fork the readit-plugin template to make plugins.
-                                // Builds are automatically generated and stored in the builds branch of the repo.
                                 return `https://raw.githubusercontent.com/${user}/${repo}/builds/plugin.js`;
                             }
-                            let rawUrl = toRawBuildsUrl(repo);
+                            const rawUrl = toRawBuildsUrl(repo);
                             this.addPlugin(rawUrl);
                         }
+                    },
+                },
+            ],
+        });
 
-                    }
-                }
-            ]
-        })
         this.readit.settings.registerNavigationTile({
             id: "add-plugin",
             title: "Add Plugin",
             description: "Add a new plugin to ReadIt",
-            icon: "➕"
-        })
-        console.log(this.loadedPluginList.map((p) => ({
-                    title: p.name,
-                    description: p.version ? `v${p.version}` : "No version",
-                    onClick: () => this.readit.settings.goToPage(`plugin:${p.id}`)
-                })))
+            icon: "➕",
+        });
+
         this.readit.settings.registerSettingsPage({
-                id: "plugins",
-                title: "Plugins",
-                items: this.loadedPluginList.map((p) => ({
-                    title: p.name,
-                    description: p.version ? `v${p.version}` : "No version",
-                    onClick: () => this.readit.settings.goToPage(`plugin:${p.id}`)
-                }))
-        })
+            id: "plugins",
+            title: "Plugins",
+            items: this.pluginList.map((p) => ({
+                title: p.name,
+                description: p.version ? `v${p.version}` : "No version",
+                onClick: () => this.readit.settings.goToPage(`plugin:${p.id}`),
+            })),
+        });
 
         this.readit.settings.registerNavigationTile({
             id: "plugins",
             title: "Plugins",
             description: "Manage your installed plugins",
             icon: "🧩",
-        })
+        });
     }
 
     async initPlugins() {

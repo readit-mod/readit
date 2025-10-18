@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'preact/hooks';
+import { useEffect, useRef } from "preact/hooks";
 import { readit } from "@/core/modules/readit";
 import { EditorState } from "@codemirror/state";
 import { EditorView, basicSetup } from "codemirror";
@@ -17,7 +17,7 @@ export function CSSEditor() {
         let disposed = false;
 
         async function setupEditor() {
-            const code = await readit.storage.get('core', 'customcss', '');
+            const code = await readit.storage.get("core", "customcss", "");
 
             if (disposed) return; // avoid setting up if unmounted early
 
@@ -25,7 +25,7 @@ export function CSSEditor() {
                 if (v.docChanged) {
                     const newCode = v.state.doc.toString();
                     readit.customcss.setRootStyle(newCode);
-                    readit.storage.set('core', 'customcss', newCode);
+                    readit.storage.set("core", "customcss", newCode);
                 }
             });
 
@@ -36,7 +36,7 @@ export function CSSEditor() {
                     basicSetup,
                     css(),
                     onUpdate,
-                    indentUnit.of('    '),
+                    indentUnit.of("    "),
                     keymap.of([indentWithTab]),
                 ],
             });
@@ -60,7 +60,7 @@ export function CSSEditor() {
     return (
         <div
             ref={containerRef}
-            style={{ width: '100%', height: '300px', border: '1px solid #333' }}
+            style={{ width: "100%", height: "300px", border: "1px solid #333" }}
         />
     );
 }
