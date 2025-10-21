@@ -154,7 +154,7 @@ export class Plugins {
         plugins.push({ url });
         await this.readit.storage.set("core", "plugins", plugins);
         alert("Plugin added! Page will now reload to apply changes.");
-        unsafeWindow.location.reload();
+        window.location.reload();
     }
 
     onLoadedPlugins() {
