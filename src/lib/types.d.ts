@@ -47,6 +47,7 @@ type ReadItNative = {
     storage: StorageNative;
     network: NetworkNative;
     logging: LogNative;
+    bundle: BundleNative;
 };
 
 type StorageNative = {
@@ -56,7 +57,13 @@ type StorageNative = {
 };
 
 type NetworkNative = {
-    xmlHttpRequest: (options: RequestOptions) => Promise<RequestReturn>;
+    xmlHttpRequest: (options: RequestOptions) => Promise<RequestReturn | null>;
+};
+
+type BundleNative = {
+    setBundleURL: (url: string) => Promise<boolean>;
+    getBundleURL: () => Promise<string>;
+    resetBundleURL: () => Promise<boolean>;
 };
 
 type LogNative = {

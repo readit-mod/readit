@@ -35,11 +35,6 @@ export class ReadIt {
             description: this.version,
         });
 
-        this.settings.registerSettingsTile({
-            title: "ReadIt Loader Version",
-            description: `${meta.loaderVersion}-${meta.platform}`,
-        });
-
         setupCustomCss(this);
 
         this.plugins.initPlugins();
