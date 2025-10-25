@@ -1,13 +1,12 @@
 import { Posts } from "@/core/modules/posts";
 import { Plugins } from "@/core/modules/plugins";
 import { Settings } from "@/core/modules/settings";
-import { meta } from "@/lib/meta";
 import { createStorage, createStorageSync } from "@/core/modules/storage";
 import { Storage, StorageSync } from "@/core/modules/storage/common";
 import { Logging } from "@/core/modules/logging";
 import { CustomCss } from "@/core/modules/customcss";
 import { setupCustomCss } from "@/core/modules/customcss/settings";
-import { isNative } from "@/lib/native";
+import { withNative } from "@/lib/native";
 
 export class ReadIt {
     version: string;
@@ -29,6 +28,25 @@ export class ReadIt {
         this.storageSync = createStorageSync(this);
         this.plugins = new Plugins(this);
         this.customcss = new CustomCss(this);
+
+        withNative(() => {
+            for (const { object, replacements } of window.ReadItNative
+                .polyfills) {
+                const target = globalThis[object] ?? globalThis;
+
+                for (const [key, value] of Object.entries(replacements)) {
+                    try {
+                        Object.defineProperty(target, key, {
+                            value,
+                            configurable: true,
+                            writable: true,
+                        });
+                    } catch {
+                        target[key] = value;
+                    }
+                }
+            }
+        });
 
         this.settings.registerSettingsTile({
             title: "ReadIt Version",

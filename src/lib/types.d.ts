@@ -48,6 +48,12 @@ type ReadItNative = {
     network: NetworkNative;
     logging: LogNative;
     bundle: BundleNative;
+    polyfills: Polyfill[];
+};
+
+type Polyfill = {
+    object: string;
+    replacements: Record<string, any>;
 };
 
 type StorageNative = {

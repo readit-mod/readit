@@ -2,7 +2,6 @@ import { definePlugin } from "@/lib/plugin";
 import { meta } from "@/lib/meta";
 import { TileProps } from "@/lib/types";
 import { withNativeAsync } from "@/lib/native";
-import { ChangeBundleURL } from "./ChangeBundleURL";
 
 export default definePlugin({
     name: "ReadIt DevTools",
@@ -20,7 +19,7 @@ export default definePlugin({
                 title: "ReadIt Platform",
                 description: meta.platform,
             },
-            ...(await withNativeAsync(async () => {
+            ...((await withNativeAsync(async () => {
                 return [
                     {
                         title: "Current Bundle URL",
@@ -31,8 +30,19 @@ export default definePlugin({
                         title: "Change ReadIt Bundle URL (DANGEROUS)",
                         description:
                             "Change where ReadIt Desktop gets the bundle from, can cause errors.",
-                        onClick() {
-                            settings.goTo("change-bundle");
+                        async onClick() {
+                            // settings.goTo("change-bundle");
+
+                            let newBundle = await prompt(
+                                "New Bundle URL",
+                                await window.ReadItNative.bundle.getBundleURL(),
+                            );
+                            if (newBundle) {
+                                await window.ReadItNative.bundle.setBundleURL(
+                                    newBundle,
+                                );
+                                alert("Please restart to apply changes.");
+                            }
                         },
                     },
                     {
@@ -47,18 +57,11 @@ export default definePlugin({
                         },
                     },
                 ];
-            })),
+            })) ?? []),
         ];
 
         const unregisterFns: (() => void)[] = [];
 
-        unregisterFns.push(
-            settings.registerSettingsPage({
-                id: "change-bundle",
-                title: "Change Bundle URL",
-                pageComponent: () => <ChangeBundleURL />,
-            }),
-        );
         unregisterFns.push(
             settings.registerSettingsPage({
                 id: "devtools",
