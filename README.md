@@ -5,6 +5,7 @@ A lightweight, modern system that extends Reddit functionality with plugin suppo
 ## Features
 
 - Extends Reddit functionality with plugin support.
+- Features built in enhancements like ad and tracker blocking.
 
 ## Installation
 
