@@ -13,11 +13,12 @@ const packageJson = JSON.parse(
 );
 const bannerTemplate = readFileSync(resolve(root, "readit.meta.js"), "utf-8");
 
-async function runBuild(mode = "default") {
+async function runBuild(mode = "userscript", version = "") {
     const isBundle = mode === "bundle";
+    const formattedVersion = version ? version : `${packageJson.version}-dev`
     const banner = isBundle
         ? undefined
-        : bannerTemplate.replace("%version%", packageJson.version);
+        : bannerTemplate.replace("%version%", formattedVersion);
 
     const buildOptions = {
         plugins: [preact()],
@@ -26,7 +27,7 @@ async function runBuild(mode = "default") {
             banner,
         },
         define: {
-            __READIT_VERSION__: JSON.stringify(packageJson.version),
+            __READIT_VERSION__: JSON.stringify(formattedVersion),
         },
         build: {
             target: "esnext",
@@ -60,5 +61,6 @@ async function runBuild(mode = "default") {
 }
 
 const modeArg = process.argv[2];
+const versionArg = process.argv[3];
 
-await runBuild(modeArg);
+await runBuild(modeArg, versionArg);
