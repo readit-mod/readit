@@ -31,7 +31,7 @@ jobs:
             - name: Get package version
               id: version
               run: |
-                  PACKAGE_VERSION=$(node -p "require('./plugins/package.json').version")
+                  PACKAGE_VERSION=$(node -p "require('./package.json').version")
                   SHORT_SHA=$(git rev-parse --short HEAD)
                   echo "version=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
                   echo "short_sha=$SHORT_SHA" >> $GITHUB_OUTPUT
@@ -69,7 +69,7 @@ jobs:
             - name: Check if release already exists
               id: check_release
               run: |
-                  if gh release view "v${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
+                  if gh release view "v${{ steps.version.outputs.version }}-${{ steps.version.outputs.short_sha }}" >/dev/null 2>&1; then
                     echo "exists=true" >> $GITHUB_OUTPUT
                   else
                     echo "exists=false" >> $GITHUB_OUTPUT
@@ -81,7 +81,7 @@ jobs:
               if: steps.check_release.outputs.exists == 'false'
               uses: softprops/action-gh-release@v2
               with:
-                  tag_name: v${{ steps.version.outputs.version }}
+                  tag_name: v${{ steps.version.outputs.version }}-${{ steps.version.outputs.short_sha }}
                   name: ${{ steps.version.outputs.version }}-${{ steps.version.outputs.short_sha }}
                   body: |
                       Automated release for version ${{ steps.version.outputs.version }} (commit ${{ steps.version.outputs.short_sha }}).
