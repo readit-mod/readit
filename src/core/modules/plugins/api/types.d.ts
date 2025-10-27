@@ -5,6 +5,7 @@ export type SettingsAPI = {
     registerSettingsTile: (tile: TileProps) => () => void;
     registerSettingsPage: (page: SettingsPage) => () => void;
     registerNavigationTile: (tile: NavigationTileProps) => () => void;
+    goTo: (page: string) => void;
 };
 
 export type PostsAPI = {

@@ -1,6 +1,6 @@
 import { Settings } from "@/core/modules/settings";
 import { Posts } from "@/core/modules/posts";
-import { Storage } from "@/core/modules/storage";
+import { Storage } from "@/core/modules/storage/common";
 import { Logging } from "@/core/modules/logging";
 import { CustomCss } from "@/core/modules/customcss";
 
@@ -29,6 +29,7 @@ export function createSettingsAPI(internal: Settings): SettingsAPI {
         registerSettingsTile: (tile) => internal.registerSettingsTile(tile),
         registerSettingsPage: (page) => internal.registerSettingsPage(page),
         registerNavigationTile: (tile) => internal.registerNavigationTile(tile),
+        goTo: (page) => internal.goToPage(page),
     };
 }
 

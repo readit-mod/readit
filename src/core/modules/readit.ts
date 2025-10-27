@@ -1,10 +1,12 @@
 import { Posts } from "@/core/modules/posts";
 import { Plugins } from "@/core/modules/plugins";
 import { Settings } from "@/core/modules/settings";
-import { Storage, StorageSync } from "@/core/modules/storage";
+import { createStorage, createStorageSync } from "@/core/modules/storage";
+import { Storage, StorageSync } from "@/core/modules/storage/common";
 import { Logging } from "@/core/modules/logging";
 import { CustomCss } from "@/core/modules/customcss";
-import { setupCustomCss } from "./customcss/settings";
+import { setupCustomCss } from "@/core/modules/customcss/settings";
+import { withNative } from "@/lib/native";
 
 export class ReadIt {
     version: string;
@@ -17,15 +19,34 @@ export class ReadIt {
     customcss: CustomCss;
 
     constructor() {
-        this.version = GM_info.script.version;
+        this.version = __READIT_VERSION__;
 
         this.logging = new Logging(this);
         this.posts = new Posts(this);
         this.settings = new Settings(this);
-        this.storage = new Storage(this);
-        this.storageSync = new StorageSync(this);
+        this.storage = createStorage(this);
+        this.storageSync = createStorageSync(this);
         this.plugins = new Plugins(this);
         this.customcss = new CustomCss(this);
+
+        withNative(() => {
+            for (const { object, replacements } of window.ReadItNative
+                .polyfills) {
+                const target = globalThis[object] ?? globalThis;
+
+                for (const [key, value] of Object.entries(replacements)) {
+                    try {
+                        Object.defineProperty(target, key, {
+                            value,
+                            configurable: true,
+                            writable: true,
+                        });
+                    } catch {
+                        target[key] = value;
+                    }
+                }
+            }
+        });
 
         this.settings.registerSettingsTile({
             title: "ReadIt Version",

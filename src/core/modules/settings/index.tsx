@@ -68,7 +68,7 @@ export class Settings {
 
     // If the user clicks a post, comment, or subreddit link, the navbar re-renders and we lose our button.
     listenForNavigations() {
-        (unsafeWindow as any).navigation.onnavigatesuccess = () => {
+        (window as any).navigation.onnavigatesuccess = () => {
             if (!this.isSettingsVisible()) {
                 this.injectButton();
             }
