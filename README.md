@@ -9,7 +9,7 @@ A lightweight, modern system that extends Reddit functionality with plugin suppo
 
 ## Installation
 
-[Press this link to install ReadIt (requires a GM-compatible userscript manager)](https://raw.githubusercontent.com/readit-mod/builds/refs/heads/main/readit.user.js)
+[Press this link to install ReadIt (requires a GM-compatible userscript manager)](https://github.com/readit-mod/readit/releases/latest/download/readit.user.js)
 
 ## Plugin Development
 

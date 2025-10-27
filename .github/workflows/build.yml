@@ -1,73 +1,68 @@
-name: Build and Push to External Repo
+name: Build and Release
+
+permissions:
+    contents: write
 
 on:
-  push:
-    branches:
-      - master
-  workflow_dispatch:
+    push:
+        branches:
+            - master
+    workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+    build-and-release:
+        runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout source
-        uses: actions/checkout@v4
+        steps:
+            - name: Checkout source
+              uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
 
-      - name: Install pnpm
-        run: npm install -g pnpm
+            - name: Install pnpm
+              run: npm install -g pnpm
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
 
-      - name: Build project
-        run: pnpm build
+            - name: Build userscript
+              run: pnpm build userscript
 
-      - name: Check if version already exists
-        id: check_version
-        run: |
-          PACKAGE_VERSION=$(node -p "require('./plugins/package.json').version")
-          
-          echo "Checking version $PACKAGE_VERSION..."
-          
-          REGISTRY_VERSION=$(npm view @readit-mod/plugins version || echo "0.0.0")
-          
-          if [ "$PACKAGE_VERSION" = "$REGISTRY_VERSION" ]; then
-              echo "Version $PACKAGE_VERSION already exists. Skipping publish."
-              echo "skip=true" >> $GITHUB_OUTPUT
-          else
-              echo "Version $PACKAGE_VERSION is new. Proceeding with publish."
-              echo "skip=false" >> $GITHUB_OUTPUT
-          fi
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+            - name: Build bundle
+              run: pnpm build bundle
 
-      - name: Publish plugin package to npm
-        if: steps.check_version.outputs.skip == 'false'
-        run: |
-          cd plugins
-          pnpm publish --no-git-checks --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+            - name: Get package version
+              id: version
+              run: |
+                  PACKAGE_VERSION=$(node -p "require('./plugins/package.json').version")
+                  SHORT_SHA=$(git rev-parse --short HEAD)
+                  echo "version=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
+                  echo "short_sha=$SHORT_SHA" >> $GITHUB_OUTPUT
 
-      - name: Clone external repo
-        run: |
-          git clone https://github-actions:${{ secrets.DEPLOY_TOKEN }}@github.com/readit-mod/builds.git external-repo
+            - name: Check if release already exists
+              id: check_release
+              run: |
+                  if gh release view "v${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
+                    echo "exists=true" >> $GITHUB_OUTPUT
+                  else
+                    echo "exists=false" >> $GITHUB_OUTPUT
+                  fi
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Copy build file
-        run: |
-          cp dist/readit.user.js external-repo/
-
-      - name: Commit and push changes
-        run: |
-          cd external-repo
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add .
-          git commit -m "Builds for https://github.com/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}" || echo "No changes to commit"
-          git push --force https://github-actions:${{ secrets.DEPLOY_TOKEN }}@github.com/readit-mod/builds.git main
+            - name: Create GitHub release
+              if: steps.check_release.outputs.exists == 'false'
+              uses: softprops/action-gh-release@v2
+              with:
+                  tag_name: v${{ steps.version.outputs.version }}
+                  name: ${{ steps.version.outputs.version }}-${{ steps.version.outputs.short_sha }}
+                  body: |
+                      Automated release for version ${{ steps.version.outputs.version }} (commit ${{ steps.version.outputs.short_sha }}).
+                  files: |
+                      dist/readit.user.js
+                      dist/readit.bundle.js
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
