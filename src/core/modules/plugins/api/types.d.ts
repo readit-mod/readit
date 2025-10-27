@@ -19,10 +19,17 @@ export type LoggingAPI = {
 };
 
 export type StorageAPI = {
-    get<T = unknown>(key: string, defaultValue?: T): Promise<T>;
-    set<T = unknown>(key: string, value: T): Promise<void>;
+    get<T>(key: string, defaultValue?: T): Promise<T>;
+    set<T>(key: string, value: T): Promise<void>;
     delete(key: string): Promise<void>;
     keys(): Promise<string[]>;
+};
+
+export type StorageSyncAPI = {
+    get<T>(key: string, defaultValue?: T): T;
+    set<T>(key: string, value: T): void;
+    delete(key: string): void;
+    keys(): string[];
 };
 
 export type CssAPI = {
@@ -34,10 +41,16 @@ export type DomAPI = {
     render(component: FunctionalComponent, element: HTMLElement): void;
 };
 
+export type StoreAPI = {
+    get: <T>(id: string) => T;
+};
+
 export type PluginContext = {
     settings: SettingsAPI;
     posts: PostsAPI;
     storage: StorageAPI;
+    storageSync: StorageSyncAPI;
+    store: StoreAPI;
     logging: LoggingAPI;
     customcss: CssAPI;
     dom: DomAPI;

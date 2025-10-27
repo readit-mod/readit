@@ -9,6 +9,23 @@ export default definePlugin({
     id: "readit-devtools",
     version: "1.0.0",
 
+    settings: [
+        {
+            title: "Test Toggle Setting",
+            description: "A test of the toggle setting type.",
+            id: "test-toggle",
+            type: "toggle",
+            default: true,
+        },
+        {
+            title: "Test Input Setting",
+            description: "A test of the input setting type.",
+            id: "test-input",
+            type: "input",
+            default: "test",
+        },
+    ],
+
     async onLoad({ settings, cleanup }) {
         let devtoolsSettings: TileProps[] = [
             {

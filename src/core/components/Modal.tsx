@@ -71,7 +71,14 @@ export function Modal({
                     ×
                 </span>
 
-                <div>{children}</div>
+                <div
+                    style={{
+                        maxHeight: "-webkit-fill-available",
+                        overflowY: "auto",
+                    }}
+                >
+                    {children}
+                </div>
             </div>
         </div>
     );

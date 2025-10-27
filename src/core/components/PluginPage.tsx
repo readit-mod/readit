@@ -2,6 +2,7 @@ import { useState } from "preact/hooks";
 import { ReadItPlugin } from "@/lib/types";
 import { readit } from "@/core/modules/readit";
 import { SwitchToggle } from "@/core/components/SwitchToggle";
+import { PluginSettings } from "@/core/components/PluginSettings";
 
 export default function PluginPage({ plugin }: { plugin: ReadItPlugin }) {
     const [enabled, setEnabled] = useState(plugin.enabled ?? false);
@@ -22,7 +23,15 @@ export default function PluginPage({ plugin }: { plugin: ReadItPlugin }) {
             <p>Version: {plugin.version ?? "N/A"}</p>
             <p>Plugin ID: {plugin.id}</p>
 
-            <SwitchToggle checked={enabled} onChange={handleToggle} />
+            <SwitchToggle
+                checked={enabled}
+                onChange={handleToggle}
+                title="Enabled"
+            />
+            <PluginSettings
+                settings={plugin.settings}
+                storage={plugin._ctx.storageSync}
+            />
         </div>
     );
 }

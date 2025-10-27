@@ -4,12 +4,32 @@ export type ReadItPlugin = {
     id: string;
     version?: string;
 
-    enabled?: boolean;
-    _ctx?: PluginContext;
+    settings?: PluginSetting[];
 
     onLoad: (ctx: PluginContext) => Promise<void>;
     onUnload?: (ctx: PluginContext) => Promise<void>;
+
+    enabled?: boolean;
+    _ctx?: PluginContext;
 };
+
+export type PluginSetting =
+    | {
+          id: string;
+          title: string;
+          description: string;
+          type: "input";
+          default: string;
+          value?: string;
+      }
+    | {
+          id: string;
+          title: string;
+          description: string;
+          type: "toggle";
+          default: boolean;
+          value?: boolean;
+      };
 
 export type TileProps = {
     title: string;
@@ -70,6 +90,8 @@ export type PluginContext = {
     settings: SettingsAPI;
     posts: PostsAPI;
     storage: StorageAPI;
+    storageSync: StorageSyncAPI;
+    store: StoreAPI;
     logging: LoggingAPI;
     customcss: CssAPI;
     cleanup: (fn: () => void) => void;
@@ -107,6 +129,17 @@ type BundleNative = {
 
 type LogNative = {
     log: (log: string) => Promise<void>;
+};
+
+type StorageSyncAPI = {
+    get<T>(key: string, defaultValue?: T): T;
+    set<T>(key: string, value: T): void;
+    delete(key: string): void;
+    keys(): string[];
+};
+
+type StoreAPI = {
+    get: <T>(id: string) => T;
 };
 
 type RequestOptions = {

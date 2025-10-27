@@ -1,5 +1,5 @@
 import { h, Component } from "preact";
-import { ReadItError } from "./ReadItError";
+import { ReadItError } from "@/core/components/ReadItError";
 import { readit } from "@/core/modules/readit";
 
 interface ErrorBoundaryState {

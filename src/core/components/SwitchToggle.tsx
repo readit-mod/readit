@@ -3,9 +3,11 @@ import { Fragment } from "preact";
 export function SwitchToggle({
     checked,
     onChange,
+    title,
 }: {
     checked: boolean;
     onChange?: (checked: boolean) => void;
+    title?: string;
 }) {
     return (
         <Fragment>
@@ -17,7 +19,7 @@ export function SwitchToggle({
                     marginTop: "16px",
                 }}
             >
-                <span>Enabled</span>
+                {title && <span>{title}</span>}
                 <span
                     style={{
                         position: "relative",

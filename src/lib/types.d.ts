@@ -8,12 +8,32 @@ export type ReadItPlugin = {
     id: string;
     version?: string;
 
-    enabled?: boolean;
-    _ctx?: PluginContext;
+    settings?: PluginSetting[];
 
     onLoad: (ctx: PluginContext) => Promise<void>;
     onUnload?: (ctx: PluginContext) => Promise<void>;
+
+    enabled?: boolean;
+    _ctx?: PluginContext;
 };
+
+export type PluginSetting =
+    | {
+          id: string;
+          title: string;
+          description: string;
+          type: "input";
+          default: string;
+          value?: string;
+      }
+    | {
+          id: string;
+          title: string;
+          description: string;
+          type: "toggle";
+          default: boolean;
+          value?: boolean;
+      };
 
 export type TileProps = {
     title: string;
@@ -96,6 +116,22 @@ type RequestReturn = {
 type ReadItMeta = {
     loaderVersion: string;
     platform: string;
+};
+
+type NamespacedStorage = {
+    get<T>(key: string, def: T): T;
+    set<T>(key: string, val: T): void;
+    delete(key: string): void;
+    keys(): string[];
+    clear(): void;
+};
+
+type NamespacedStorageAsync = {
+    get<T>(key: string, def: T): Promise<T>;
+    set<T>(key: string, val: T): Promise<void>;
+    delete(key: string): Promise<void>;
+    keys(): Promise<string[]>;
+    clear(): Promise<void>;
 };
 
 declare global {

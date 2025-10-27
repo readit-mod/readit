@@ -1,6 +1,6 @@
 import { Settings } from "@/core/modules/settings";
 import { Posts } from "@/core/modules/posts";
-import { Storage } from "@/core/modules/storage/common";
+import { Storage, StorageSync } from "@/core/modules/storage/common";
 import { Logging } from "@/core/modules/logging";
 import { CustomCss } from "@/core/modules/customcss";
 
@@ -14,8 +14,10 @@ import {
     LoggingAPI,
     CssAPI,
     DomAPI,
+    StorageSyncAPI,
+    StoreAPI,
 } from "@/core/modules/plugins/api/types";
-import { ReadItPlugin } from "@/lib/types";
+import { PluginSetting, ReadItPlugin } from "@/lib/types";
 import { ReadIt } from "@/core/modules/readit";
 
 export function createPostsAPI(internal: Posts): PostsAPI {
@@ -46,21 +48,26 @@ export function createLoggingAPI(
 }
 
 export function createStorageAPI(internal: Storage, id: string): StorageAPI {
+    return internal.withNamespace(`plugin:${id}`);
+}
+
+export function createStorageSyncAPI(
+    internal: StorageSync,
+    id: string,
+): StorageSyncAPI {
+    return internal.withNamespace(`plugin:${id}`);
+}
+
+export function createStoreAPI(
+    internal: StorageSync,
+    settings: PluginSetting[],
+    id: string,
+): StoreAPI {
+    let store = internal.withNamespace(`plugin:${id}`);
     return {
-        async get<T = unknown>(
-            key: string,
-            defaultValue?: T,
-        ): Promise<Awaited<T>> {
-            return await internal.get<T>(`plugin:${id}`, key, defaultValue);
-        },
-        async set<T = unknown>(key: string, value: T): Promise<void> {
-            return await internal.set<T>(`plugin:${id}`, key, value);
-        },
-        async delete(key: string): Promise<void> {
-            return await internal.delete(`plugin:${id}`, key);
-        },
-        async keys(): Promise<string[]> {
-            return await internal.keys(`plugin:${id}`);
+        get: <T>(id: string): T => {
+            let def = settings.find((s) => s.id == id).default as T;
+            return store.get<T>(id, def);
         },
     };
 }
@@ -99,6 +106,8 @@ export function createPluginContext(
         posts: createPostsAPI(deps.posts),
         settings: createSettingsAPI(deps.settings),
         storage: createStorageAPI(deps.storage, plugin.id),
+        storageSync: createStorageSyncAPI(deps.storageSync, plugin.id),
+        store: createStoreAPI(deps.storageSync, plugin.settings, plugin.id),
         logging: createLoggingAPI(deps.logging, plugin),
         customcss: createCssAPI(deps.customcss),
         dom: createDomApi(),
