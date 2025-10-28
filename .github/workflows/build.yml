@@ -88,5 +88,6 @@ jobs:
                   files: |
                       dist/readit.user.js
                       dist/readit.bundle.js
+                      dist/manifest.json
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

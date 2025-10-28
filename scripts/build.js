@@ -1,7 +1,7 @@
 import { build } from "vite";
 import preact from "@preact/preset-vite";
 import path, { resolve, dirname } from "path";
-import { readFileSync } from "fs";
+import { readFileSync, writeFileSync } from "fs";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -15,7 +15,7 @@ const bannerTemplate = readFileSync(resolve(root, "readit.meta.js"), "utf-8");
 
 async function runBuild(mode = "userscript", version = "") {
     const isBundle = mode === "bundle";
-    const formattedVersion = version ? version : `${packageJson.version}-dev`
+    const formattedVersion = version ? version : `${packageJson.version}-dev-${(new Date()).toISOString()}`
     const banner = isBundle
         ? undefined
         : bannerTemplate.replace("%version%", formattedVersion);
@@ -52,6 +52,12 @@ async function runBuild(mode = "userscript", version = "") {
     };
 
     await build(buildOptions);
+
+    let manifest = {
+        version: formattedVersion,
+    }
+
+    writeFileSync(path.join(root, "dist/manifest.json"), JSON.stringify(manifest))
 
     console.log(
         `Built ${isBundle ? "bundle" : "user script"} → dist/${
