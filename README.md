@@ -8,8 +8,11 @@ A lightweight, modern system that extends Reddit functionality with plugin suppo
 - Features built in enhancements like ad and tracker blocking.
 
 ## Installation
-
+### Web
 [Press this link to install ReadIt (requires a GM-compatible userscript manager)](https://github.com/readit-mod/readit/releases/latest/download/readit.user.js)
+
+### Desktop
+Use ReadIt Desktop, [visit this link for more details](https://github.com/readit-mod/readit-desktop).
 
 ## Plugin Development
 
