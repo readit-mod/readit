@@ -11,13 +11,23 @@ export class Settings {
     visible = false;
     title: string;
     tiles: TileProps[] = [];
-    pages: SettingsPage[] = [];
+    pages: Map<string, SettingsPage> = new Map<string, SettingsPage>();
     history: string[] = [];
-    activePage: string = "general";
+    activePageId: string = "general";
+
+    get activePage(): SettingsPage | undefined {
+        return this.pages.get(this.activePageId);
+    }
 
     constructor(private readit: ReadIt) {
         this.modalContainer = document.createElement("div");
         document.body.appendChild(this.modalContainer);
+
+        this.pages.set("general", {
+            id: "general",
+            title: "General",
+            items: this.tiles,
+        });
 
         this.injectButton();
         this.listenForNavigations();
@@ -43,13 +53,13 @@ export class Settings {
     };
 
     goToPage = (id: string) => {
-        this.history.push(this.activePage);
-        this.activePage = id;
+        this.history.push(this.activePageId);
+        this.activePageId = id;
         this.render();
     };
 
     goBack = () => {
-        this.activePage = this.history.pop() || "general";
+        this.activePageId = this.history.pop() || "general";
         this.render();
     };
 
@@ -93,14 +103,11 @@ export class Settings {
     }
 
     registerSettingsPage(page: SettingsPage) {
-        this.pages.push(page);
+        this.pages.set(page.id, page);
         this.render();
         return () => {
-            const idx = this.pages.indexOf(page);
-            if (idx !== -1) {
-                this.pages.splice(idx, 1);
-                this.render();
-            }
+            this.pages.delete(page.id);
+            this.render();
         };
     }
 
@@ -126,7 +133,7 @@ export class Settings {
     render() {
         render(
             <Modal
-                title={this.title}
+                title={this.activePage.title}
                 visible={this.visible}
                 onClose={this.close}
             >

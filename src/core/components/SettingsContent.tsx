@@ -4,9 +4,9 @@ import { TileProps, SettingsPage } from "@/lib/types";
 import { readit } from "@/core/modules/readit";
 
 interface SettingsProps {
-    pages?: SettingsPage[];
+    pages?: Map<string, SettingsPage>;
     items?: TileProps[];
-    activePage?: string;
+    activePage?: SettingsPage;
     onGoBack?: () => void;
 }
 
@@ -22,24 +22,7 @@ export function SettingsContent({
         throw new Error("This is an example of the error boundary.");
     }
 
-    pages.unshift({
-        id: "general",
-        title: "General",
-        items:
-            items.concat([
-                {
-                    title: "Test Error Boundary",
-                    description: "Press to test the error boundary.",
-                    icon: "🚧",
-                    onClick: () => {
-                        setIsClicked(true);
-                    },
-                },
-            ]) || [],
-    });
-
-    const currentPage = pages.find((p) => p.id === activePage) || pages[0];
-    const isFirstPage = currentPage.id === "general";
+    const isFirstPage = activePage.id === "general";
 
     // readit.settings.setTitle(currentPage.title);
 
@@ -65,10 +48,10 @@ export function SettingsContent({
                 </span>
             )}
             <div id="settings-tile-container">
-                {currentPage.pageComponent ? (
-                    <currentPage.pageComponent />
+                {activePage.pageComponent ? (
+                    <activePage.pageComponent />
                 ) : (
-                    currentPage.items.map((i) => <SettingsTile {...i} />)
+                    activePage.items.map((i) => <SettingsTile {...i} />)
                 )}
             </div>
         </div>
