@@ -68,39 +68,44 @@ export default definePlugin({
             },
         ];
 
-        patcher.instead(window, "fetch", ([input, init], original) => {
-            const url = input.toString();
+        patcher.before(
+            window,
+            "fetch",
+            (args): [RequestInfo | URL, RequestInit?] => {
+                let [input, init] = args;
+                const url = input.toString();
 
-            for (const pattern of blockedPatterns) {
-                if (
-                    pattern.match.test(url) &&
-                    (pattern.bodyReplacements || pattern.body) &&
-                    init?.body
-                ) {
-                    try {
-                        let bodyObj = JSON.parse(init.body as string);
+                for (const pattern of blockedPatterns) {
+                    if (
+                        pattern.match.test(url) &&
+                        (pattern.bodyReplacements || pattern.body) &&
+                        init?.body
+                    ) {
+                        try {
+                            let bodyObj = JSON.parse(init.body as string);
 
-                        if (pattern.bodyReplacements) {
-                            for (const replacement of pattern.bodyReplacements) {
-                                bodyObj[replacement.name] =
-                                    replacement.replacement;
+                            if (pattern.bodyReplacements) {
+                                for (const replacement of pattern.bodyReplacements) {
+                                    bodyObj[replacement.name] =
+                                        replacement.replacement;
+                                }
+                            } else {
+                                bodyObj = pattern.body;
                             }
-                        } else {
-                            bodyObj = pattern.body;
-                        }
 
-                        init = { ...init, body: JSON.stringify(bodyObj) };
-                    } catch {}
+                            init = { ...init, body: JSON.stringify(bodyObj) };
+                        } catch {}
+                    }
                 }
-            }
 
-            return original(input, init);
-        });
+                return [input, init];
+            },
+        );
 
-        patcher.instead(
+        patcher.before(
             window.navigator,
             "sendBeacon",
-            ([url, data], original) => {
+            ([url, data]): [string | URL, BodyInit?] => {
                 for (const pattern of blockedPatterns) {
                     if (
                         pattern.match.test(url.toString()) &&
@@ -120,12 +125,12 @@ export default definePlugin({
                             }
 
                             const newBody = JSON.stringify(bodyObj);
-                            return original(url, newBody);
+                            return [url, newBody];
                         } catch {}
                     }
                 }
 
-                return original(url, data);
+                return [url, data];
             },
         );
 
