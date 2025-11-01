@@ -1,5 +1,6 @@
-import { NavigationTileProps, SettingsPage, TileProps } from "@/lib/types";
 import { FunctionalComponent } from "preact";
+import * as strawberry from "@marshift/strawberry";
+import { NavigationTileProps, SettingsPage, TileProps } from "@/lib/types";
 
 export type SettingsAPI = {
     registerSettingsTile: (tile: TileProps) => () => void;
@@ -45,6 +46,8 @@ export type StoreAPI = {
     get: <T>(id: string) => T;
 };
 
+export type PatcherAPI = strawberry.Patcher;
+
 export type PluginContext = {
     settings: SettingsAPI;
     posts: PostsAPI;
@@ -54,6 +57,7 @@ export type PluginContext = {
     logging: LoggingAPI;
     customcss: CssAPI;
     dom: DomAPI;
+    patcher: PatcherAPI;
     cleanup: (fn: () => void) => void;
     _internalCleanup: () => void;
 };

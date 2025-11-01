@@ -3,6 +3,7 @@ import { Posts } from "@/core/modules/posts";
 import { Storage, StorageSync } from "@/core/modules/storage/common";
 import { Logging } from "@/core/modules/logging";
 import { CustomCss } from "@/core/modules/customcss";
+import { Patcher } from "@/core/modules/patcher";
 
 import { render, FunctionalComponent } from "preact";
 
@@ -16,6 +17,7 @@ import {
     DomAPI,
     StorageSyncAPI,
     StoreAPI,
+    PatcherAPI,
 } from "@/core/modules/plugins/api/types";
 import { PluginSetting, ReadItPlugin } from "@/lib/types";
 import { ReadIt } from "@/core/modules/readit";
@@ -84,12 +86,16 @@ export function createCssAPI(internal: CustomCss): CssAPI {
     };
 }
 
-export function createDomApi(): DomAPI {
+export function createDomAPI(): DomAPI {
     return {
         render(component: FunctionalComponent, element: HTMLElement) {
             render(component, element);
         },
     };
+}
+
+export function createPatcherAPI(internal: Patcher): PatcherAPI {
+    return internal.scopedPatcher();
 }
 
 export type PluginContextWithCleanup = PluginContext & {
@@ -110,7 +116,8 @@ export function createPluginContext(
         store: createStoreAPI(deps.storageSync, plugin.settings, plugin.id),
         logging: createLoggingAPI(deps.logging, plugin),
         customcss: createCssAPI(deps.customcss),
-        dom: createDomApi(),
+        dom: createDomAPI(),
+        patcher: createPatcherAPI(deps.patcher),
         cleanup: (fn: () => void) => {
             cleanupCallbacks.push(fn);
         },

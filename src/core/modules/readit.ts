@@ -6,6 +6,7 @@ import { Storage, StorageSync } from "@/core/modules/storage/common";
 import { Logging } from "@/core/modules/logging";
 import { CustomCss } from "@/core/modules/customcss";
 import { setupCustomCss } from "@/core/modules/customcss/settings";
+import { Patcher } from "@/core/modules/patcher";
 import { withNative } from "@/lib/native";
 
 export class ReadIt {
@@ -17,6 +18,7 @@ export class ReadIt {
     storage: Storage;
     storageSync: StorageSync;
     customcss: CustomCss;
+    patcher: Patcher;
 
     constructor() {
         this.version = __READIT_VERSION__;
@@ -28,6 +30,7 @@ export class ReadIt {
         this.storageSync = createStorageSync(this);
         this.plugins = new Plugins(this);
         this.customcss = new CustomCss(this);
+        this.patcher = new Patcher(this);
 
         withNative(() => {
             for (const { object, replacements } of window.ReadItNative
@@ -35,15 +38,7 @@ export class ReadIt {
                 const target = globalThis[object] ?? globalThis;
 
                 for (const [key, value] of Object.entries(replacements)) {
-                    try {
-                        Object.defineProperty(target, key, {
-                            value,
-                            configurable: true,
-                            writable: true,
-                        });
-                    } catch {
-                        target[key] = value;
-                    }
+                    this.patcher.instead(target, key, value);
                 }
             }
         });

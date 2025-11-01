@@ -86,6 +86,71 @@ export type CssAPI = {
     clearRules(): void;
 };
 
+export type PatcherAPI = {
+    before: <P extends Record<PropertyKey, any>, N extends keyof P>(
+        funcParent: P,
+        funcName: N,
+        callback: (
+            args: P[N] extends infer T
+                ? T extends P[N]
+                    ? T extends (...args: infer P_1) => any
+                        ? unknown[] extends P_1
+                            ? any
+                            : P_1
+                        : never
+                    : never
+                : never,
+        ) =>
+            | void
+            | (P[N] extends infer T_1
+                  ? T_1 extends P[N]
+                      ? T_1 extends (...args: infer P_1) => any
+                          ? unknown[] extends P_1
+                              ? any
+                              : P_1
+                          : never
+                      : never
+                  : never)
+            | undefined,
+        oneTime?: boolean,
+    ) => () => boolean;
+    after: <P extends Record<PropertyKey, any>, N extends keyof P>(
+        funcParent: P,
+        funcName: N,
+        callback: (
+            args: P[N] extends infer T
+                ? T extends P[N]
+                    ? T extends (...args: infer P_1) => any
+                        ? unknown[] extends P_1
+                            ? any
+                            : P_1
+                        : never
+                    : never
+                : never,
+            ret: ReturnType<P[N]>,
+        ) => void | ReturnType<P[N]> | undefined,
+        oneTime?: boolean,
+    ) => () => boolean;
+    instead: <P extends Record<PropertyKey, any>, N extends keyof P>(
+        funcParent: P,
+        funcName: N,
+        callback: (
+            args: P[N] extends infer T
+                ? T extends P[N]
+                    ? T extends (...args: infer P_1) => any
+                        ? unknown[] extends P_1
+                            ? any
+                            : P_1
+                        : never
+                    : never
+                : never,
+            origFunc: NonNullable<P[N]>,
+        ) => ReturnType<P[N]>,
+        oneTime?: boolean,
+    ) => () => boolean;
+    unpatchAll: () => boolean;
+};
+
 export type PluginContext = {
     settings: SettingsAPI;
     posts: PostsAPI;
@@ -94,6 +159,7 @@ export type PluginContext = {
     store: StoreAPI;
     logging: LoggingAPI;
     customcss: CssAPI;
+    patcher: PatcherAPI;
     cleanup: (fn: () => void) => void;
 };
 

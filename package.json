@@ -26,6 +26,7 @@
         "@codemirror/language": "^6.11.3",
         "@codemirror/state": "^6.5.2",
         "@codemirror/view": "^6.38.4",
+        "@marshift/strawberry": "^1.7.3",
         "@types/react": "17.0.60",
         "@uiw/codemirror-theme-vscode": "^4.25.2",
         "codemirror": "^6.0.2",

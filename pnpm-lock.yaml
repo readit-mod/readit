@@ -26,6 +26,9 @@ importers:
       '@codemirror/view':
         specifier: ^6.38.4
         version: 6.38.4
+      '@marshift/strawberry':
+        specifier: ^1.7.3
+        version: 1.7.3
       '@types/react':
         specifier: 17.0.60
         version: 17.0.60
@@ -370,6 +373,9 @@ packages:
 
   '@marijn/find-cluster-break@1.0.2':
     resolution: {integrity: sha512-l0h88YhZFyKdXIFNfSWpyjStDjGHwZ/U7iobcK1cQQD8sejsONdQtTVU+1wVN1PBw40PiiHB1vA5S7VTfQiP9g==}
+
+  '@marshift/strawberry@1.7.3':
+    resolution: {integrity: sha512-Aqu2jZcHIQ//TsgtSX6iO5ujZHwYg+3vac7oeKjJ6UItg1+4l9XmPKcjVkFdHH4Vqx46l+Jqv9KcFbd3jqkIlg==}
 
   '@preact/preset-vite@2.10.2':
     resolution: {integrity: sha512-K9wHlJOtkE+cGqlyQ5v9kL3Ge0Ql4LlIZjkUTL+1zf3nNdF88F9UZN6VTV8jdzBX9Fl7WSzeNMSDG7qECPmSmg==}
@@ -1189,6 +1195,8 @@ snapshots:
       '@lezer/common': 1.2.3
 
   '@marijn/find-cluster-break@1.0.2': {}
+
+  '@marshift/strawberry@1.7.3': {}
 
   '@preact/preset-vite@2.10.2(@babel/core@7.28.4)(preact@10.27.2)(vite@7.1.5(@types/node@24.5.0))':
     dependencies:

@@ -23,7 +23,7 @@ export default definePlugin({
     id: "readit-tracking-blocker",
     version: "1.1.0",
 
-    async onLoad({ cleanup }) {
+    async onLoad({ cleanup, patcher }) {
         const blockedPatterns: BlockedPattern[] = [
             {
                 match: /\/svc\/shreddit\/events\b/i,
@@ -39,7 +39,6 @@ export default definePlugin({
             {
                 match: /https:\/\/w3-reporting\.reddit\.com\/reports\b/i,
                 body: [
-                    // The body need to satisfy the backend or it gets a 400.
                     {
                         age: 1,
                         type: "reddit-w3reporting",
@@ -69,50 +68,39 @@ export default definePlugin({
             },
         ];
 
-        const originalFetch = window.fetch;
-        const originalSendBeacon = window.navigator.sendBeacon;
+        patcher.instead(window, "fetch", ([input, init], original) => {
+            const url = input.toString();
 
-        const fetchProxy = new Proxy(originalFetch, {
-            apply(target, thisArg, args: Parameters<typeof fetch>) {
-                const [input] = args;
-                let init = args[1];
-                const url = input.toString();
+            for (const pattern of blockedPatterns) {
+                if (
+                    pattern.match.test(url) &&
+                    (pattern.bodyReplacements || pattern.body) &&
+                    init?.body
+                ) {
+                    try {
+                        let bodyObj = JSON.parse(init.body as string);
 
-                for (const pattern of blockedPatterns) {
-                    if (
-                        pattern.match.test(url) &&
-                        (pattern.bodyReplacements || pattern.body) &&
-                        init?.body
-                    ) {
-                        try {
-                            let bodyObj = JSON.parse(init.body as string);
-
-                            if (pattern.bodyReplacements) {
-                                for (const replacement of pattern.bodyReplacements) {
-                                    bodyObj[replacement.name] =
-                                        replacement.replacement;
-                                }
-                            } else {
-                                bodyObj = pattern.body;
+                        if (pattern.bodyReplacements) {
+                            for (const replacement of pattern.bodyReplacements) {
+                                bodyObj[replacement.name] =
+                                    replacement.replacement;
                             }
+                        } else {
+                            bodyObj = pattern.body;
+                        }
 
-                            init = { ...init, body: JSON.stringify(bodyObj) };
-                        } catch {}
-                    }
+                        init = { ...init, body: JSON.stringify(bodyObj) };
+                    } catch {}
                 }
+            }
 
-                return Reflect.apply(target, thisArg, [input, init]);
-            },
+            return original(input, init);
         });
 
-        const sendBeaconProxy = new Proxy(originalSendBeacon, {
-            apply(
-                target,
-                thisArg,
-                args: Parameters<typeof navigator.sendBeacon>,
-            ) {
-                const [url, data] = args;
-
+        patcher.instead(
+            window.navigator,
+            "sendBeacon",
+            ([url, data], original) => {
                 for (const pattern of blockedPatterns) {
                     if (
                         pattern.match.test(url.toString()) &&
@@ -121,6 +109,7 @@ export default definePlugin({
                     ) {
                         try {
                             let bodyObj = JSON.parse(data);
+
                             if (pattern.bodyReplacements) {
                                 for (const replacement of pattern.bodyReplacements) {
                                     bodyObj[replacement.name] =
@@ -131,41 +120,22 @@ export default definePlugin({
                             }
 
                             const newBody = JSON.stringify(bodyObj);
-                            return Reflect.apply(target, thisArg, [
-                                url,
-                                newBody,
-                            ]);
+                            return original(url, newBody);
                         } catch {}
                     }
                 }
 
-                return Reflect.apply(target, thisArg, args);
+                return original(url, data);
             },
-        });
-
-        window.fetch = fetchProxy;
-        window.navigator.sendBeacon = sendBeaconProxy;
-
-        const originalSentry: Record<string, Function> = {};
-
-        const noop = () => {};
+        );
 
         if (window.Sentry) {
             for (const key of Object.keys(window.Sentry)) {
-                const val = window.Sentry[key];
-                originalSentry[key] = val;
-                window.Sentry[key] = noop;
+                patcher.instead(window.Sentry, key, () => {});
             }
         }
 
-        cleanup(() => {
-            window.fetch = originalFetch;
-            window.navigator.sendBeacon = originalSendBeacon;
-
-            for (const key of Object.keys(originalSentry)) {
-                window.Sentry[key] = originalSentry[key];
-            }
-        });
+        cleanup(() => patcher.unpatchAll());
     },
 });
 
