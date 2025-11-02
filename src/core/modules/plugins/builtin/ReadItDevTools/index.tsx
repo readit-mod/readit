@@ -2,6 +2,7 @@ import { definePlugin } from "@/lib/plugin";
 import { meta } from "@/lib/meta";
 import { TileProps } from "@/lib/types";
 import { withNativeAsync } from "@/lib/native";
+import { TestErrorBoundary } from "./TestErrorBoundary";
 
 export default definePlugin({
     name: "ReadIt DevTools",
@@ -35,6 +36,12 @@ export default definePlugin({
             {
                 title: "ReadIt Platform",
                 description: meta.platform,
+            },
+            {
+                title: "Test Error Boundary",
+                description:
+                    "Test if the error boundary catches render errors.",
+                onClick: () => settings.goTo("test-error-boundary"),
             },
             ...((await withNativeAsync(async () => {
                 return [
@@ -93,6 +100,14 @@ export default definePlugin({
                 description: "Some tools useful for developers.",
                 icon: "🛠️",
                 id: "devtools",
+            }),
+        );
+
+        unregisterFns.push(
+            settings.registerSettingsPage({
+                id: "test-error-boundary",
+                title: "Test Error Boundary",
+                pageComponent: () => <TestErrorBoundary />,
             }),
         );
 

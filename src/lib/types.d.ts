@@ -59,7 +59,7 @@ export type SettingsPage =
           id: string;
           title: string;
           items?: never;
-          pageComponent?: FunctionalComponent;
+          pageComponent?: any;
       };
 
 type ReadItNative = {
