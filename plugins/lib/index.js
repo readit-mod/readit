@@ -1,4 +1,11 @@
+
+/** 
+ * Adds properties to a plugin object that aren't defined.
+ * @param {import("./types").ReadItPlugin} config
+*/
 export function definePlugin(config) {
-    // type safety
-    return config;
+    return {
+        settings: [],
+        ...config
+    }
 }
