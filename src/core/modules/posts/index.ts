@@ -1,8 +1,9 @@
 import { ReadIt } from "@/core/modules/readit";
+import { InternalPostMeta, PostMeta } from "@/lib/types";
 
 export class Posts {
     selector = "shreddit-post, shreddit-ad-post";
-    postCallbacks: ((posts: Element[]) => void)[] = [];
+    postCallbacks: ((posts: PostMeta[]) => void)[] = [];
     _queuedPosts = new Set<Element>();
     _rafScheduled = false;
 
@@ -36,7 +37,7 @@ export class Posts {
     }
 
     registerOnPostsLoaded = (
-        callback: (posts: Element[]) => void,
+        callback: (posts: PostMeta[]) => void,
     ): (() => void) => {
         this.postCallbacks.push(callback);
         // each plugin scans the current post list as its loaded
@@ -52,7 +53,9 @@ export class Posts {
     _callbackInitialScan(): void {
         const existing = document.querySelectorAll(this.selector);
         if (existing.length > 0) {
-            this._emitPosts(Array.from(existing));
+            this._emitPosts(
+                Array.from(existing) as (Element & InternalPostMeta)[],
+            );
         }
     }
 
@@ -63,14 +66,37 @@ export class Posts {
         this._rafScheduled = true;
         window.requestAnimationFrame(() => {
             if (this._queuedPosts.size > 0) {
-                this._emitPosts(Array.from(this._queuedPosts));
+                this._emitPosts(
+                    Array.from(this._queuedPosts) as (Element &
+                        InternalPostMeta)[],
+                );
                 this._queuedPosts.clear();
             }
             this._rafScheduled = false;
         });
     }
 
-    _emitPosts(posts: Element[]): void {
-        this.postCallbacks.forEach((cb) => cb(posts));
+    _emitPosts(posts: (Element & InternalPostMeta)[]): void {
+        let typedPosts: PostMeta[] = [];
+
+        for (const post of posts) {
+            typedPosts.push({
+                id: post.__id,
+                title: post.__postTitle,
+                subreddit: post.__subredditName,
+                url: post.__contentHref,
+                score: post.__score,
+                upvoted: post.__postVoteType == "upvote",
+                downvoted: post.__postVoteType == "downvote",
+                createdAt: post.__createdTimestamp,
+                nsfw: post.__nsfw,
+                spoiler: post.__spoiler,
+                promoted: post.__promoted,
+                commentCount: post.__commentCount,
+                element: post,
+            });
+        }
+
+        this.postCallbacks.forEach((cb) => cb(typedPosts));
     }
 }

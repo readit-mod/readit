@@ -10,9 +10,9 @@ export default definePlugin({
 
         let unsubLoadCallback = posts.registerLoadCallback(async (posts) => {
             posts.forEach((post) => {
-                if (post.matches("shreddit-ad-post")) {
+                if (post.promoted) {
                     blocked++;
-                    post.remove();
+                    post.element.remove();
                 }
             });
             await storage.set("ads-blocked", blocked);

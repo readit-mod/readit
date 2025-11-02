@@ -1,6 +1,11 @@
 import { FunctionalComponent } from "preact";
 import * as strawberry from "@marshift/strawberry";
-import { NavigationTileProps, SettingsPage, TileProps } from "@/lib/types";
+import {
+    NavigationTileProps,
+    PostMeta,
+    SettingsPage,
+    TileProps,
+} from "@/lib/types";
 
 export type SettingsAPI = {
     registerSettingsTile: (tile: TileProps) => () => void;
@@ -10,7 +15,7 @@ export type SettingsAPI = {
 };
 
 export type PostsAPI = {
-    registerLoadCallback: (cb: (posts: Element[]) => void) => () => void;
+    registerLoadCallback: (cb: (posts: PostMeta[]) => void) => () => void;
 };
 
 export type LoggingAPI = {
