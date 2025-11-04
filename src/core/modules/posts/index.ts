@@ -93,6 +93,7 @@ export class Posts {
                 spoiler: post.__spoiler,
                 promoted: post.__promoted,
                 commentCount: post.__commentCount,
+                postType: post.__postType,
                 element: post,
             });
         }

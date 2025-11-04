@@ -44,7 +44,7 @@ export type CssAPI = {
 };
 
 export type DomAPI = {
-    render(component: FunctionalComponent, element: HTMLElement): void;
+    render(component: any, element: HTMLElement): void;
 };
 
 export type StoreAPI = {

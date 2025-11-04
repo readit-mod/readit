@@ -159,6 +159,8 @@ type PostMeta = {
     promoted: boolean;
     /** Number of comments on the post */
     commentCount: number;
+    /** What type of post is it (e.g. image, video) */
+    postType: string;
     /** Post's HTML element */
     element: Element & InternalPostMeta;
 };
@@ -176,6 +178,7 @@ type InternalPostMeta = {
     __spoiler?: boolean;
     __promoted?: boolean;
     __commentCount?: number;
+    __postType?: string;
 };
 
 declare global {
