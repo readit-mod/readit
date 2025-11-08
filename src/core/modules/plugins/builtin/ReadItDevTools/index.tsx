@@ -46,23 +46,23 @@ export default definePlugin({
             ...((await withNativeAsync(async () => {
                 return [
                     {
-                        title: "Current Bundle URL",
+                        title: "Current Bundle Manifest URL",
                         description:
-                            await window.ReadItNative.bundle.getBundleURL(),
+                            await window.ReadItNative.bundle.getManifestURL(),
                     },
                     {
                         title: "Change ReadIt Bundle URL (DANGEROUS)",
                         description:
-                            "Change where ReadIt Desktop gets the bundle from, can cause errors.",
+                            "Change where ReadIt Desktop gets the bundle manifest from, can cause errors.",
                         async onClick() {
                             // settings.goTo("change-bundle");
 
                             let newBundle = await prompt(
                                 "New Bundle URL",
-                                await window.ReadItNative.bundle.getBundleURL(),
+                                await window.ReadItNative.bundle.getManifestURL(),
                             );
                             if (newBundle) {
-                                await window.ReadItNative.bundle.setBundleURL(
+                                await window.ReadItNative.bundle.setManifestURL(
                                     newBundle,
                                 );
                                 alert("Please restart to apply changes.");
@@ -72,9 +72,9 @@ export default definePlugin({
                     {
                         title: "Reset ReadIt Bundle URL",
                         description:
-                            "Reset where ReadIt Desktop gets the bundle.",
+                            "Reset where ReadIt Desktop gets the bundle manifest.",
                         onClick() {
-                            window.ReadItNative.bundle.resetBundleURL();
+                            window.ReadItNative.bundle.resetManifestURL();
                             alert(
                                 "You should restart ReadIt Desktop to apply changes.",
                             );
