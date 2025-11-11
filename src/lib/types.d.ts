@@ -87,9 +87,9 @@ type NetworkNative = {
 };
 
 type BundleNative = {
-    setManifestURL: (url: string) => Promise<boolean>;
-    getManifestURL: () => Promise<string>;
-    resetManifestURL: () => Promise<boolean>;
+    setBundleManifest: (url: string) => Promise<boolean>;
+    getBundleManifest: () => Promise<string>;
+    resetBundleManifest: () => Promise<boolean>;
 };
 
 type LogNative = {

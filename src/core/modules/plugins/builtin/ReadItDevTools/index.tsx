@@ -48,7 +48,7 @@ export default definePlugin({
                     {
                         title: "Current Bundle Manifest URL",
                         description:
-                            await window.ReadItNative.bundle.getManifestURL(),
+                            await window.ReadItNative.bundle.getBundleManifest(),
                     },
                     {
                         title: "Change ReadIt Bundle URL (DANGEROUS)",
@@ -59,10 +59,10 @@ export default definePlugin({
 
                             let newBundle = await prompt(
                                 "New Bundle URL",
-                                await window.ReadItNative.bundle.getManifestURL(),
+                                await window.ReadItNative.bundle.getBundleManifest(),
                             );
                             if (newBundle) {
-                                await window.ReadItNative.bundle.setManifestURL(
+                                await window.ReadItNative.bundle.setBundleManifest(
                                     newBundle,
                                 );
                                 alert("Please restart to apply changes.");
@@ -74,7 +74,7 @@ export default definePlugin({
                         description:
                             "Reset where ReadIt Desktop gets the bundle manifest.",
                         onClick() {
-                            window.ReadItNative.bundle.resetManifestURL();
+                            window.ReadItNative.bundle.resetBundleManifest();
                             alert(
                                 "You should restart ReadIt Desktop to apply changes.",
                             );
