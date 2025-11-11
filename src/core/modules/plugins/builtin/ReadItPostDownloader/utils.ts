@@ -1,5 +1,5 @@
 import { readit } from "@modules/readit";
-import { isNative, withNativeAsync } from "@lib/native";
+import { isNative } from "@lib/native";
 import { PostMeta } from "@lib/types";
 
 export async function waitForShadowRoot(
@@ -36,7 +36,7 @@ export async function downloadPost(post: PostMeta) {
             url:
                 post.postType == "image"
                     ? post.url
-                    : `${post.url}/DASH_480.mp4?source=fallback`,
+                    : `${post.url}/CMAF_480.mp4?source=fallback`,
             responseType: "blob",
             onload: (res) => {
                 const blobUrl = URL.createObjectURL(res.response);
