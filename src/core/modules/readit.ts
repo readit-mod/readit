@@ -38,7 +38,7 @@ export class ReadIt {
                 const target = globalThis[object] ?? globalThis;
 
                 for (const [key, value] of Object.entries(replacements)) {
-                    this.patcher.instead(target, key, value);
+                    this.patcher.instead(target, key, ([...args]) => value(...args));
                 }
             }
         });
