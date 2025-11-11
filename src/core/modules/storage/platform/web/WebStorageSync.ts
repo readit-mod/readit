@@ -1,5 +1,5 @@
-import { ReadIt } from "@/core/modules/readit";
-import { StorageSync } from "@/core/modules/storage/common";
+import { ReadIt } from "@modules/readit";
+import { StorageSync } from "@modules/storage/common";
 
 export class WebStorageSync extends StorageSync {
     constructor(readit: ReadIt) {

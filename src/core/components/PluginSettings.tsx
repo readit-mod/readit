@@ -1,6 +1,6 @@
-import { PluginSettingsTile } from "@/core/components/PluginSettingsTile";
-import { StorageSyncAPI } from "@/core/modules/plugins/api/types";
-import { PluginSetting } from "@/lib/types";
+import { PluginSettingsTile } from "@components/PluginSettingsTile";
+import { StorageSyncAPI } from "@modules/plugins/api/types";
+import { PluginSetting } from "@lib/types";
 
 export function PluginSettings({
     settings,

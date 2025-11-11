@@ -1,7 +1,7 @@
-import { definePlugin } from "@/lib/plugin";
-import { meta } from "@/lib/meta";
-import { TileProps } from "@/lib/types";
-import { withNativeAsync } from "@/lib/native";
+import { definePlugin } from "@lib/plugin";
+import { meta } from "@lib/meta";
+import { TileProps } from "@lib/types";
+import { withNativeAsync } from "@lib/native";
 import { TestErrorBoundary } from "./TestErrorBoundary";
 
 export default definePlugin({

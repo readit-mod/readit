@@ -1,5 +1,5 @@
 import * as strawberry from "@marshift/strawberry";
-import { ReadIt } from "@/core/modules/readit";
+import { ReadIt } from "@modules/readit";
 
 export class Patcher {
     constructor(private readit: ReadIt) {}

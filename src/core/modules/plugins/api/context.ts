@@ -1,9 +1,9 @@
-import { Settings } from "@/core/modules/settings";
-import { Posts } from "@/core/modules/posts";
-import { Storage, StorageSync } from "@/core/modules/storage/common";
-import { Logging } from "@/core/modules/logging";
-import { CustomCss } from "@/core/modules/customcss";
-import { Patcher } from "@/core/modules/patcher";
+import { Settings } from "@modules/settings";
+import { Posts } from "@modules/posts";
+import { Storage, StorageSync } from "@modules/storage/common";
+import { Logging } from "@modules/logging";
+import { CustomCss } from "@modules/customcss";
+import { Patcher } from "@modules/patcher";
 
 import { render, FunctionalComponent } from "preact";
 
@@ -18,9 +18,9 @@ import {
     StorageSyncAPI,
     StoreAPI,
     PatcherAPI,
-} from "@/core/modules/plugins/api/types";
-import { PluginSetting, ReadItPlugin } from "@/lib/types";
-import { ReadIt } from "@/core/modules/readit";
+} from "@modules/plugins/api/types";
+import { PluginSetting, ReadItPlugin } from "@lib/types";
+import { ReadIt } from "@modules/readit";
 
 export function createPostsAPI(internal: Posts): PostsAPI {
     return {

@@ -6,8 +6,8 @@ import {
     Storage as StorageType,
     StorageSync as StorageSyncType,
 } from "./common";
-import { ReadIt } from "@/core/modules/readit";
-import { withNative } from "@/lib/native";
+import { ReadIt } from "@modules/readit";
+import { withNative } from "@lib/native";
 
 export function createStorage(readit: ReadIt): StorageType {
     return (

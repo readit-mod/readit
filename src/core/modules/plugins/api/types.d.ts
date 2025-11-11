@@ -5,7 +5,7 @@ import {
     PostMeta,
     SettingsPage,
     TileProps,
-} from "@/lib/types";
+} from "@lib/types";
 
 export type SettingsAPI = {
     registerSettingsTile: (tile: TileProps) => () => void;

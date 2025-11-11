@@ -1,5 +1,5 @@
-import { PluginContext } from "@/core/modules/plugins/api/types";
-import { ReadIt } from "@/core/modules/readit";
+import { PluginContext } from "@modules/plugins/api/types";
+import { ReadIt } from "@modules/readit";
 import { FunctionalComponent, h } from "preact";
 
 export type ReadItPlugin = {

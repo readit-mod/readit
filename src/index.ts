@@ -1,2 +1,2 @@
-import "@/core/modules/readit";
+import "@modules/readit";
 // so it doesn't tree shake this

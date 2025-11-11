@@ -46,7 +46,11 @@ async function runBuild(mode = "userscript", version = "") {
         },
         resolve: {
             alias: {
-                "@": resolve(root, "./src"),
+                "@modules": resolve(root, "./src/core/modules"),
+                "@components": resolve(root, "./src/core/components"),
+                "@lib": resolve(root, "./src/lib"),
+                "@utils": resolve(root, "./src/core/utils.ts"),
+                "@": resolve(root, "./"),
             },
         },
     };

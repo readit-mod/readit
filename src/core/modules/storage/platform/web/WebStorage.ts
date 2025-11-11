@@ -1,5 +1,5 @@
-import { ReadIt } from "@/core/modules/readit";
-import { Storage } from "@/core/modules/storage/common";
+import { ReadIt } from "@modules/readit";
+import { Storage } from "@modules/storage/common";
 
 export class WebStorage extends Storage {
     constructor(readit: ReadIt) {

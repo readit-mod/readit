@@ -1,5 +1,5 @@
 import { useState } from "preact/hooks";
-import type { TileProps } from "@/lib/types";
+import type { TileProps } from "@lib/types";
 
 export function SettingsTile({ onClick, icon, title, description }: TileProps) {
     const [isPressed, setIsPressed] = useState(false);

@@ -1,5 +1,5 @@
-import { ReadIt } from "@/core/modules/readit";
-import { InternalPostMeta, PostMeta } from "@/lib/types";
+import { ReadIt } from "@modules/readit";
+import { InternalPostMeta, PostMeta } from "@lib/types";
 
 export class Posts {
     selector = "shreddit-post, shreddit-ad-post";

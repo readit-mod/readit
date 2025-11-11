@@ -1,7 +1,7 @@
 import { useEffect, useState } from "preact/hooks";
-import { SettingsTile } from "@/core/components/SettingsTile";
-import { TileProps, SettingsPage } from "@/lib/types";
-import { readit } from "@/core/modules/readit";
+import { SettingsTile } from "@components/SettingsTile";
+import { TileProps, SettingsPage } from "@lib/types";
+import { readit } from "@modules/readit";
 
 interface SettingsProps {
     pages?: Map<string, SettingsPage>;

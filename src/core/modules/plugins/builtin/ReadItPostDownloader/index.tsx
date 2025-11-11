@@ -1,6 +1,6 @@
 // This plugin is disbled due to some bugs in some modules, it will be brought back when they are fixed.
 
-// import { definePlugin } from "@/lib/plugin";
+// import { definePlugin } from "@lib/plugin";
 // import { downloadPost, waitForShadowRoot } from "./utils";
 // import { DownloadChip } from "./DownloadChip";
 

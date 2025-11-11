@@ -1,5 +1,5 @@
-import { CSSEditor } from "@/core/components/CSSEditor";
-import { ReadIt } from "@/core/modules/readit";
+import { CSSEditor } from "@components/CSSEditor";
+import { ReadIt } from "@modules/readit";
 
 export function setupCustomCss(readit: ReadIt) {
     let userDefinedCSS = "";

@@ -1,4 +1,4 @@
-import { definePlugin } from "@/lib/plugin";
+import { definePlugin } from "@lib/plugin";
 
 type BodyReplacementItem = {
     name: string;

@@ -1,10 +1,10 @@
 import { render } from "preact";
-import { SettingsContent } from "@/core/components/SettingsContent";
-import { SettingsButton } from "@/core/components/SettingsButton";
-import { Modal } from "@/core/components/Modal";
-import { ErrorBoundary } from "@/core/components/ErrorBoundary";
-import { ReadIt } from "@/core/modules/readit";
-import { TileProps, SettingsPage, NavigationTileProps } from "@/lib/types";
+import { SettingsContent } from "@components/SettingsContent";
+import { SettingsButton } from "@components/SettingsButton";
+import { Modal } from "@components/Modal";
+import { ErrorBoundary } from "@components/ErrorBoundary";
+import { ReadIt } from "@modules/readit";
+import { TileProps, SettingsPage, NavigationTileProps } from "@lib/types";
 
 export class Settings {
     modalContainer: HTMLElement;

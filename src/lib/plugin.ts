@@ -1,4 +1,4 @@
-import { ReadItPlugin } from "@/lib/types";
+import { ReadItPlugin } from "@lib/types";
 
 export const definePlugin = (config: ReadItPlugin): ReadItPlugin => {
     return {

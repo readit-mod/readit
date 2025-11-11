@@ -1,4 +1,4 @@
-import { isNative, withNative } from "@/lib/native";
+import { isNative, withNative } from "@lib/native";
 
 export async function importProxied(url: string) {
     const jsContents: string =

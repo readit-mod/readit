@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "preact/hooks";
-import { readit } from "@/core/modules/readit";
+import { readit } from "@modules/readit";
 import { EditorState } from "@codemirror/state";
 import { EditorView, basicSetup } from "codemirror";
 import { keymap } from "@codemirror/view";

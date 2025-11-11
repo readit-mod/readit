@@ -1,8 +1,8 @@
 import { useState } from "preact/hooks";
-import { ReadItPlugin } from "@/lib/types";
-import { readit } from "@/core/modules/readit";
-import { SwitchToggle } from "@/core/components/SwitchToggle";
-import { PluginSettings } from "@/core/components/PluginSettings";
+import { ReadItPlugin } from "@lib/types";
+import { readit } from "@modules/readit";
+import { SwitchToggle } from "@components/SwitchToggle";
+import { PluginSettings } from "@components/PluginSettings";
 
 export default function PluginPage({ plugin }: { plugin: ReadItPlugin }) {
     const [enabled, setEnabled] = useState(plugin.enabled ?? false);

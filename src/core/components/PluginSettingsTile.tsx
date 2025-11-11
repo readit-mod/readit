@@ -1,5 +1,5 @@
 import { useEffect, useState } from "preact/hooks";
-import { SwitchToggle } from "@/core/components/SwitchToggle";
+import { SwitchToggle } from "@components/SwitchToggle";
 
 type SettingsTileProps = {
     title: string;

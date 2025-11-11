@@ -1,5 +1,5 @@
-import { ReadIt } from "@/core/modules/readit";
-import { withNative } from "@/lib/native";
+import { ReadIt } from "@modules/readit";
+import { withNative } from "@lib/native";
 
 export class Logging {
     constructor(private readit: ReadIt) {}

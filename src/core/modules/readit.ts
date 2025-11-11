@@ -1,13 +1,13 @@
-import { Posts } from "@/core/modules/posts";
-import { Plugins } from "@/core/modules/plugins";
-import { Settings } from "@/core/modules/settings";
-import { createStorage, createStorageSync } from "@/core/modules/storage";
-import { Storage, StorageSync } from "@/core/modules/storage/common";
-import { Logging } from "@/core/modules/logging";
-import { CustomCss } from "@/core/modules/customcss";
-import { setupCustomCss } from "@/core/modules/customcss/settings";
-import { Patcher } from "@/core/modules/patcher";
-import { withNative } from "@/lib/native";
+import { Posts } from "@modules/posts";
+import { Plugins } from "@modules/plugins";
+import { Settings } from "@modules/settings";
+import { createStorage, createStorageSync } from "@modules/storage";
+import { Storage, StorageSync } from "@modules/storage/common";
+import { Logging } from "@modules/logging";
+import { CustomCss } from "@modules/customcss";
+import { setupCustomCss } from "@modules/customcss/settings";
+import { Patcher } from "@modules/patcher";
+import { withNative } from "@lib/native";
 
 export class ReadIt {
     version: string;

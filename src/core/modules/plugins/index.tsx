@@ -1,8 +1,8 @@
-import type { ReadItPlugin } from "@/lib/types";
-import { importProxied } from "@/core/utils";
-import { ReadIt } from "@/core/modules/readit";
-import PluginPage from "@/core/components/PluginPage";
-import { createPluginContext } from "@/core/modules/plugins/api/context";
+import type { ReadItPlugin } from "@lib/types";
+import { importProxied } from "@utils";
+import { ReadIt } from "@modules/readit";
+import PluginPage from "@components/PluginPage";
+import { createPluginContext } from "@modules/plugins/api/context";
 
 export class Plugins {
     private unloadedPluginList: { url: string }[] = [];

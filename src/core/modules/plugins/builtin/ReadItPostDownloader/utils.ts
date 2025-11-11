@@ -1,6 +1,6 @@
-import { readit } from "@/core/modules/readit";
-import { isNative, withNativeAsync } from "@/lib/native";
-import { PostMeta } from "@/lib/types";
+import { readit } from "@modules/readit";
+import { isNative, withNativeAsync } from "@lib/native";
+import { PostMeta } from "@lib/types";
 
 export async function waitForShadowRoot(
     element: HTMLElement,

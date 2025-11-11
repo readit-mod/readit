@@ -1,6 +1,6 @@
-import { ReadIt } from "@/core/modules/readit";
-import { StorageSync } from "@/core/modules/storage/common";
-import { StorageNative } from "@/lib/types";
+import { ReadIt } from "@modules/readit";
+import { StorageSync } from "@modules/storage/common";
+import { StorageNative } from "@lib/types";
 
 export class NativeStorageSync extends StorageSync {
     private nativeStorage: StorageNative;

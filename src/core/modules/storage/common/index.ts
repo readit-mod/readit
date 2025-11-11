@@ -1,5 +1,5 @@
-import { ReadIt } from "@/core/modules/readit";
-import { NamespacedStorage, NamespacedStorageAsync } from "@/lib/types";
+import { ReadIt } from "@modules/readit";
+import { NamespacedStorage, NamespacedStorageAsync } from "@lib/types";
 
 export abstract class Storage {
     constructor(private readit: ReadIt) {}
