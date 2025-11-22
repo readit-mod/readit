@@ -8,6 +8,8 @@ import { CustomCss } from "@modules/customcss";
 import { setupCustomCss } from "@modules/customcss/settings";
 import { Patcher } from "@modules/patcher";
 import { withNative } from "@lib/native";
+import { Network } from "@modules/network/common";
+import { createNetwork } from "@modules/network";
 
 export class ReadIt {
     version: string;
@@ -16,6 +18,7 @@ export class ReadIt {
     plugins: Plugins;
     settings: Settings;
     storage: Storage;
+    network: Network
     customcss: CustomCss;
     patcher: Patcher;
 
@@ -26,6 +29,7 @@ export class ReadIt {
         this.posts = new Posts(this);
         this.settings = new Settings(this);
         this.storage = createStorage(this);
+        this.network = createNetwork(this);
         this.plugins = new Plugins(this);
         this.customcss = new CustomCss(this);
         this.patcher = new Patcher(this);

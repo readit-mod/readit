@@ -1,5 +1,4 @@
 import { readit } from "@modules/readit";
-import { isNative } from "@lib/native";
 import { PostMeta } from "@lib/types";
 
 export async function waitForShadowRoot(
@@ -21,35 +20,11 @@ export async function waitForShadowRoot(
 }
 
 export async function downloadPost(post: PostMeta) {
-    if (isNative()) {
-        alert(
-            "This currently isn't supported on native due to the xmlHttpRequest polyfill not being advanced enough.",
-        );
-        readit.logging.error(
-            "This currently isn't supported on native due to the xmlHttpRequest polyfill not being advanced enough.",
-        );
-        return;
-    }
-    const mediaBlobUrl: string = await new Promise((resolve, reject) => {
-        GM.xmlHttpRequest({
-            method: "GET",
-            url:
-                post.postType == "image"
-                    ? post.url
-                    : `${post.url}/CMAF_480.mp4?source=fallback`,
-            responseType: "blob",
-            onload: (res) => {
-                const blobUrl = URL.createObjectURL(res.response);
-                resolve(blobUrl);
-            },
-            onerror: (err) => reject(err),
-        });
+    await readit.network.downloadUrl({
+        url: post.postType == "image"
+            ? post.url
+            : `${post.url}/CMAF_480.mp4?source=fallback`,
+        title: "Download Post",
+        name: `${post.id}.${post.postType == "image" ? "jpg" : "mp4"}`
     });
-
-    const a = document.createElement("a");
-    a.href = mediaBlobUrl;
-    a.download = `${post.id}.${post.postType == "image" ? "jpg" : "mp4"}`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
 }

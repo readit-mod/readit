@@ -229,8 +229,21 @@ type StorageNative = {
 };
 
 type NetworkNative = {
-    XMLHttpRequest: typeof XMLHttpRequest;
-    fetch: typeof fetch;
+    downloadUrl: (options: DownloadOptions) => Promise<void>;
+};
+
+type DownloadOptions = {
+    url: string;
+    title?: string;
+    name?: string;
+    message?: string;
+    buttonLabel?: string;
+    filters?: DownloadFilter[];
+};
+
+type DownloadFilter = {
+    name: string;
+    extensions: string[];
 };
 
 type BundleNative = {
