@@ -1,5 +1,5 @@
 import { PluginSettingsTile } from "@components/PluginSettingsTile";
-import { StorageSyncAPI } from "@modules/plugins/api/types";
+import { StorageAPI } from "@modules/plugins/api/types";
 import { PluginSetting } from "@lib/types";
 
 export function PluginSettings({
@@ -7,7 +7,7 @@ export function PluginSettings({
     storage,
 }: {
     settings: PluginSetting[];
-    storage: StorageSyncAPI;
+    storage: StorageAPI;
 }) {
     const saveSettings = () => {
         settings.map((s) => {

@@ -3,14 +3,7 @@ import { isNative, withNative } from "@lib/native";
 export async function importProxied(url: string) {
     const jsContents: string =
         (await withNative(async () => {
-            return await new Promise((resolve, reject) => {
-                window.ReadItNative.network.xmlHttpRequest({
-                    method: "GET",
-                    url,
-                    onload: (res) => resolve(res.responseText),
-                    onerror: (err) => reject(err),
-                });
-            });
+            return (await window.ReadItNative.network.fetch(url)).text();
         })) ??
         (await new Promise((resolve, reject) => {
             GM.xmlHttpRequest({

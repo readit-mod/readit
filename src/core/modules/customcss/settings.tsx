@@ -2,12 +2,9 @@ import { CSSEditor } from "@components/CSSEditor";
 import { ReadIt } from "@modules/readit";
 
 export function setupCustomCss(readit: ReadIt) {
-    let userDefinedCSS = "";
+    let userDefinedCSS = readit.storage.get("core", "customcss", "");
 
-    readit.storage.get("core", "customcss", "").then((css) => {
-        userDefinedCSS = css;
-        readit.customcss.setRootStyle(userDefinedCSS);
-    });
+    readit.customcss.setRootStyle(userDefinedCSS);
 
     readit.settings.registerSettingsPage({
         id: "custom-css",

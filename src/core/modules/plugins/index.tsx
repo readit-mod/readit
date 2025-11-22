@@ -9,11 +9,11 @@ export class Plugins {
     private loadedPluginMap: Map<string, ReadItPlugin> = new Map();
 
     constructor(private readit: ReadIt) {
-        this.readit.storage
-            .get("core", "plugins", [])
-            .then((plugins: { url: string }[]) => {
-                this.unloadedPluginList = plugins;
-            });
+        this.unloadedPluginList = this.readit.storage.get(
+            "core",
+            "plugins",
+            [],
+        );
     }
 
     get pluginList() {
@@ -47,7 +47,7 @@ export class Plugins {
 
         plugin._ctx = ctx;
 
-        const disabledPlugins = this.readit.storageSync.get<string[]>(
+        const disabledPlugins = this.readit.storage.get<string[]>(
             "core",
             "disabledPlugins",
             [],
@@ -69,8 +69,8 @@ export class Plugins {
         this.loadedPluginMap.set(plugin.id, plugin);
     }
 
-    async disablePlugin(plugin: ReadItPlugin) {
-        let disabledPlugins = await this.readit.storage.get<string[]>(
+    disablePlugin(plugin: ReadItPlugin) {
+        let disabledPlugins = this.readit.storage.get<string[]>(
             "core",
             "disabledPlugins",
             [],
@@ -80,11 +80,7 @@ export class Plugins {
             disabledPlugins.push(plugin.id);
         }
 
-        await this.readit.storage.set(
-            "core",
-            "disabledPlugins",
-            disabledPlugins,
-        );
+        this.readit.storage.set("core", "disabledPlugins", disabledPlugins);
 
         plugin._ctx?._internalCleanup();
         plugin.onUnload?.(plugin._ctx);
@@ -95,14 +91,14 @@ export class Plugins {
     }
 
     enablePlugin(plugin: ReadItPlugin) {
-        let disabledPlugins = this.readit.storageSync.get<string[]>(
+        let disabledPlugins = this.readit.storage.get<string[]>(
             "core",
             "disabledPlugins",
             [],
         );
 
         disabledPlugins = disabledPlugins.filter((id) => id !== plugin.id);
-        this.readit.storageSync.set("core", "disabledPlugins", disabledPlugins);
+        this.readit.storage.set("core", "disabledPlugins", disabledPlugins);
 
         plugin.enabled = true;
         plugin.onLoad(plugin._ctx);
@@ -150,9 +146,9 @@ export class Plugins {
     }
 
     async addPlugin(url: string) {
-        const plugins = await this.readit.storage.get("core", "plugins", []);
+        const plugins = this.readit.storage.get("core", "plugins", []);
         plugins.push({ url });
-        await this.readit.storage.set("core", "plugins", plugins);
+        this.readit.storage.set("core", "plugins", plugins);
         alert("Plugin added! Page will now reload to apply changes.");
         window.location.reload();
     }

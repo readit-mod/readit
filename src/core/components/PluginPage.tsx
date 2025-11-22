@@ -30,7 +30,7 @@ export default function PluginPage({ plugin }: { plugin: ReadItPlugin }) {
             />
             <PluginSettings
                 settings={plugin.settings}
-                storage={plugin._ctx.storageSync}
+                storage={plugin._ctx.storage}
             />
         </div>
     );
