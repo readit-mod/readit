@@ -1,6 +1,5 @@
 import { PluginSettingsTile } from "@components/PluginSettingsTile";
 import { StorageAPI } from "@modules/plugins/api/types";
-import { PluginSetting } from "@lib/types";
 
 export function PluginSettings({
     settings,

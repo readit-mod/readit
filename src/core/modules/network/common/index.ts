@@ -1,4 +1,3 @@
-import { DownloadOptions } from "@lib/types";
 import { ReadIt } from "@modules/readit";
 
 export abstract class Network {

@@ -4,7 +4,6 @@ import { SettingsButton } from "@components/SettingsButton";
 import { Modal } from "@components/Modal";
 import { ErrorBoundary } from "@components/ErrorBoundary";
 import { ReadIt } from "@modules/readit";
-import { TileProps, SettingsPage, NavigationTileProps } from "@lib/types";
 
 export class Settings {
     modalContainer: HTMLElement;

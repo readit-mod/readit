@@ -1,4 +1,3 @@
-import { ReadItMeta } from "@lib/types";
 import { withNative } from "@lib/native";
 
 let meta: ReadItMeta;

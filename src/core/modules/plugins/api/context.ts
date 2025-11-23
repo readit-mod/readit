@@ -18,7 +18,6 @@ import {
     StoreAPI,
     PatcherAPI,
 } from "@modules/plugins/api/types";
-import { PluginSetting, ReadItPlugin } from "@lib/types";
 import { ReadIt } from "@modules/readit";
 
 export function createPostsAPI(internal: Posts): PostsAPI {

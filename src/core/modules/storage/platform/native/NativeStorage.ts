@@ -1,6 +1,5 @@
 import { ReadIt } from "@modules/readit";
 import { Storage } from "@modules/storage/common";
-import { StorageNative } from "@lib/types";
 
 export class NativeStorage extends Storage {
     private nativeStorage: StorageNative;

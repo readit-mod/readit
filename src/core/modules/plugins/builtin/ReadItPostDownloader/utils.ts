@@ -1,5 +1,4 @@
 import { readit } from "@modules/readit";
-import { PostMeta } from "@lib/types";
 
 export async function waitForShadowRoot(
     element: HTMLElement,

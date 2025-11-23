@@ -1,5 +1,4 @@
 import { ReadIt } from "@modules/readit";
-import { NamespacedStorage } from "@lib/types";
 
 export abstract class Storage {
     constructor(private readit: ReadIt) {}

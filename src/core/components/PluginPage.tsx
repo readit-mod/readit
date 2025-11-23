@@ -1,5 +1,4 @@
 import { useState } from "preact/hooks";
-import { ReadItPlugin } from "@lib/types";
 import { readit } from "@modules/readit";
 import { SwitchToggle } from "@components/SwitchToggle";
 import { PluginSettings } from "@components/PluginSettings";
