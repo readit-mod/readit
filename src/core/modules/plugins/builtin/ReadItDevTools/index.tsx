@@ -46,6 +46,13 @@ export default definePlugin({
             ...((await withNativeAsync(async () => {
                 return [
                     {
+                        title: "Open Devtools",
+                        description: "Open Chromium Devtools for debugging.",
+                        onClick() {
+                            window.ReadItNative.app.openDevtools();
+                        },
+                    },
+                    {
                         title: "Current Bundle Manifest URL",
                         description:
                             await window.ReadItNative.bundle.getBundleManifest(),

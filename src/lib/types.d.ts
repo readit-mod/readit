@@ -63,6 +63,7 @@ export type SettingsPage =
 
 type ReadItNative = {
     meta: ReadItMeta;
+    app: AppNative;
     storage: StorageNative;
     network: NetworkNative;
     logging: LogNative;
@@ -84,6 +85,10 @@ type StorageNative = {
 type NetworkNative = {
     downloadUrl: (options: DownloadOptions) => Promise<void>;
 };
+
+type AppNative = {
+    openDevtools: () => Promise<void>;
+}
 
 type DownloadOptions = {
     url: string;

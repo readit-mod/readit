@@ -210,6 +210,7 @@ export type PluginContext = {
 
 type ReadItNative = {
     meta: ReadItMeta;
+    app: AppNative;
     storage: StorageNative;
     network: NetworkNative;
     logging: LogNative;
@@ -259,6 +260,10 @@ type LogNative = {
 type StoreAPI = {
     get: <T>(id: string) => T;
 };
+
+type AppNative = {
+    openDevtools: () => Promise<void>;
+}
 
 type RequestOptions = {
     url: string;
