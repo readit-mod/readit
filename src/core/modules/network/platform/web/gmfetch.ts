@@ -17,7 +17,7 @@ async function makeResponse(
     status: number,
     statusText: string,
     headersRaw: string,
-    url: string
+    url: string,
 ): Promise<Response> {
     const arrayBuffer = await blob.arrayBuffer();
     const headers = parseHeaders(headersRaw);
@@ -29,7 +29,10 @@ async function makeResponse(
     });
 }
 
-export function GM_fetch(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response> {
+export function GM_fetch(
+    input: RequestInfo | URL,
+    init: RequestInit = {},
+): Promise<Response> {
     return new Promise((resolve, reject) => {
         const url = input.toString();
 
@@ -51,7 +54,7 @@ export function GM_fetch(input: RequestInfo | URL, init: RequestInit = {}): Prom
                     resp.status,
                     resp.statusText || "",
                     resp.responseHeaders,
-                    url
+                    url,
                 );
 
                 resolve(response);
@@ -62,7 +65,8 @@ export function GM_fetch(input: RequestInfo | URL, init: RequestInit = {}): Prom
 
         opts.onerror = () => reject(new TypeError("GM_fetch: Network error"));
         opts.ontimeout = () => reject(new TypeError("GM_fetch: Timeout"));
-        opts.onabort = () => reject(new DOMException("GM_fetch: Aborted", "AbortError"));
+        opts.onabort = () =>
+            reject(new DOMException("GM_fetch: Aborted", "AbortError"));
 
         GM_xmlhttpRequest(opts);
     });

@@ -21,10 +21,11 @@ export async function waitForShadowRoot(
 
 export async function downloadPost(post: PostMeta) {
     await readit.network.downloadUrl({
-        url: post.postType == "image"
-            ? post.url
-            : `${post.url}/CMAF_480.mp4?source=fallback`,
+        url:
+            post.postType == "image"
+                ? post.url
+                : `${post.url}/CMAF_480.mp4?source=fallback`,
         title: "Download Post",
-        name: `${post.id}.${post.postType == "image" ? "jpg" : "mp4"}`
+        name: `${post.id}.${post.postType == "image" ? "jpg" : "mp4"}`,
     });
 }

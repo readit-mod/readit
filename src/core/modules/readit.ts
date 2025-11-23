@@ -18,7 +18,7 @@ export class ReadIt {
     plugins: Plugins;
     settings: Settings;
     storage: Storage;
-    network: Network
+    network: Network;
     customcss: CustomCss;
     patcher: Patcher;
 

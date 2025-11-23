@@ -5,5 +5,5 @@ export async function downloadUrl(options: DownloadOptions) {
         url: options.url,
         name: options.name ?? "",
         saveAs: true,
-    })
+    });
 }

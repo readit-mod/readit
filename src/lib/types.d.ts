@@ -88,7 +88,7 @@ type NetworkNative = {
 
 type AppNative = {
     openDevtools: () => Promise<void>;
-}
+};
 
 type DownloadOptions = {
     url: string;

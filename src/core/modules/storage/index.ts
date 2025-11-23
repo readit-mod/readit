@@ -5,7 +5,5 @@ import { ReadIt } from "@modules/readit";
 import { isNative } from "@lib/native";
 
 export function createStorage(readit: ReadIt): StorageType {
-    return isNative() 
-        ? new NativeStorage(readit)
-        : new WebStorage(readit);
+    return isNative() ? new NativeStorage(readit) : new WebStorage(readit);
 }
