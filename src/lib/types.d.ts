@@ -1,6 +1,5 @@
 import { PluginContext } from "@modules/plugins/api/types";
 import { ReadIt } from "@modules/readit";
-import { FunctionalComponent, h } from "preact";
 
 export type ReadItPlugin = {
     name: string;
@@ -77,13 +76,27 @@ type Polyfill = {
 };
 
 type StorageNative = {
-    getValue: <T = unknown>(key: string, def?: T) => Promise<T>;
-    setValue: <T = unknown>(key: string, value: T) => Promise<boolean>;
-    getAll: () => Promise<Record<string, any>>;
+    getValue: <T = unknown>(key: string, def?: T) => T;
+    setValue: <T = unknown>(key: string, value: T) => boolean;
+    getAll: () => Record<string, any>;
 };
 
 type NetworkNative = {
-    xmlHttpRequest: (options: RequestOptions) => Promise<RequestReturn | null>;
+    downloadUrl: (options: DownloadOptions) => Promise<void>;
+};
+
+type DownloadOptions = {
+    url: string;
+    title?: string;
+    name?: string;
+    message?: string;
+    buttonLabel?: string;
+    filters?: DownloadFilter[];
+};
+
+type DownloadFilter = {
+    name: string;
+    extensions: string[];
 };
 
 type BundleNative = {
@@ -93,7 +106,7 @@ type BundleNative = {
 };
 
 type LogNative = {
-    log: (log: string) => Promise<void>;
+    log: (log: string) => void;
 };
 
 type RequestOptions = {
@@ -124,14 +137,6 @@ type NamespacedStorage = {
     delete(key: string): void;
     keys(): string[];
     clear(): void;
-};
-
-type NamespacedStorageAsync = {
-    get<T>(key: string, def: T): Promise<T>;
-    set<T>(key: string, val: T): Promise<void>;
-    delete(key: string): Promise<void>;
-    keys(): Promise<string[]>;
-    clear(): Promise<void>;
 };
 
 type PostMeta = {

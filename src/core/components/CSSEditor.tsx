@@ -16,8 +16,8 @@ export function CSSEditor() {
         let editor: EditorView | null = null;
         let disposed = false;
 
-        async function setupEditor() {
-            const code = await readit.storage.get("core", "customcss", "");
+        function setupEditor() {
+            const code = readit.storage.get("core", "customcss", "");
 
             if (disposed) return; // avoid setting up if unmounted early
 

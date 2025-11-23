@@ -6,7 +6,7 @@ export default definePlugin({
     id: "readit-adblock",
     version: "1.0.0",
     async onLoad({ logging, posts, settings, storage, cleanup }) {
-        let blocked = await storage.get<number>("ads-blocked", 0);
+        let blocked = storage.get<number>("ads-blocked", 0);
 
         let unsubLoadCallback = posts.registerLoadCallback(async (posts) => {
             posts.forEach((post) => {
@@ -15,7 +15,7 @@ export default definePlugin({
                     post.element.remove();
                 }
             });
-            await storage.set("ads-blocked", blocked);
+            storage.set("ads-blocked", blocked);
         });
         let removeTile = settings.registerSettingsTile({
             title: "Ads Blocked",

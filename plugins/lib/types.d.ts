@@ -121,10 +121,10 @@ export type LoggingAPI = {
 };
 
 export type StorageAPI = {
-    get<T = unknown>(key: string, defaultValue?: T): Promise<T>;
-    set<T = unknown>(key: string, value: T): Promise<void>;
-    delete(key: string): Promise<void>;
-    keys(): Promise<string[]>;
+    get<T = unknown>(key: string, defaultValue?: T): T;
+    set<T = unknown>(key: string, value: T): void;
+    delete(key: string): void;
+    keys(): string[];
 };
 
 export type CssAPI = {
@@ -201,7 +201,6 @@ export type PluginContext = {
     settings: SettingsAPI;
     posts: PostsAPI;
     storage: StorageAPI;
-    storageSync: StorageSyncAPI;
     store: StoreAPI;
     logging: LoggingAPI;
     customcss: CssAPI;
@@ -224,13 +223,27 @@ type Polyfill = {
 };
 
 type StorageNative = {
-    getValue: <T = unknown>(key: string, def?: T) => Promise<T>;
-    setValue: <T = unknown>(key: string, value: T) => Promise<boolean>;
-    getAll: () => Promise<Record<string, any>>;
+    getValue: <T = unknown>(key: string, def?: T) => T;
+    setValue: <T = unknown>(key: string, value: T) => boolean;
+    getAll: () => Record<string, any>;
 };
 
 type NetworkNative = {
-    xmlHttpRequest: (options: RequestOptions) => Promise<RequestReturn | null>;
+    downloadUrl: (options: DownloadOptions) => Promise<void>;
+};
+
+type DownloadOptions = {
+    url: string;
+    title?: string;
+    name?: string;
+    message?: string;
+    buttonLabel?: string;
+    filters?: DownloadFilter[];
+};
+
+type DownloadFilter = {
+    name: string;
+    extensions: string[];
 };
 
 type BundleNative = {
@@ -240,14 +253,7 @@ type BundleNative = {
 };
 
 type LogNative = {
-    log: (log: string) => Promise<void>;
-};
-
-type StorageSyncAPI = {
-    get<T>(key: string, defaultValue?: T): T;
-    set<T>(key: string, value: T): void;
-    delete(key: string): void;
-    keys(): string[];
+    log: (log: string) => void;
 };
 
 type StoreAPI = {

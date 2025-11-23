@@ -1,6 +1,6 @@
 import { Settings } from "@modules/settings";
 import { Posts } from "@modules/posts";
-import { Storage, StorageSync } from "@modules/storage/common";
+import { Storage } from "@modules/storage/common";
 import { Logging } from "@modules/logging";
 import { CustomCss } from "@modules/customcss";
 import { Patcher } from "@modules/patcher";
@@ -15,7 +15,6 @@ import {
     LoggingAPI,
     CssAPI,
     DomAPI,
-    StorageSyncAPI,
     StoreAPI,
     PatcherAPI,
 } from "@modules/plugins/api/types";
@@ -53,15 +52,8 @@ export function createStorageAPI(internal: Storage, id: string): StorageAPI {
     return internal.withNamespace(`plugin:${id}`);
 }
 
-export function createStorageSyncAPI(
-    internal: StorageSync,
-    id: string,
-): StorageSyncAPI {
-    return internal.withNamespace(`plugin:${id}`);
-}
-
 export function createStoreAPI(
-    internal: StorageSync,
+    internal: Storage,
     settings: PluginSetting[],
     id: string,
 ): StoreAPI {
@@ -112,8 +104,7 @@ export function createPluginContext(
         posts: createPostsAPI(deps.posts),
         settings: createSettingsAPI(deps.settings),
         storage: createStorageAPI(deps.storage, plugin.id),
-        storageSync: createStorageSyncAPI(deps.storageSync, plugin.id),
-        store: createStoreAPI(deps.storageSync, plugin.settings, plugin.id),
+        store: createStoreAPI(deps.storage, plugin.settings, plugin.id),
         logging: createLoggingAPI(deps.logging, plugin),
         customcss: createCssAPI(deps.customcss),
         dom: createDomAPI(),
