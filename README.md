@@ -1,22 +1,21 @@
 # ReadIt
 
-A lightweight, modern system that extends Reddit functionality with plugin support.
+A lightweight, modern system that extends Reddit’s functionality with plugin support.
 
-## Features
+## What is this?
 
-- Extends Reddit functionality with plugin support.
-- Features built in enhancements like ad and tracker blocking.
+This is an experimental rewrite of the original project, designed to be faster, cleaner, and far more flexible. It focuses on modern architecture and extensibility while keeping overhead to a minimum.
 
-## Installation
-### Web
-[Press this link to install ReadIt (requires a GM-compatible userscript manager)](https://github.com/readit-mod/readit/releases/latest/download/readit.user.js)
+### What’s different?
 
-### Desktop
-Use ReadIt Desktop, [visit this link for more details](https://github.com/readit-mod/readit-desktop).
+The original ReadIt relied heavily on raw DOM patching, which led to fragility and hard-to-maintain code. It also depended on external UI libraries, increasing bundle size and overall complexity.
 
-## Plugin Development
+This rewrite introduces a brand-new modules system. Instead of shipping its own UI framework, ReadIt patches Reddit’s module loader to access Lit directly from the source. This results in:
 
-- Fork [this repository](https://github.com/readit-mod/readit-plugin).
-- Clone and develop.
-- On push, builds will automatically be put in the builds branch.
-- To add and use the plugin, insert the repository's URL into ReadIt's "Add from GitHub Repo"
+- Significantly less bloat
+
+- A cleaner, more maintainable architecture
+
+- New and powerful plugin possibilities enabled by the modules system
+
+Overall, this version is lighter, more robust, and opens the door to features that weren’t practical in the original implementation.

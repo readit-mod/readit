@@ -1,0 +1,90 @@
+import { defineSafeElement } from "@api/elements";
+import { lazyComponentPatch } from "@api/patches/customElements";
+import { defineCorePlugin, PluginLifeCycle } from "@api/plugins";
+import { html, LitElement } from "@modules/common/lit";
+import type { TemplateResult } from "lit";
+
+function buildReadItItem() {
+    return class extends LitElement {
+        protected createRenderRoot(): HTMLElement | DocumentFragment {
+            return this;
+        }
+
+        protected render(): TemplateResult {
+            return html`
+                <li
+                    rpl=""
+                    class="relative list-none mt-0 "
+                    id="drafts-list-item"
+                    role="presentation"
+                >
+                    <a
+                        class="flex justify-between relative px-md gap-[0.5rem] text-secondary hover:text-secondary-hover active:bg-interactive-pressed hover:bg-neutral-background-hover hover:no-underline cursor-pointer  py-xs  -outline-offset-1   no-underline"
+                        @click="${() => {}}"
+                        style="padding-inline-end: 16px"
+                    >
+                        <span class="flex items-center gap-xs min-w-0 shrink">
+                            <span
+                                class="flex shrink-0 items-center justify-center h-xl w-xl text-20 leading-4"
+                                ><svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    height="20"
+                                    viewBox="0 -960 960 960"
+                                    width="20"
+                                    fill="currentColor"
+                                >
+                                    <path
+                                        d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"
+                                    />
+                                </svg>
+                            </span>
+
+                            <span
+                                class="flex flex-col justify-center min-w-0 shrink py-[var(--rem6)]"
+                            >
+                                <span class="text-body-2">ReadIt Version</span>
+                                <span
+                                    class="text-caption-1 text-secondary-weak"
+                                >
+                                    ${__READIT_VERSION__}
+                                </span>
+                            </span>
+                        </span>
+                        <span class="flex items-center shrink-0">
+                            <span
+                                class="flex items-center justify-center h-lg"
+                            ></span>
+                        </span>
+                    </a>
+                </li>
+            `;
+        }
+    };
+}
+
+export default defineCorePlugin({
+    name: "ReadIt Settings",
+    id: "readit.settings",
+    version: "1.0.0",
+    lifeCycle: PluginLifeCycle.OnInit,
+    start() {
+        /*
+            Right now, this only adds "ReadIt Version" to the user drawer,
+            but more is planned for this plugin.
+        */
+        defineSafeElement("readit-li", () => buildReadItItem());
+
+        lazyComponentPatch(
+            (partialLoader) =>
+                partialLoader.__src
+                    ?.toLowerCase()
+                    .trim()
+                    .includes("user-drawer-menu"),
+            (parsed) => {
+                const list = parsed.querySelector("ul");
+                if (list) list.appendChild(document.createElement("readit-li"));
+            },
+        );
+    },
+    stop() {},
+});

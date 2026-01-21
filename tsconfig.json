@@ -2,18 +2,14 @@
     "compilerOptions": {
         "baseUrl": ".",
         "paths": {
-            "@modules/*": ["./src/core/modules/*"],
-            "@components/*": ["./src/core/components/*"],
-            "@lib/*": ["./src/lib/*"],
-            "@utils": ["./src/core/utils.ts"],
-            "@/*": ["./*"]
+            "@api/*": ["./src/api/*"],
+            "@modules/*": ["./src/modules/*"]
         },
         "lib": ["ES2022", "DOM"],
-        "target": "es2015",
+        "target": "es2017",
         "module": "es2022",
         "moduleResolution": "bundler",
-        "jsx": "react-jsx",
-        "jsxImportSource": "preact",
+        "types": ["vite/client"],
     },
-    "include": ["src", "src/lib/types.d.ts"]
+    "include": ["src"],
 }
