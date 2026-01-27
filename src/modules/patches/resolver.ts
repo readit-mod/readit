@@ -1,16 +1,14 @@
-import { expose } from "@api/expose";
 import { createPatcher } from "@api/patcher";
 import { registry } from "@modules/loader/_internals/registry";
 import { InternalModule } from "@modules/types";
 
-export function installResolverPatch() {
+export function installResolverPatch(ModuleLoaderClass) {
     const patcher = createPatcher("ResolverPatch");
-    const modules = [];
 
     const PATCHED_SYMBOL = Symbol.for("readit_patched");
 
     patcher.after(
-        window.ShredditModuleLoader.prototype,
+        ModuleLoaderClass.prototype,
         "addModulePromise",
         (self, [id]) => {
             const module = self.moduleRegistry[id as string];
@@ -76,14 +74,4 @@ export function installResolverPatch() {
             };
         },
     );
-
-    patcher.after(
-        window.ShredditModuleLoader.prototype,
-        "_evaluateModule",
-        (self, args, ret) => {
-            modules.push(args[0]);
-        },
-    );
-
-    expose(modules, "readit.loaded");
 }

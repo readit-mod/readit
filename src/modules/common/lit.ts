@@ -9,6 +9,7 @@ import { filters as exportFilters } from "@modules/filters";
 import { startPluginsFromLifeCycle } from "@api/plugins/manager";
 import { PluginLifeCycle } from "@api/plugins";
 import { defineElements } from "@api/elements";
+import { FilterFn } from "@modules/types";
 
 type LitExports = {
     html: typeof import("lit").html;
@@ -22,9 +23,10 @@ type LitExports = {
     };
 };
 
-let lit: LitExports;
+let Lit: LitExports;
 
-export default lit;
+export default Lit;
+export let LitModuleID: string;
 
 export let html: typeof import("lit").html;
 export let LitElement: typeof import("lit").LitElement;
@@ -51,6 +53,8 @@ waitForModule(
         moduleFilters.byHasExports(true),
     ),
     (litMangled) => {
+        LitModuleID = litMangled.id;
+
         const resolvedLit: LitExports = mapMangledModule(litMangled, {
             html: chain.all(
                 // Rough orginisation of parameters (strings, ...values).
@@ -66,7 +70,7 @@ waitForModule(
             ),
             LitElement: exportFilters.byPrototypeKeys("render", "update"),
             render: chain.all(
-                exportFilters.byCode("_$litPart$", /\i.insertBefore/),
+                exportFilters.byCode("_$litPart$", /\i\.insertBefore/),
                 // (result, container, options)
                 exportFilters.byParameterCount(3),
             ),
@@ -77,16 +81,16 @@ waitForModule(
             nothing: (e) => e == Symbol.for("lit-nothing"),
         });
 
-        lit = {
+        Lit = {
             ...resolvedLit,
             mangled: litMangled.exports,
         };
 
-        ({ html, css, LitElement, noChange, nothing, render } = lit);
+        ({ html, css, LitElement, noChange, nothing, render } = Lit);
 
         startPluginsFromLifeCycle(PluginLifeCycle.LitReady);
         defineElements();
 
-        expose(lit, "readit.modules.common.lit");
+        expose(Lit, "readit.modules.common.lit");
     },
 );

@@ -1,4 +1,5 @@
 import { LiteralUnion } from "type-fest";
+import { expose } from "@api/expose";
 
 type KeyOfOrAny<P, T extends object> = P extends keyof T ? T[P] : any;
 
@@ -13,7 +14,8 @@ export function hookDefineProperty<
     const targetAsAny = target as any;
 
     if (property in target) {
-        return void cb(targetAsAny[property]);
+        targetAsAny[property] = cb(targetAsAny[property]);
+        return;
     }
 
     let value: any;
@@ -27,3 +29,5 @@ export function hookDefineProperty<
         enumerable: false,
     });
 }
+
+expose(hookDefineProperty, "readit.api.hookDefineProperty");

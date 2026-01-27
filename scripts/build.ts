@@ -43,7 +43,7 @@ const commonLibConfig: import("vite").LibraryOptions = {
     formats: ["iife"],
 };
 
-async function buildReadIt(mode: BuildMode = "userscript") {
+export async function buildReadIt(mode: BuildMode = "userscript") {
     const isBundle = mode == "bundle";
     const manifest = {
         version,
@@ -92,4 +92,6 @@ async function buildReadIt(mode: BuildMode = "userscript") {
     console.log(`Successfully built ${isBundle ? "bundle" : "userscript"}!`);
 }
 
-buildReadIt(process.argv[2] as BuildMode);
+if (require.main) {
+    buildReadIt(process.argv[2] as BuildMode);
+}

@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsx scripts/build.ts"
+    "build": "tsx scripts/build.ts",
+    "serve": "tsx scripts/serve.ts"
   },
   "keywords": [],
   "author": "",
@@ -19,7 +20,10 @@
     "typescript": "^5.9.3"
   },
   "devDependencies": {
+    "@types/http-server": "^0.12.4",
     "@types/node": "^24.10.1",
+    "chokidar": "^5.0.0",
+    "http-server": "^14.1.1",
     "prettier": "^3.7.3",
     "tsx": "^4.21.0",
     "vite": "^7.2.6"

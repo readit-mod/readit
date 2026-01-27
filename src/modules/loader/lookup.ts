@@ -75,6 +75,11 @@ export const filters = {
             (Object.keys(module.exports).length != 0) == hasExports;
     },
 
+    byDependecies(...deps: string[]): FilterFn {
+        return (module: InternalModule) =>
+            deps.every((d) => module.deps.includes(d));
+    },
+
     byAsyncFactory(async: boolean): FilterFn {
         return (module: InternalModule) => module.isAsync == async;
     },

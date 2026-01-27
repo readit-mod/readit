@@ -29,6 +29,10 @@ class InternalModuleRegistry {
     addWaiter(filter: FilterFn, cb: (module: InternalModule) => void) {
         this._moduleWaitersMap.set(filter, cb);
     }
+
+    require(id: string): any {
+        return this.getModuleById(id)?.exports ?? {};
+    }
 }
 
 export const registry = new InternalModuleRegistry();
