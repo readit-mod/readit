@@ -1,5 +1,5 @@
-import { expose } from "@api/expose";
-import { normaliseMatch } from "@api/regexp";
+import { expose } from "./expose";
+import { normaliseMatch } from "./regexp";
 
 export const chain = {
     all(...factories: Fn[]): Fn {

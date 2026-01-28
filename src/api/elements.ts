@@ -1,3 +1,5 @@
+import { expose } from "./expose";
+
 const elementFactoryMap = new Map<string, () => LitElementCtor>();
 
 /**
@@ -16,3 +18,56 @@ export function defineElements() {
         customElements.define(name, element);
     }
 }
+
+type ElementFilter = (element: Element) => boolean;
+
+export function findInElementTree(
+    element: Element,
+    filter: ElementFilter,
+): Element {
+    const walker = document.createTreeWalker(element, NodeFilter.SHOW_ELEMENT, {
+        acceptNode(node) {
+            return filter(node as Element)
+                ? NodeFilter.FILTER_ACCEPT
+                : NodeFilter.FILTER_SKIP;
+        },
+    });
+
+    return walker.nextNode() as Element;
+}
+
+export function findChild(
+    element: Element,
+    childFilter: ElementFilter,
+): Element {
+    return Array.from(element.children).find((c) => childFilter(c));
+}
+
+export const filters = {
+    byTagName(tag: string): ElementFilter {
+        return (element) => element.tagName.toLowerCase() == tag;
+    },
+
+    byClasses(...classes: string[]): ElementFilter {
+        return (element) => classes.every((c) => element.classList.contains(c));
+    },
+
+    byAttribute(attr: string, value?: string): ElementFilter {
+        return (element) =>
+            value === undefined
+                ? element.hasAttribute(attr)
+                : element.getAttribute(attr) == value;
+    },
+
+    byChild(childFilter: ElementFilter): ElementFilter {
+        return (element) => Boolean(findChild(element, childFilter));
+    },
+};
+
+expose(
+    {
+        findInElementTree,
+        filters,
+    },
+    "readit.api.elements",
+);

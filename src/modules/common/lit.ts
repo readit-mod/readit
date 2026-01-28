@@ -1,11 +1,11 @@
 import { expose } from "@api/expose";
-import { chain } from "@modules/filters";
+import { chain } from "@api/filters";
 import { mapMangledModule } from "@modules/utils";
 import {
     filters as moduleFilters,
     waitForModule,
 } from "@modules/loader/lookup";
-import { filters as exportFilters } from "@modules/filters";
+import { filters as exportFilters } from "@api/filters";
 import { startPluginsFromLifeCycle } from "@api/plugins/manager";
 import { PluginLifeCycle } from "@api/plugins";
 import { defineElements } from "@api/elements";

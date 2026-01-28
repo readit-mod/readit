@@ -1,5 +1,5 @@
 import { expose } from "@api/expose";
-import { chain } from "@modules/filters";
+import { chain } from "@api/filters";
 import { filters, waitForModule } from "@modules/loader/lookup";
 
 export let Matrix: Partial<typeof import("matrix-js-sdk")>;

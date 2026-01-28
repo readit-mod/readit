@@ -1,4 +1,10 @@
-import { defineSafeElement } from "@api/elements";
+import {
+    defineSafeElement,
+    findInElementTree,
+    filters as elementFilters,
+    findChild,
+} from "@api/elements";
+import { chain } from "@api/filters";
 import { lazyComponentPatch } from "@api/patches/customElements";
 import { defineCorePlugin, PluginLifeCycle } from "@api/plugins";
 import { html, LitElement } from "@modules/common/lit";
@@ -81,8 +87,43 @@ export default defineCorePlugin({
                     .trim()
                     .includes("user-drawer-menu"),
             (parsed) => {
-                const list = parsed.querySelector("ul");
-                if (list) list.appendChild(document.createElement("readit-li"));
+                let patched = false;
+
+                function fallback() {
+                    const list = parsed.querySelector("ul");
+                    if (list && !patched)
+                        list.appendChild(document.createElement("readit-li"));
+                    patched = true;
+                }
+
+                try {
+                    const profileItemFilter = chain.all(
+                        elementFilters.byTagName("faceplate-tracker"),
+                        elementFilters.byAttribute("noun", "profile"),
+                    );
+
+                    const targetSection = findInElementTree(
+                        parsed.body,
+                        chain.all(
+                            elementFilters.byTagName("ul"),
+                            elementFilters.byChild(profileItemFilter),
+                        ),
+                    );
+
+                    if (!targetSection) fallback();
+
+                    const profileItem = findChild(
+                        targetSection,
+                        profileItemFilter,
+                    );
+
+                    if (!profileItem) fallback();
+
+                    profileItem &&
+                        profileItem.after(document.createElement("readit-li"));
+                } catch {
+                    fallback();
+                }
             },
         );
     },
