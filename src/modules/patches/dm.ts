@@ -21,7 +21,7 @@ export function installDMPatch(ModuleLoaderClass) {
         timer = setTimeout(() => {
             if (!fired) {
                 fireModulesReady();
-                fired = false;
+                fired = true;
             }
         }, 750);
     });
