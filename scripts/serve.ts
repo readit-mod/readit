@@ -36,8 +36,6 @@ async function serveReadIt(mode: BuildMode) {
     const port = await getAvailablePort(8080, process.argv[3]);
     console.log(`Serving ReadIt on port ${port}`);
 
-    await buildReadIt(mode);
-
     const server = httpServer.createServer({
         root: path.resolve(root, "dist"),
     });
