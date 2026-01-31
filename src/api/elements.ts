@@ -11,6 +11,25 @@ export function defineSafeElement(name: string, factory: () => LitElementCtor) {
     if (!elementFactoryMap.has(name)) elementFactoryMap.set(name, factory);
 }
 
+export function waitForElement(filter: () => Element | null): Promise<Element> {
+    return new Promise((resolve) => {
+        if (filter()) resolve(filter());
+
+        const observer = new MutationObserver(() => {
+            const element = filter();
+            if (element) {
+                observer.disconnect();
+                resolve(element);
+            }
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true,
+        });
+    });
+}
+
 export function defineElements() {
     for (const [name, elementFactory] of elementFactoryMap) {
         const element = elementFactory();

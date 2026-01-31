@@ -27,6 +27,7 @@ const common: import("vite").InlineConfig = {
         alias: {
             "@api": resolve(root, "./src/api"),
             "@modules": resolve(root, "./src/modules"),
+            "@": resolve(root, "./src"),
         },
     },
     plugins: [minifyHTML()],

@@ -11,3 +11,9 @@ export function splitArray<T>(
 
     return [pass, fail];
 }
+
+export function isArrayEqual(a: any[], b: any[]): boolean {
+    if (a.length !== b.length) return false;
+
+    return a.every((value) => b.includes(value));
+}

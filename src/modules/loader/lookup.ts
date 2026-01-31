@@ -2,6 +2,7 @@ import { FilterFn, InternalModule } from "@modules/types";
 import { registry } from "./_internals/registry";
 import { normaliseMatch } from "@api/regexp";
 import { expose } from "@api/expose";
+import { isArrayEqual } from "@api/utils/array";
 
 export const cache = new Map<string, string | null>();
 export const multiCache = new Map<string, string[]>();
@@ -75,9 +76,11 @@ export const filters = {
             (Object.keys(module.exports).length != 0) == hasExports;
     },
 
-    byDependecies(...deps: string[]): FilterFn {
+    byDependecies(...deps: string[] | [string[]]): FilterFn {
         return (module: InternalModule) =>
-            deps.every((d) => module.deps.includes(d));
+            deps.length == 1 && Array.isArray(deps[0])
+                ? isArrayEqual(module.deps, deps[0])
+                : deps.every((d) => module.deps.includes(d as string));
     },
 
     byAsyncFactory(async: boolean): FilterFn {
