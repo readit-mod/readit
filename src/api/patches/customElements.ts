@@ -97,11 +97,12 @@ export async function initLazyPatches() {
     );
 }
 
+export const filters = {
+    bySrcIncludes: (text: string) => (instance: FaceplatePartialInstance) =>
+        instance.__src.toLowerCase().includes(text.toLowerCase()),
+};
+
 expose(
-    componentRenderPatch,
-    "readit.api.patches.customElements.componentRenderPatch",
-);
-expose(
-    lazyComponentPatch,
-    "readit.api.patches.customElements.lazyComponentPatch",
+    { componentRenderPatch, lazyComponentPatch, filters },
+    "readit.api.patches.customElements",
 );

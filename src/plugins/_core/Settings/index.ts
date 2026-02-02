@@ -5,7 +5,10 @@ import {
     findChild,
 } from "@api/elements";
 import { chain } from "@api/filters";
-import { lazyComponentPatch } from "@api/patches/customElements";
+import {
+    filters as lazyComponentFilters,
+    lazyComponentPatch,
+} from "@api/patches/customElements";
 import { defineCorePlugin, PluginLifeCycle } from "@api/plugins";
 import { html, LitElement } from "@modules/common/lit";
 import type { TemplateResult } from "lit";
@@ -77,11 +80,7 @@ export default defineCorePlugin({
         defineSafeElement("readit-li", () => buildReadItItem());
 
         lazyComponentPatch(
-            (partialLoader) =>
-                partialLoader.__src
-                    ?.toLowerCase()
-                    .trim()
-                    .includes("user-drawer-menu"),
+            lazyComponentFilters.bySrcIncludes("user-drawer-menu"),
             (parsed) => {
                 const li = document.createElement("readit-li");
 
@@ -108,6 +107,30 @@ export default defineCorePlugin({
                     const list = parsed.querySelector("ul");
                     list?.appendChild(li);
                 }
+            },
+        );
+
+        lazyComponentPatch(
+            lazyComponentFilters.bySrcIncludes("left-nav"),
+            (parsed) => {
+                const info = findInElementTree(
+                    parsed.body,
+                    chain.all(
+                        elementFilters.byTagName("a"),
+                        elementFilters.byAttribute(
+                            "href",
+                            "https://redditinc.com",
+                        ),
+                    ),
+                );
+
+                const readitInfo = info.cloneNode(true) as Element;
+                readitInfo.setAttribute("href", "#");
+                readitInfo.addEventListener("click", (e) => e.preventDefault());
+                readitInfo.classList.add("pointer-events-none");
+                readitInfo.textContent = `ReadIt Version: ${__READIT_VERSION__}`;
+
+                info?.before(readitInfo);
             },
         );
     },
