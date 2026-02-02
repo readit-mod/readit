@@ -74,10 +74,6 @@ export default defineCorePlugin({
     version: "1.0.0",
     lifeCycle: PluginLifeCycle.OnInit,
     start() {
-        /*
-            Right now, this only adds "ReadIt Version" to the user drawer,
-            but more is planned for this plugin.
-        */
         defineSafeElement("readit-li", () => buildReadItItem());
 
         lazyComponentPatch(
@@ -87,42 +83,30 @@ export default defineCorePlugin({
                     .trim()
                     .includes("user-drawer-menu"),
             (parsed) => {
-                let patched = false;
+                const li = document.createElement("readit-li");
 
-                function fallback() {
+                const profileItemFilter = chain.all(
+                    elementFilters.byTagName("faceplate-tracker"),
+                    elementFilters.byAttribute("noun", "profile"),
+                );
+
+                const targetSection = findInElementTree(
+                    parsed.body,
+                    chain.all(
+                        elementFilters.byTagName("ul"),
+                        elementFilters.byChild(profileItemFilter),
+                    ),
+                );
+
+                const profileItem =
+                    targetSection &&
+                    findChild(targetSection, profileItemFilter);
+
+                if (profileItem) {
+                    profileItem.after(li);
+                } else {
                     const list = parsed.querySelector("ul");
-                    if (list && !patched)
-                        list.appendChild(document.createElement("readit-li"));
-                    patched = true;
-                }
-
-                try {
-                    const profileItemFilter = chain.all(
-                        elementFilters.byTagName("faceplate-tracker"),
-                        elementFilters.byAttribute("noun", "profile"),
-                    );
-
-                    const targetSection = findInElementTree(
-                        parsed.body,
-                        chain.all(
-                            elementFilters.byTagName("ul"),
-                            elementFilters.byChild(profileItemFilter),
-                        ),
-                    );
-
-                    if (!targetSection) fallback();
-
-                    const profileItem = findChild(
-                        targetSection,
-                        profileItemFilter,
-                    );
-
-                    if (!profileItem) fallback();
-
-                    profileItem &&
-                        profileItem.after(document.createElement("readit-li"));
-                } catch {
-                    fallback();
+                    list?.appendChild(li);
                 }
             },
         );
