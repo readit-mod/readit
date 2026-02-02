@@ -76,6 +76,7 @@ export async function initLazyPatches() {
         FaceplatePartial.prototype,
         "_loadContent",
         async (self, _, resultPromise) => {
+            if (resultPromise === void 0) return;
             const result = await resultPromise;
 
             for (const [filter, callback] of lazyComponentPatches.entries()) {
@@ -100,6 +101,15 @@ export async function initLazyPatches() {
 export const filters = {
     bySrcIncludes: (text: string) => (instance: FaceplatePartialInstance) =>
         instance.__src.toLowerCase().includes(text.toLowerCase()),
+
+    byName(name: string) {
+        return (instance: FaceplatePartialInstance) => {
+            const [_, instanceName] =
+                /^([^_]+)_/.exec(instance.getAttribute("name")) || [];
+
+            return instanceName === name;
+        };
+    },
 };
 
 expose(

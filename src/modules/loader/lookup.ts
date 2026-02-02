@@ -75,7 +75,11 @@ export const filters = {
         return (module: InternalModule) =>
             (Object.keys(module.exports).length != 0) == hasExports;
     },
-
+    /**
+     * Filters modules by their dependencies.
+     * @param deps Either a list of included dependencies, or a single array which matches the full list of dependencied.
+     * @returns The filter function.
+     */
     byDependecies(...deps: string[] | [string[]]): FilterFn {
         return (module: InternalModule) =>
             deps.length == 1 && Array.isArray(deps[0])

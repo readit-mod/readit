@@ -80,7 +80,7 @@ export default defineCorePlugin({
         defineSafeElement("readit-li", () => buildReadItItem());
 
         lazyComponentPatch(
-            lazyComponentFilters.bySrcIncludes("user-drawer-menu"),
+            lazyComponentFilters.byName("UserDrawerMenu"),
             (parsed) => {
                 const li = document.createElement("readit-li");
 
@@ -111,7 +111,7 @@ export default defineCorePlugin({
         );
 
         lazyComponentPatch(
-            lazyComponentFilters.bySrcIncludes("left-nav"),
+            lazyComponentFilters.byName("CommonLeftNav"),
             (parsed) => {
                 const info = findInElementTree(
                     parsed.body,
