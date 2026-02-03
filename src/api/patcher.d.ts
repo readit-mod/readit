@@ -1,23 +1,32 @@
 import { PatchType } from "./patcher";
 
-export type BeforeCallback<F extends Fn> = (
-    context?: any,
-    args?: Parameters<F>,
-    original?: F,
+export type BeforeCallback<
+    Parent extends Record<string, Fn>,
+    F extends keyof Parent,
+> = (
+    context?: Parent,
+    args?: Parameters<Parent[F]>,
+    original?: Parent[F],
     unpatch?: () => void,
-) => Parameters<F> | void;
-export type InsteadCallback<F extends Fn> = (
-    context?: any,
-    args?: Parameters<F>,
-    original?: F,
+) => Parameters<Parent[F]> | void;
+export type InsteadCallback<
+    Parent extends Record<string, Fn>,
+    F extends keyof Parent,
+> = (
+    context?: Parent,
+    args?: Parameters<Parent[F]>,
+    original?: Parent[F],
     unpatch?: () => void,
-) => ReturnType<F> | void;
-export type AfterCallback<F extends Fn> = (
-    context?: any,
-    args?: Parameters<F>,
-    result?: ReturnType<F>,
+) => ReturnType<Parent[F]> | void;
+export type AfterCallback<
+    Parent extends Record<string, Fn>,
+    F extends keyof Parent,
+> = (
+    context?: Parent,
+    args?: Parameters<Parent[F]>,
+    result?: ReturnType<Parent[F]>,
     unpatch?: () => void,
-) => ReturnType<F> | void;
+) => ReturnType<Parent[F]> | void;
 
 export interface PatchOverwrite {
     mdl: Record<string, any> | Function;

@@ -8,6 +8,7 @@ declare type LitElementCtor = CustomElementConstructor &
 declare type PropOf<M> = {
     [K in keyof M]: M[K] extends Fn ? Extract<K, string> : never;
 }[keyof M];
+
 declare type Constructor<T extends any = any> = new () => T;
 
 declare type CodeFilter = string | RegExp;

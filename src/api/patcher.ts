@@ -19,7 +19,7 @@ export function before<M extends Record<P, Fn>, P extends PropOf<M>>(
     caller: string,
     mdl: M,
     func: P,
-    callback: BeforeCallback<M[P]>,
+    callback: BeforeCallback<M, P>,
     once: boolean = false,
 ): () => void {
     return patch(caller, mdl, func, callback, PatchType.Before, once);
@@ -29,7 +29,7 @@ export function instead<M extends Record<P, Fn>, P extends PropOf<M>>(
     caller: string,
     mdl: M,
     func: P,
-    callback: InsteadCallback<M[P]>,
+    callback: InsteadCallback<M, P>,
     once: boolean = false,
 ): () => void {
     return patch(caller, mdl, func, callback, PatchType.Instead, once);
@@ -39,7 +39,7 @@ export function after<M extends Record<P, Fn>, P extends PropOf<M>>(
     caller: string,
     mdl: M,
     func: P,
-    callback: AfterCallback<M[P]>,
+    callback: AfterCallback<M, P>,
     once: boolean = false,
 ): () => void {
     return patch(caller, mdl, func, callback, PatchType.After, once);
@@ -52,7 +52,7 @@ export function createPatcher(name: string) {
         before<M extends Record<P, Fn>, P extends PropOf<M>>(
             mdl: M,
             func: P,
-            callback: BeforeCallback<M[P]>,
+            callback: BeforeCallback<M, P>,
             once: boolean = false,
         ) {
             return before(name, mdl, func, callback, once);
@@ -60,7 +60,7 @@ export function createPatcher(name: string) {
         after<M extends Record<P, Fn>, P extends PropOf<M>>(
             mdl: M,
             func: P,
-            callback: AfterCallback<M[P]>,
+            callback: AfterCallback<M, P>,
             once: boolean = false,
         ) {
             return after(name, mdl, func, callback, once);
@@ -68,7 +68,7 @@ export function createPatcher(name: string) {
         instead<M extends Record<P, Fn>, P extends PropOf<M>>(
             mdl: M,
             func: P,
-            callback: InsteadCallback<M[P]>,
+            callback: InsteadCallback<M, P>,
             once: boolean = false,
         ) {
             return instead(name, mdl, func, callback, once);
@@ -240,11 +240,14 @@ function get(mdl: Record<string, any> | Function, func: string) {
     return push(mdl, func);
 }
 
-function patch<F extends Fn>(
+function patch<Parent extends Record<string, Fn>, F extends keyof Parent>(
     caller: string,
-    mdl: Record<string, any> | Function,
-    func: string,
-    callback: BeforeCallback<F> | InsteadCallback<F> | AfterCallback<F>,
+    mdl: Parent,
+    func: F,
+    callback:
+        | BeforeCallback<Parent, F>
+        | InsteadCallback<Parent, F>
+        | AfterCallback<Parent, F>,
     type: PatchType = PatchType.After,
     once = false,
 ): () => void {

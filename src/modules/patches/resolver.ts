@@ -1,8 +1,10 @@
 import { createPatcher } from "@api/patcher";
 import { registry } from "@modules/loader/_internals/registry";
-import { InternalModule } from "@modules/types";
+import { InternalModule, SML } from "@modules/types";
 
-export function installResolverPatch(ModuleLoaderClass) {
+export function installResolverPatch(
+    ModuleLoaderClass: typeof SML.ModuleLoader,
+) {
     const patcher = createPatcher("ResolverPatch");
 
     const PATCHED_SYMBOL = Symbol.for("readit_patched");
@@ -11,14 +13,10 @@ export function installResolverPatch(ModuleLoaderClass) {
         ModuleLoaderClass.prototype,
         "addModulePromise",
         (self, [id]) => {
-            const module = self.moduleRegistry[id as string];
+            const module = self.moduleRegistry[id];
             if (!module || module[PATCHED_SYMBOL]) return;
 
-            const originalResolver = module.resolver;
-
-            module.resolver = () => {
-                originalResolver?.();
-
+            patcher.after(module, "resolver", (module) => {
                 async function register(exports: Promise<any>) {
                     const meta: InternalModule = {
                         id: id as string,
@@ -71,7 +69,7 @@ export function installResolverPatch(ModuleLoaderClass) {
                 });
 
                 module[PATCHED_SYMBOL] = true;
-            };
+            });
         },
     );
 }
