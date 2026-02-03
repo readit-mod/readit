@@ -77,62 +77,65 @@ export default defineCorePlugin({
     version: "1.0.0",
     lifeCycle: PluginLifeCycle.OnInit,
     start() {
-        defineSafeElement("readit-li", () => buildReadItItem());
-
-        lazyComponentPatch(
-            lazyComponentFilters.byName("UserDrawerMenu"),
-            (parsed) => {
-                const li = document.createElement("readit-li");
-
-                const profileItemFilter = chain.all(
-                    elementFilters.byTagName("faceplate-tracker"),
-                    elementFilters.byAttribute("noun", "profile"),
-                );
-
-                const targetSection = findInElementTree(
-                    parsed.body,
-                    chain.all(
-                        elementFilters.byTagName("ul"),
-                        elementFilters.byChild(profileItemFilter),
-                    ),
-                );
-
-                const profileItem =
-                    targetSection &&
-                    findChild(targetSection, profileItemFilter);
-
-                if (profileItem) {
-                    profileItem.after(li);
-                } else {
-                    const list = parsed.querySelector("ul");
-                    list?.appendChild(li);
-                }
-            },
-        );
-
-        lazyComponentPatch(
-            lazyComponentFilters.byName("CommonLeftNav"),
-            (parsed) => {
-                const info = findInElementTree(
-                    parsed.body,
-                    chain.all(
-                        elementFilters.byTagName("a"),
-                        elementFilters.byAttribute(
-                            "href",
-                            "https://redditinc.com",
-                        ),
-                    ),
-                );
-
-                const readitInfo = info.cloneNode(true) as Element;
-                readitInfo.setAttribute("href", "#");
-                readitInfo.addEventListener("click", (e) => e.preventDefault());
-                readitInfo.classList.add("pointer-events-none");
-                readitInfo.textContent = `ReadIt Version: ${__READIT_VERSION__}`;
-
-                info?.before(readitInfo);
-            },
-        );
+        patchUserDrawer();
+        patchSidebar();
     },
     stop() {},
 });
+
+function patchUserDrawer() {
+    defineSafeElement("readit-li", () => buildReadItItem());
+
+    lazyComponentPatch(
+        lazyComponentFilters.byName("UserDrawerMenu"),
+        (parsed) => {
+            const li = document.createElement("readit-li");
+
+            const profileItemFilter = chain.all(
+                elementFilters.byTagName("faceplate-tracker"),
+                elementFilters.byAttribute("noun", "profile"),
+            );
+
+            const targetSection = findInElementTree(
+                parsed.body,
+                chain.all(
+                    elementFilters.byTagName("ul"),
+                    elementFilters.byChild(profileItemFilter),
+                ),
+            );
+
+            const profileItem =
+                targetSection && findChild(targetSection, profileItemFilter);
+
+            if (profileItem) {
+                profileItem.after(li);
+            } else {
+                const list = parsed.querySelector("ul");
+                list?.appendChild(li);
+            }
+        },
+    );
+}
+
+function patchSidebar() {
+    lazyComponentPatch(
+        lazyComponentFilters.byName("CommonLeftNav"),
+        (parsed) => {
+            const info = findInElementTree(
+                parsed.body,
+                chain.all(
+                    elementFilters.byTagName("a"),
+                    elementFilters.byAttribute("href", "https://redditinc.com"),
+                ),
+            );
+
+            const readitInfo = info.cloneNode(true) as Element;
+            readitInfo.setAttribute("href", "#");
+            readitInfo.addEventListener("click", (e) => e.preventDefault());
+            readitInfo.classList.add("pointer-events-none");
+            readitInfo.textContent = `ReadIt Version: ${__READIT_VERSION__}`;
+
+            info?.before(readitInfo);
+        },
+    );
+}
