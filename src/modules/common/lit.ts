@@ -9,10 +9,10 @@ import { filters as exportFilters } from "@api/filters";
 import { startPluginsFromLifeCycle } from "@api/plugins/manager";
 import { PluginLifeCycle } from "@api/plugins";
 import { defineElements } from "@api/elements";
-import { FilterFn } from "@modules/types";
 
 type LitExports = {
     html: typeof import("lit").html;
+    svg: typeof import("lit").svg;
     LitElement: typeof import("lit").LitElement;
     css: typeof import("lit").css;
     noChange: typeof import("lit").noChange;
@@ -29,18 +29,28 @@ export default Lit;
 export let LitModuleID: string;
 
 export let html: typeof import("lit").html;
+export let svg: typeof import("lit").svg;
 export let LitElement: typeof import("lit").LitElement;
 export let css: typeof import("lit").css;
 export let noChange: typeof import("lit").noChange;
 export let nothing: typeof import("lit").nothing;
 export let render: typeof import("lit").render;
 
+function byLitType(type: number): (fn: Fn) => boolean {
+    return (e) => {
+        try {
+            return (e()._$litType$ ?? 0) == type;
+        } catch {
+            return false;
+        }
+    };
+}
+
 waitForModule(
     chain.all(
         moduleFilters.byCode(
             // Lit's "nothing" or "noChange" symbols.
             /Symbol\.for\("lit-(?:noChange|nothing)"\)/,
-            // Idk but "$lit$" is in the factory.
             "$lit$",
         ),
         /*
@@ -57,24 +67,18 @@ waitForModule(
 
         const resolvedLit: LitExports = mapMangledModule(litMangled, {
             html: chain.all(
-                // Rough orginisation of parameters (strings, ...values).
                 exportFilters.byCode(/\(\i,(\s?)+\.{3}\i\)/),
-                // Make sure to get the html export and not the svg.
-                (e) => {
-                    try {
-                        return (e()._$litType$ ?? 0) == 1;
-                    } catch {
-                        return false;
-                    }
-                },
+                byLitType(1),
+            ),
+            svg: chain.all(
+                exportFilters.byCode(/\(\i,(\s?)+\.{3}\i\)/),
+                byLitType(2),
             ),
             LitElement: exportFilters.byPrototypeKeys("render", "update"),
             render: chain.all(
                 exportFilters.byCode("_$litPart$", /\i\.insertBefore/),
-                // (result, container, options)
                 exportFilters.byParameterCount(3),
             ),
-            // The string used in an error in the css export.
             css: exportFilters.byCode("Value passed to 'css'"),
             // We could directly use Symbol.for(...) but where's the fun in that?
             noChange: (e) => e == Symbol.for("lit-noChange"),
@@ -86,7 +90,7 @@ waitForModule(
             mangled: litMangled.exports,
         };
 
-        ({ html, css, LitElement, noChange, nothing, render } = Lit);
+        ({ html, svg, css, LitElement, noChange, nothing, render } = Lit);
 
         startPluginsFromLifeCycle(PluginLifeCycle.LitReady);
         defineElements();
