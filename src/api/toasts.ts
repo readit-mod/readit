@@ -8,21 +8,21 @@ type Toast = {
     duration?: number;
 };
 
-type ToastController = HTMLElement & {
+export type AlertController = HTMLElement & {
     triggerToast: (toast: {
         level: number;
         message: string;
         meta?: { duration?: number };
     }) => void;
+    toaster?: HTMLElement;
 };
 
 const toastQueue: Toast[] = [];
 let toastsPushed = false;
-let toastController: ToastController;
+let alertController: AlertController;
 
 function sendToast(toast: Toast) {
-    toastController.triggerToast({
-        // Level has no effect on toasts (only banners), but we set it as it's expected.
+    alertController.triggerToast({
         level: ToastLevels[toast.level ?? "info"],
         message: toast.message,
         ...(toast.duration && {
@@ -37,7 +37,7 @@ export function pushQueuedToasts() {
     if (toastsPushed) return;
     toastsPushed = true;
 
-    toastController = document.querySelector("alert-controller");
+    alertController = document.querySelector("alert-controller");
     for (const toast of toastQueue) {
         sendToast(toast);
     }

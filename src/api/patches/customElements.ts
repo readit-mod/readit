@@ -2,7 +2,7 @@ import { expose } from "@api/expose";
 import { createPatcher } from "@api/patcher";
 import { LitElement } from "lit";
 
-type PatchCallback = (self: any, args: any[], ret: any) => any;
+type PatchCallback = (self: LitElement, args: any[], ret: any) => any;
 
 interface FaceplatePartialInstance extends HTMLElement {
     __src: string;
