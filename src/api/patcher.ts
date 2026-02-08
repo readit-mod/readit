@@ -1,3 +1,4 @@
+import { logger } from "./logger";
 import {
     AfterCallback,
     BeforeCallback,
@@ -139,7 +140,12 @@ function override(patch: PatchOverwrite) {
                 );
                 if (Array.isArray(temp)) args = temp;
                 if (instance.once) instance.unpatch();
-            } catch (error) {}
+            } catch (error) {
+                logger.error(
+                    `Before patch failed for ${instance.caller} on method ${patch.func}.`,
+                    error,
+                );
+            }
         }
 
         const instead = [...patch.patches.instead];
@@ -165,7 +171,12 @@ function override(patch: PatchOverwrite) {
                     );
                     if (typeof ret !== "undefined") res = ret;
                     if (instance.once) instance.unpatch();
-                } catch (error) {}
+                } catch (error) {
+                    logger.error(
+                        `Instead patch failed for ${instance.caller} on method ${patch.func}.`,
+                        error,
+                    );
+                }
             }
         }
 
@@ -178,7 +189,12 @@ function override(patch: PatchOverwrite) {
                 const ret = instance.callback(this, args, res, patch.unpatch);
                 if (typeof ret !== "undefined") res = ret;
                 if (instance.once) instance.unpatch();
-            } catch (error) {}
+            } catch (error) {
+                logger.error(
+                    `After patch failed for ${instance.caller} on method ${patch.func}.`,
+                    error,
+                );
+            }
         }
 
         return res;
