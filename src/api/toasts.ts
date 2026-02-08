@@ -1,4 +1,3 @@
-import { ToastLevels } from "@/plugins/_core/Toasts";
 import { expose } from "./expose";
 
 type ToastLevel = "info" | "success" | "warning" | "error";
@@ -7,6 +6,14 @@ type Toast = {
     message: string;
     duration?: number;
 };
+
+// Directly from Reddit's exports, we only use these out of the 10.
+export enum ToastLevels {
+    error = 3,
+    warning = 4,
+    info = 6,
+    success = 7,
+}
 
 export type AlertController = HTMLElement & {
     triggerToast: (toast: {

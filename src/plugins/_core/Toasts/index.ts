@@ -1,21 +1,11 @@
+import {
+    filters as elementFilters,
+    findInElementTree,
+    waitForElement,
+} from "@api/elements";
 import { chain } from "@api/filters";
 import { defineCorePlugin, PluginLifeCycle } from "@api/plugins";
-import { LitModuleID } from "@modules/common/lit";
-import { filters, find } from "@modules/loader/lookup";
-import { filters as exportFilters } from "@api/filters";
-import { mapMangledModule } from "@modules/utils";
-import { InternalModule } from "@modules/types";
-import { AlertController, pushQueuedToasts } from "@api/toasts";
-import { waitForElement } from "@api/elements";
-import { createPatcher } from "@api/patcher";
-
-type ToastLevel = "info" | "success" | "warning" | "error";
-
-type ToastLevelEnum = {
-    [key in ToastLevel]: number;
-};
-
-export let ToastLevels: ToastLevelEnum;
+import { AlertController, pushQueuedToasts, ToastLevels } from "@api/toasts";
 
 export default defineCorePlugin({
     name: "Toasts",
@@ -23,32 +13,6 @@ export default defineCorePlugin({
     version: "1.0.0",
     lifeCycle: PluginLifeCycle.ModulesReady,
     start() {
-        // It's unclear what this module really is, but it contains the enum which has toast levels.
-        const Module = find(
-            chain.all(
-                filters.byAsyncFactory(true),
-                filters.byCode("info", "alert", "error", "directive"),
-                filters.byDependecies([LitModuleID]),
-                filters.byHasExports(true),
-            ),
-            {
-                key: "toasts-module",
-            },
-        ) as InternalModule;
-
-        const exports: { ToastLevels: ToastLevelEnum } = mapMangledModule(
-            Module,
-            {
-                ToastLevels: exportFilters.byProps(
-                    "info",
-                    "success",
-                    "warning",
-                    "error",
-                ),
-            },
-        );
-
-        ToastLevels = exports.ToastLevels;
         waitForElement(() =>
             document
                 .querySelector("alert-controller")
@@ -68,13 +32,10 @@ export default defineCorePlugin({
                 ?.lastElementChild as HTMLElement;
             if (!toast) return;
 
-            const { level = 1 } = event.detail;
-            const levelString = Object.keys(ToastLevels).find(
-                (key) => ToastLevels[key as ToastLevel] === level,
-            ) as ToastLevel;
+            const { level = 1, meta } = event.detail;
             let colorVariables: string[];
 
-            switch (levelString) {
+            switch (ToastLevels[level]) {
                 case "error":
                     colorVariables = [
                         "--color-banner-error",
@@ -96,14 +57,51 @@ export default defineCorePlugin({
                 case "info":
                 default:
                     colorVariables = [
-                        "--color-banner-plain-inverted",
-                        "--color-banner-plain-inverted-text",
+                        "--color-banner-plain",
+                        "--color-banner-plain-text",
                     ];
                     break;
             }
 
             toast.style.backgroundColor = `var(${colorVariables[0]})`;
             toast.style.color = `var(${colorVariables[1]})`;
+
+            // Fix dismiss button color not matching the toast color.
+            const dismissButtonContainer = findInElementTree(
+                toast,
+                elementFilters.byAttribute("slot", "action"),
+            );
+            console.log(toast);
+
+            if (!dismissButtonContainer) return;
+
+            const dismissButtonImageContainer = findInElementTree(
+                dismissButtonContainer,
+                chain.all(
+                    elementFilters.byTagName("span"),
+                    elementFilters.byClasses(
+                        "flex",
+                        "items-center",
+                        "justify-center",
+                    ),
+                ),
+            ) as HTMLElement;
+            console.log(dismissButtonImageContainer);
+            if (!dismissButtonImageContainer) return;
+
+            dismissButtonImageContainer.style.color = `var(${colorVariables[1]})`;
+
+            /*
+             * Reddit doesn't dismiss error toasts even when the duration
+             * is set, probably so users don't miss important error messages.
+             * But if the duration was set, obviously the developer expects
+             * the toast to be dimissed.
+             */
+            if (meta?.duration && ToastLevels[level] === "error") {
+                setTimeout(() => {
+                    toast.setAttribute("_fading", "");
+                }, meta.duration);
+            }
         });
     },
     stop() {},
