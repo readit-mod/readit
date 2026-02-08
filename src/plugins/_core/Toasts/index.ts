@@ -71,7 +71,6 @@ export default defineCorePlugin({
                 toast,
                 elementFilters.byAttribute("slot", "action"),
             );
-            console.log(toast);
 
             if (!dismissButtonContainer) return;
 
@@ -86,7 +85,6 @@ export default defineCorePlugin({
                     ),
                 ),
             ) as HTMLElement;
-            console.log(dismissButtonImageContainer);
             if (!dismissButtonImageContainer) return;
 
             dismissButtonImageContainer.style.color = `var(${colorVariables[1]})`;
