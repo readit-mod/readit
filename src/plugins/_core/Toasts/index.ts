@@ -1,5 +1,6 @@
 import {
     filters as elementFilters,
+    findChild,
     findInElementTree,
     waitForElement,
 } from "@api/elements";
@@ -19,14 +20,16 @@ export default defineCorePlugin({
                 ?.shadowRoot?.querySelector("toaster-lite"),
         ).then(pushQueuedToasts);
 
-        /*
-         * Before, the toast even recieved a level property but it would
-         * not be used at all as it was probably a side effect of toasts
-         * and banners being the same type (I'm guessing). To improve
-         * this, here, we listen for new toasts and apply the appropriate
-         * colors based on the level which is passed in.
-         */
         document.addEventListener("show-toast", (event: ToastEvent) => {
+            // #region Style the toast according to its level.
+
+            /*
+             * Before, the toast even recieved a level property but it would
+             * not be used at all as it was probably a side effect of toasts
+             * and banners being the same type (I'm guessing). To improve
+             * this, here, we listen for new toasts and apply the appropriate
+             * colors based on the level which is passed in.
+             */
             const alertController = event.target as AlertController;
             const toast = alertController.toaster
                 ?.lastElementChild as HTMLElement;
@@ -66,7 +69,10 @@ export default defineCorePlugin({
             toast.style.backgroundColor = `var(${colorVariables[0]})`;
             toast.style.color = `var(${colorVariables[1]})`;
 
-            // Fix dismiss button color not matching the toast color.
+            //#endregion
+
+            //#region Fix dismiss button colors.
+
             const dismissButtonContainer = findInElementTree(
                 toast,
                 elementFilters.byAttribute("slot", "action"),
@@ -74,8 +80,17 @@ export default defineCorePlugin({
 
             if (!dismissButtonContainer) return;
 
-            const dismissButtonImageContainer = findInElementTree(
+            const dismissButton = findChild(
                 dismissButtonContainer,
+                chain.all(elementFilters.byTagName("button")),
+            );
+
+            // Fix button hover color (may still look weird for certain levels).
+            dismissButton?.classList.remove("button-plain-inverted");
+            dismissButton?.classList.add("button-plain");
+
+            const dismissButtonImageContainer = findChild(
+                dismissButton,
                 chain.all(
                     elementFilters.byTagName("span"),
                     elementFilters.byClasses(
@@ -89,6 +104,9 @@ export default defineCorePlugin({
 
             dismissButtonImageContainer.style.color = `var(${colorVariables[1]})`;
 
+            // #endregion
+
+            //#region Dismiss error toasts if duration was explicitly set.
             /*
              * Reddit doesn't dismiss error toasts even when the duration
              * is set, probably so users don't miss important error messages.
@@ -100,6 +118,8 @@ export default defineCorePlugin({
                     toast.setAttribute("_fading", "");
                 }, meta.duration);
             }
+
+            //#endregion
         });
     },
     stop() {},

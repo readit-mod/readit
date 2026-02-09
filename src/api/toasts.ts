@@ -1,3 +1,4 @@
+import type { TemplateResult } from "lit";
 import { expose } from "./expose";
 
 type ToastLevel = "info" | "success" | "warning" | "error";
@@ -5,6 +6,20 @@ type Toast = {
     level?: ToastLevel;
     message: string;
     duration?: number;
+    icon?: TemplateResult;
+    raw?: {
+        [key: string]: any;
+    };
+};
+
+type RawToast = {
+    level: number;
+    message: string;
+    meta?: { duration?: number };
+    namedContent?: {
+        icon?: TemplateResult;
+    };
+    [key: string]: any;
 };
 
 // Directly from Reddit's exports, we only use these out of the 10.
@@ -16,11 +31,7 @@ export enum ToastLevels {
 }
 
 export type AlertController = HTMLElement & {
-    triggerToast: (toast: {
-        level: number;
-        message: string;
-        meta?: { duration?: number };
-    }) => void;
+    triggerToast: (toast: RawToast) => void;
     toaster?: HTMLElement;
 };
 
@@ -29,15 +40,24 @@ let toastsPushed = false;
 let alertController: AlertController;
 
 function sendToast(toast: Toast) {
-    alertController.triggerToast({
+    const rawToast: RawToast = {
         level: ToastLevels[toast.level ?? "info"],
         message: toast.message,
-        ...(toast.duration && {
-            meta: {
-                duration: toast.duration,
-            },
-        }),
-    });
+    };
+
+    if (toast.duration) {
+        rawToast.meta = {
+            duration: toast.duration,
+        };
+    }
+
+    if (toast.icon) {
+        rawToast.namedContent = {
+            icon: toast.icon,
+        };
+    }
+
+    alertController.triggerToast(rawToast);
 }
 
 export function pushQueuedToasts() {
