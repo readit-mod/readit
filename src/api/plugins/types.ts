@@ -9,6 +9,10 @@ export type Plugin = {
     stop: () => void;
 };
 
+export type CorePlugin = Omit<Plugin, "stop"> & {
+    stop?: () => void;
+};
+
 export type RawPluginModule = {
     default: InternalPlugin;
 };
@@ -20,7 +24,7 @@ export enum PluginStates {
     Errored = 1 << 3,
 }
 
-export type InternalPlugin = Plugin & {
+export type InternalPlugin = CorePlugin & {
     state: number;
     [SYM_CORE_PLUGIN]?: boolean;
 };

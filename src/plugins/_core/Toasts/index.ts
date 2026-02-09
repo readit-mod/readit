@@ -122,7 +122,6 @@ export default defineCorePlugin({
             //#endregion
         });
     },
-    stop() {},
 });
 
 type ToastEvent = CustomEvent<{

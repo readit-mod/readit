@@ -16,7 +16,6 @@
     "@marshift/strawberry": "^1.7.3",
     "lit": "^3.3.1",
     "matrix-js-sdk": "^40.0.0",
-    "type-fest": "^5.3.1",
     "typescript": "^5.9.3"
   },
   "devDependencies": {

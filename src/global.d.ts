@@ -14,5 +14,5 @@ declare type Constructor<T extends any = any> = new () => T;
 declare type CodeFilter = string | RegExp;
 
 interface Window {
-    ShredditModuleLoader: any;
+    ShredditModuleLoader: import("@modules/types").SML.ModuleLoader;
 }

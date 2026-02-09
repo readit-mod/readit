@@ -20,9 +20,6 @@ importers:
       matrix-js-sdk:
         specifier: ^40.0.0
         version: 40.0.0
-      type-fest:
-        specifier: ^5.3.1
-        version: 5.3.1
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -929,10 +926,6 @@ packages:
     resolution: {integrity: sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==}
     engines: {node: '>=8'}
 
-  tagged-tag@1.0.0:
-    resolution: {integrity: sha512-yEFYrVhod+hdNyx7g5Bnkkb0G6si8HJurOoOEgC8B/O0uXLHlaey/65KRv6cuWBNhBgHKAROVpc7QyYqE5gFng==}
-    engines: {node: '>=20'}
-
   terser@5.45.0:
     resolution: {integrity: sha512-hQ9c+JZEnMug8eqzuU48sCeq95f00lLDAaJ5gWhRkFXsfy3+SUkZXiF/Z66ZO6EomSmgqXnkhVrWXKaQ8K41Ug==}
     engines: {node: '>=10'}
@@ -949,10 +942,6 @@ packages:
     resolution: {integrity: sha512-5C1sg4USs1lfG0GFb2RLXsdpXqBSEhAaA/0kPL01wxzpMqLILNxIxIOKiILz+cdg/pLnOUxFYOR5yhHU666wbw==}
     engines: {node: '>=18.0.0'}
     hasBin: true
-
-  type-fest@5.3.1:
-    resolution: {integrity: sha512-VCn+LMHbd4t6sF3wfU/+HKT63C9OoyrSIf4b+vtWHpt2U7/4InZG467YDNMFMR70DdHjAdpPWmw2lzRdg0Xqqg==}
-    engines: {node: '>=20'}
 
   typescript@5.9.3:
     resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
@@ -1806,8 +1795,6 @@ snapshots:
     dependencies:
       has-flag: 4.0.0
 
-  tagged-tag@1.0.0: {}
-
   terser@5.45.0:
     dependencies:
       '@jridgewell/source-map': 0.3.11
@@ -1828,10 +1815,6 @@ snapshots:
       get-tsconfig: 4.13.0
     optionalDependencies:
       fsevents: 2.3.3
-
-  type-fest@5.3.1:
-    dependencies:
-      tagged-tag: 1.0.0
 
   typescript@5.9.3: {}
 

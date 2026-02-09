@@ -46,18 +46,18 @@ export function componentRenderPatch(
 
 const lazyComponentPatches = new Map<
     (instance: HTMLElement) => boolean,
-    (partial: Document) => any
+    (partial: HTMLElement) => any
 >();
 
 /**
  * A patcher for lazy loaded components in Reddit which are loaded with `faceplate-partial`.
  * @param filter A function to determine whether the current `faceplate-partial` is the right one, you can use properties such as `__src`.
- * @param callback The function that will be called after the component is fetched, before it is injected, the argument being a {@link Document} which can be manipulated (note that it will be parsed in a way that means it will include `html` and `body` tags, the component contents will be in the `body`).
+ * @param callback The function that will be called after the component is fetched, before it is injected, the argument being a {@link HTMLElement} which can be manipulated.
  * @returns A function to unpatch, only useful if it's in the same time as the patch is added, once the component has been loaded, it's too late.
  */
 export function lazyComponentPatch(
     filter: (instance: FaceplatePartialInstance) => boolean,
-    callback: (partial: Document) => any,
+    callback: (partial: HTMLElement) => any,
 ): () => void {
     if (!lazyComponentPatches.has(filter)) {
         lazyComponentPatches.set(filter, callback);
@@ -87,7 +87,7 @@ export async function initLazyPatches() {
                         result,
                         "text/html",
                     );
-                    callback(parsedPartial);
+                    callback(parsedPartial.body);
 
                     return parsedPartial.body.innerHTML;
                 }
