@@ -13,7 +13,7 @@ import { defineCorePlugin, PluginLifeCycle } from "@api/plugins";
 import { showToast } from "@api/toasts";
 import { html, LitElement } from "@modules/common/lit";
 import type { TemplateResult } from "lit";
-import { InfoIcon } from "@api/icons";
+import { Icon, InfoIcon } from "@api/icons";
 
 function buildReadItItem() {
     return class extends LitElement {
@@ -34,7 +34,10 @@ function buildReadItItem() {
                         @click="${() => {
                             showToast({
                                 message: `You're using ReadIt! Version: ${__READIT_VERSION__}`,
-                                icon: InfoIcon(),
+                                icon: Icon(InfoIcon, {
+                                    // Fix weird icon positioning bug in toasts.
+                                    styles: "padding-top: 30%",
+                                }),
                             });
                         }}"
                         style="padding-inline-end: 16px"
@@ -42,7 +45,10 @@ function buildReadItItem() {
                         <span class="flex items-center gap-xs min-w-0 shrink">
                             <span
                                 class="flex shrink-0 items-center justify-center h-xl w-xl text-20 leading-4"
-                                >${InfoIcon()}
+                            >
+                                ${Icon(InfoIcon, {
+                                    size: 20,
+                                })}
                             </span>
 
                             <span
