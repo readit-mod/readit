@@ -12,7 +12,6 @@
   "license": "ISC",
   "packageManager": "pnpm@10.19.0",
   "dependencies": {
-    "@lit-labs/rollup-plugin-minify-html-literals": "^0.1.1",
     "@marshift/strawberry": "^1.7.3",
     "lit": "^3.3.1",
     "matrix-js-sdk": "^40.0.0",

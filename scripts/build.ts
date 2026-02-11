@@ -2,7 +2,6 @@ import { build } from "vite";
 import packageJSON from "../package.json";
 import path, { resolve } from "path";
 import { readFileSync, writeFileSync } from "fs";
-import minifyHTML from "@lit-labs/rollup-plugin-minify-html-literals";
 import { fileURLToPath } from "url";
 import { platformIIFEPlugin } from "./plugins/platform";
 
@@ -27,10 +26,11 @@ const common: import("vite").InlineConfig = {
         alias: {
             "@api": resolve(root, "./src/api"),
             "@modules": resolve(root, "./src/modules"),
+            "@assets": resolve(root, "./src/assets"),
             "@": resolve(root, "./src"),
         },
     },
-    plugins: [minifyHTML()],
+    plugins: [],
     build: {
         target: "esnext",
         outDir: "dist",

@@ -1,3 +1,5 @@
+import ReadItIconSvg from "@assets/svg/ReadItIcon.svg?raw";
+import { svgToIcon } from "./nodes";
 export * from "./nodes";
 
 export const InfoIcon: IconDefinition = {
@@ -11,3 +13,7 @@ export const InfoIcon: IconDefinition = {
         },
     ],
 };
+
+console.log(ReadItIconSvg);
+
+export const ReadItIcon: IconDefinition = svgToIcon(ReadItIconSvg);

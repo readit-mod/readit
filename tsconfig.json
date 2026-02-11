@@ -4,6 +4,7 @@
         "paths": {
             "@api/*": ["./src/api/*"],
             "@modules/*": ["./src/modules/*"],
+            "@assets/*": ["./src/assets/*"],
             "@/*": ["./src/*"]
         },
         "lib": ["ES2022", "DOM"],
