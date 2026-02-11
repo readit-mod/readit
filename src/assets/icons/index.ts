@@ -14,6 +14,4 @@ export const InfoIcon: IconDefinition = {
     ],
 };
 
-console.log(ReadItIconSvg);
-
 export const ReadItIcon: IconDefinition = svgToIcon(ReadItIconSvg);
