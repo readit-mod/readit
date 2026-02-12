@@ -83,11 +83,18 @@ export default defineCorePlugin({
             const dismissButton = findChild(
                 dismissButtonContainer,
                 chain.all(elementFilters.byTagName("button")),
-            );
+            ) as HTMLButtonElement;
 
-            // Fix button hover color (may still look weird for certain levels).
-            dismissButton?.classList.remove("button-plain-inverted");
-            dismissButton?.classList.add("button-plain");
+            // Fix button hover color.
+            if (ToastLevels[level] != "info") {
+                dismissButton?.style.setProperty(
+                    "--button-color-background-hover",
+                    `color-mix(in srgb, var(${colorVariables[0]}) 100%, #FFFFFF 50%)`,
+                );
+            } else {
+                dismissButton?.classList.remove("button-plain-inverted");
+                dismissButton?.classList.add("button-plain");
+            }
 
             const dismissButtonImageContainer = findChild(
                 dismissButton,
