@@ -10,12 +10,53 @@ const __dirname = path.dirname(__filename);
 
 type BuildMode = "userscript" | "bundle";
 
+type MetaReplacement = {
+    find: string;
+    replace: (() => string) | string;
+};
+
 const version =
     process.argv[3] ?? `${packageJSON.version}-dev-${new Date().toISOString()}`;
 const root = resolve(__dirname, "..");
-const banner = readFileSync(resolve(root, "readit.meta.js"), "utf-8").replace(
-    "%version%",
-    version,
+
+const replacements: MetaReplacement[] = [
+    {
+        find: "%version%",
+        replace: version,
+    },
+    {
+        find: "%icon%",
+        replace() {
+            const rawIcon = readFileSync(
+                resolve(root, "src/assets/svg/ReadItIcon.svg"),
+                "utf-8",
+            );
+
+            return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(
+                rawIcon,
+            )}`;
+        },
+    },
+];
+
+function applyReplacements(
+    meta: string,
+    replacements: MetaReplacement[],
+): string {
+    let result = meta;
+
+    for (const { find, replace } of replacements) {
+        result = result.replace(
+            find,
+            typeof replace == "function" ? replace() : replace,
+        );
+    }
+    return result;
+}
+
+const meta = applyReplacements(
+    readFileSync(resolve(root, "readit.meta.js"), "utf-8"),
+    replacements,
 );
 
 const common: import("vite").InlineConfig = {
@@ -69,7 +110,7 @@ export async function buildReadIt(mode: BuildMode = "userscript") {
         await build({
             ...common,
             esbuild: {
-                banner,
+                banner: meta,
             },
             plugins: [
                 ...(common.plugins ?? []),

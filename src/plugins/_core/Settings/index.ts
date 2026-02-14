@@ -11,9 +11,9 @@ import {
 } from "@api/patches/customElements";
 import { defineCorePlugin, PluginLifeCycle } from "@api/plugins";
 import { showToast } from "@api/toasts";
-import { html, LitElement } from "@modules/common/lit";
+import { html, LitElement, render } from "@modules/common/lit";
 import type { TemplateResult } from "lit";
-import { Icon, ReadItIcon } from "@assets/icons";
+import { Icon, IconSizes, ReadItIcon } from "@assets/icons";
 
 function buildReadItItem() {
     return class extends LitElement {
@@ -34,7 +34,9 @@ function buildReadItItem() {
                         @click="${() => {
                             showToast({
                                 message: `You're using ReadIt! Version: ${__READIT_VERSION__}`,
-                                icon: Icon(ReadItIcon),
+                                icon: Icon(ReadItIcon, {
+                                    size: IconSizes.Toast,
+                                }),
                             });
                         }}"
                         style="padding-inline-end: 16px"
@@ -44,7 +46,7 @@ function buildReadItItem() {
                                 class="flex shrink-0 items-center justify-center h-xl w-xl text-20 leading-4"
                             >
                                 ${Icon(ReadItIcon, {
-                                    size: 20,
+                                    size: IconSizes.UserDrawer,
                                 })}
                             </span>
 
@@ -128,7 +130,20 @@ function patchSidebar() {
                 ),
             );
 
-            const readitInfo = info.cloneNode(true) as Element;
+            // because why not
+            const readitIcon = document.createElement("div");
+            readitIcon.classList.add("px-md");
+
+            render(
+                Icon(ReadItIcon, {
+                    size: IconSizes.Large,
+                }),
+                readitIcon,
+            );
+
+            info?.before(readitIcon);
+
+            const readitInfo = info.cloneNode(true) as HTMLAnchorElement;
             readitInfo.setAttribute("href", "#");
             readitInfo.addEventListener("click", (e) => e.preventDefault());
             readitInfo.classList.add("pointer-events-none");

@@ -1,5 +1,6 @@
 import type { TemplateResult } from "lit";
 import { expose } from "./expose";
+import { Icon, IconSizes, ReadItIcon } from "@assets/icons";
 
 type ToastLevel = "info" | "success" | "warning" | "error";
 type Toast = {
@@ -7,17 +8,21 @@ type Toast = {
     message: string;
     duration?: number;
     icon?: TemplateResult;
+    click?: () => void;
     raw?: {
         [key: string]: any;
     };
 };
 
-type RawToast = {
+export type RawToast = {
     level: number;
     message: string;
     meta?: { duration?: number };
     namedContent?: {
         icon?: TemplateResult;
+    };
+    readit?: {
+        click?: () => void;
     };
     [key: string]: any;
 };
@@ -54,6 +59,19 @@ function sendToast(toast: Toast) {
     if (toast.icon) {
         rawToast.namedContent = {
             icon: toast.icon,
+        };
+    } else {
+        rawToast.namedContent = {
+            // So its obvious it came from ReadIt.
+            icon: Icon(ReadItIcon, {
+                size: IconSizes.Toast,
+            }),
+        };
+    }
+
+    if (toast.click) {
+        rawToast.readit = {
+            click: toast.click,
         };
     }
 

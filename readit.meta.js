@@ -5,7 +5,7 @@
 // @description          A userscript for Reddit Web with plugin support.
 // @author               tralwdwd
 // @match                https://www.reddit.com/*
-// @icon                 https://www.redditstatic.com/desktop2x/img/favicon/apple-icon-76x76.png
+// @icon                 %icon%
 // @run-at               document-start
 // @downloadURL          https://github.com/readit-mod/readit/releases/latest/download/readit.user.js
 // @grant                GM.xmlHttpRequest
