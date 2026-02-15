@@ -40,10 +40,10 @@ export function defineElements() {
 
 type ElementFilter = (element: Element) => boolean;
 
-export function findInElementTree(
+export function findInElementTree<T extends Element>(
     element: Element | ShadowRoot,
     filter: ElementFilter,
-): Element {
+): T | null {
     const walker = document.createTreeWalker(element, NodeFilter.SHOW_ELEMENT, {
         acceptNode(node) {
             return filter(node as Element)
@@ -52,14 +52,16 @@ export function findInElementTree(
         },
     });
 
-    return walker.nextNode() as Element;
+    return walker.nextNode() as T;
 }
 
-export function findChild(
+export function findChild<T extends Element>(
     element: Element,
     childFilter: ElementFilter,
-): Element {
-    return Array.from(element.children).find((c) => childFilter(c));
+): T | null {
+    return (
+        (Array.from(element.children).find((c) => childFilter(c)) as T) ?? null
+    );
 }
 
 export const filters = {

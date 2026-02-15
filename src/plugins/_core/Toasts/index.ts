@@ -84,17 +84,17 @@ function applyDismissButtonFixes(
     level: number,
     colorVariables: [string, string],
 ) {
-    const dismissButtonContainer = findInElementTree(
+    const dismissButtonContainer = findInElementTree<HTMLDivElement>(
         toast,
         elementFilters.byAttribute("slot", "action"),
-    ) as HTMLDivElement;
+    );
 
     if (!dismissButtonContainer) return;
 
-    const dismissButton = findChild(
+    const dismissButton = findChild<HTMLButtonElement>(
         dismissButtonContainer,
         chain.all(elementFilters.byTagName("button")),
-    ) as HTMLButtonElement;
+    );
 
     // Fix button hover color.
     if (ToastLevels[level] != "info") {
@@ -107,23 +107,23 @@ function applyDismissButtonFixes(
         dismissButton?.classList.add("button-plain");
     }
 
-    const dismissButtonImageContainer = findChild(
+    const dismissButtonImageContainer = findChild<HTMLSpanElement>(
         dismissButton,
         chain.all(
             elementFilters.byTagName("span"),
             elementFilters.byClasses("flex", "items-center", "justify-center"),
         ),
-    ) as HTMLElement;
+    );
     if (!dismissButtonImageContainer) return;
 
     dismissButtonImageContainer.style.color = `var(${colorVariables[1]})`;
 }
 
 function applyToastIconFix(toast: HTMLElement) {
-    const iconContainer = findInElementTree(
+    const iconContainer = findInElementTree<HTMLDivElement>(
         toast,
         elementFilters.byAttribute("slot", "icon"),
-    ) as HTMLDivElement;
+    );
 
     iconContainer.style.display = "flex";
 }

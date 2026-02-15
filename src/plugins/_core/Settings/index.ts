@@ -6,6 +6,7 @@ import {
 } from "@api/elements";
 import { chain } from "@api/filters";
 import {
+    componentDOMPatch,
     filters as lazyComponentFilters,
     lazyComponentPatch,
 } from "@api/patches/customElements";
@@ -81,6 +82,7 @@ export default defineCorePlugin({
     start() {
         patchUserDrawer();
         patchSidebar();
+        patchHeader();
     },
 });
 
@@ -97,7 +99,7 @@ function patchUserDrawer() {
                 elementFilters.byAttribute("noun", "profile"),
             );
 
-            const targetSection = findInElementTree(
+            const targetSection = findInElementTree<HTMLUListElement>(
                 menu,
                 chain.all(
                     elementFilters.byTagName("ul"),
@@ -122,7 +124,7 @@ function patchSidebar() {
     lazyComponentPatch(
         lazyComponentFilters.byName("CommonLeftNav"),
         (sidebar) => {
-            const info = findInElementTree(
+            const info = findInElementTree<HTMLAnchorElement>(
                 sidebar,
                 chain.all(
                     elementFilters.byTagName("a"),
@@ -152,4 +154,36 @@ function patchSidebar() {
             info?.before(readitInfo);
         },
     );
+}
+
+function patchHeader() {
+    // There is some delay where the Reddit logo is visible probably due to SSR.
+    componentDOMPatch("reddit-header-action-items", (headerItems) => {
+        const logoContainerFilter = elementFilters.byTagName("span");
+
+        const logo = findInElementTree<HTMLAnchorElement>(
+            headerItems,
+            chain.all(
+                elementFilters.byTagName("a"),
+                elementFilters.byChild(logoContainerFilter),
+            ),
+        );
+
+        const logoContainer = findChild<HTMLSpanElement>(
+            logo,
+            logoContainerFilter,
+        );
+
+        // Out with the old!
+        logoContainer.firstElementChild?.remove();
+
+        // And in with the new!
+        render(
+            Icon(ReadItIcon, {
+                size: IconSizes.Large,
+                styles: "color: var(--shreddit-color-wordmark)",
+            }),
+            logoContainer,
+        );
+    });
 }

@@ -46,7 +46,7 @@ export function componentRenderPatch(
 }
 
 /**
- * Generic patch for the DOM of Lit custom elements. This utilises the `updated` callback of the element.
+ * Generic patch for the DOM of Lit custom elements. This utilises the `firstUpdated` callback of the element.
  *
  * @param element The name of the custom element.
  * @param callback The patch that will be run after the component updates. Here, you can use the passed in instance to manipulate it's DOM.
@@ -83,7 +83,7 @@ const lazyComponentPatches = new Map<
 /**
  * A patcher for lazy loaded components in Reddit which are loaded with `faceplate-partial`.
  * @param filter A function to determine whether the current `faceplate-partial` is the right one, you can use properties such as `__src`.
- * @param callback The function that will be called after the component is fetched, before it is injected, the argument being a {@link HTMLElement} which can be manipulated.
+ * @param callback The function that will be called after the component is fetched, before it is injected, the argument being a {@link HTMLElement} which can be manipulated. It's recommended to make custom elements as this just changes the string and has no connection to DOM.
  * @returns A function to unpatch, only useful if it's in the same time as the patch is added, once the component has been loaded, it's too late.
  */
 export function lazyComponentPatch(
