@@ -2,7 +2,8 @@ import { expose } from "@api/expose";
 import { createPatcher } from "@api/patcher";
 import { LitElement } from "lit";
 
-type PatchCallback = (self: LitElement, args: any[], ret: any) => any;
+type RenderPatchCallback = (self: LitElement, args: any[], ret: any) => any;
+type DOMPatchCallback = (self: LitElement) => void;
 
 interface FaceplatePartialInstance extends HTMLElement {
     __src: string;
@@ -16,9 +17,9 @@ interface FaceplatePartialInstance extends HTMLElement {
  */
 export function componentRenderPatch(
     element: string,
-    callback: PatchCallback,
+    callback: RenderPatchCallback,
 ): () => void {
-    const patcher = createPatcher(`componentPatcher:${element}`);
+    const patcher = createPatcher(`componentRenderPatcher:${element}`);
     let shouldPatch = true;
 
     customElements.whenDefined(element).then((ElementClass) => {
@@ -31,6 +32,36 @@ export function componentRenderPatch(
         );
         updateInstances();
     });
+    function updateInstances() {
+        // Propogate changes in case there are elements already rendered.
+        document
+            .querySelectorAll(element)
+            .forEach((elem: LitElement) => elem.requestUpdate());
+    }
+
+    return () => {
+        shouldPatch = false;
+        updateInstances();
+    };
+}
+
+/**
+ * Generic patch for the DOM of Lit custom elements. This utilises the `updated` callback of the element.
+ *
+ * @param element The name of the custom element.
+ * @param callback The patch that will be run after the component updates. Here, you can use the passed in instance to manipulate it's DOM.
+ */
+export function componentDOMPatch(element: string, callback: DOMPatchCallback) {
+    const patcher = createPatcher(`componentRenderPatcher:${element}`);
+    let shouldPatch = true;
+
+    customElements.whenDefined(element).then((ElementClass) => {
+        patcher.after(ElementClass.prototype, "firstUpdated", (self) => {
+            shouldPatch && callback(self);
+        });
+        updateInstances();
+    });
+
     function updateInstances() {
         // Propogate changes in case there are elements already rendered.
         document

@@ -41,7 +41,7 @@ export function defineElements() {
 type ElementFilter = (element: Element) => boolean;
 
 export function findInElementTree(
-    element: Element,
+    element: Element | ShadowRoot,
     filter: ElementFilter,
 ): Element {
     const walker = document.createTreeWalker(element, NodeFilter.SHOW_ELEMENT, {
