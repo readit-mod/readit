@@ -1,12 +1,12 @@
+import { unsafeSvg } from "@api/directives";
 import { expose } from "@api/expose";
+import { memoize } from "@api/utils/lazy";
 import { svg } from "@modules/common/lit";
 import type { SVGTemplateResult } from "lit";
 
-function renderNode(node: SvgNode): SVGTemplateResult {
+const renderNode = memoize((node: SvgNode): SVGTemplateResult => {
     if (typeof node === "string") return svg`${node}`;
 
-    // Reddit's lit exports have no static directives so we have to trick
-    // the `svg` function to take our full string, resulting in this mess.
     function makeRaw(n: SvgNode): string {
         if (typeof n === "string") return n;
 
@@ -18,11 +18,8 @@ function renderNode(node: SvgNode): SVGTemplateResult {
         return `<${tag}${attrString ? " " + attrString : ""}>${children.map(makeRaw).join("")}</${tag}>`;
     }
 
-    const strings = [makeRaw(node)];
-    strings["raw"] = strings;
-
-    return svg(strings as unknown as TemplateStringsArray);
-}
+    return unsafeSvg(makeRaw(node)) as unknown as SVGTemplateResult;
+});
 
 export function Icon(
     definition: IconDefinition,
@@ -43,7 +40,7 @@ export function Icon(
     `;
 }
 
-export function svgToIcon(svg: string): IconDefinition {
+export const svgToIcon = memoize((svg: string): IconDefinition => {
     const parsedSvg = new DOMParser()
         .parseFromString(svg, "image/svg+xml")
         .children.item(0) as SVGElement;
@@ -53,7 +50,7 @@ export function svgToIcon(svg: string): IconDefinition {
     };
 
     return icon;
-}
+});
 
 function convertChildren(element: Element): SvgNode[] {
     return Array.from(element.childNodes).map((node) => {

@@ -1,5 +1,5 @@
 declare const __READIT_VERSION__: string;
-declare type Fn = (...args: any) => any;
+declare type Fn<T = any> = (...args: any) => T;
 declare type AnyClass = new (...args: any[]) => any;
 
 declare type LitElementCtor = CustomElementConstructor &

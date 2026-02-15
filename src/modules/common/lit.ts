@@ -18,9 +18,16 @@ type LitExports = {
     noChange: typeof import("lit").noChange;
     nothing: typeof import("lit").nothing;
     render: typeof import("lit").render;
+    Directive?: typeof import("lit/directive.js").Directive;
+    directive?: typeof import("lit/directive.js").directive;
     mangled: {
         [key: string]: any;
     };
+};
+
+type OtherExports = {
+    Directive: typeof import("lit/directive.js").Directive;
+    directive: typeof import("lit/directive.js").directive;
 };
 
 let Lit: LitExports;
@@ -36,6 +43,9 @@ export let noChange: typeof import("lit").noChange;
 export let nothing: typeof import("lit").nothing;
 export let render: typeof import("lit").render;
 
+export let directive: typeof import("lit/directive.js").directive;
+export let Directive: typeof import("lit/directive.js").Directive;
+
 function byLitType(type: number): (fn: Fn) => boolean {
     return (e) => {
         try {
@@ -46,55 +56,93 @@ function byLitType(type: number): (fn: Fn) => boolean {
     };
 }
 
-waitForModule(
-    chain.all(
-        moduleFilters.byCode(
-            // Lit's "nothing" or "noChange" symbols.
-            /Symbol\.for\("lit-(?:noChange|nothing)"\)/,
-            "$lit$",
-        ),
-        /*
-            Another module matches the same strings above
-            but it has dependencies and no exports, so we
-            make sure the module we're looking for has no
-            dependencies and has exports.
-        */
-        moduleFilters.byDepsCount(0),
-        moduleFilters.byHasExports(true),
-    ),
-    (litMangled) => {
-        LitModuleID = litMangled.id;
-
-        const resolvedLit: LitExports = mapMangledModule(litMangled, {
-            html: chain.all(
-                exportFilters.byCode(/\(\i,(\s?)+\.{3}\i\)/),
-                byLitType(1),
+Promise.all([
+    new Promise<void>((resolve) => {
+        waitForModule(
+            chain.all(
+                moduleFilters.byCode(
+                    // Lit's "nothing" or "noChange" symbols.
+                    /Symbol\.for\("lit-(?:noChange|nothing)"\)/,
+                    "$lit$",
+                ),
+                /*
+                Another module matches the same strings above
+                but it has dependencies and no exports, so we
+                make sure the module we're looking for has no
+                dependencies and has exports.
+            */
+                moduleFilters.byDepsCount(0),
+                moduleFilters.byHasExports(true),
             ),
-            svg: chain.all(
-                exportFilters.byCode(/\(\i,(\s?)+\.{3}\i\)/),
-                byLitType(2),
+            (litMangled) => {
+                LitModuleID = litMangled.id;
+
+                const litModule: LitExports = mapMangledModule(litMangled, {
+                    html: chain.all(
+                        exportFilters.byCode(/\(\i,(\s?)+\.{3}\i\)/),
+                        byLitType(1),
+                    ),
+                    svg: chain.all(
+                        exportFilters.byCode(/\(\i,(\s?)+\.{3}\i\)/),
+                        byLitType(2),
+                    ),
+                    LitElement: exportFilters.byPrototypeKeys(
+                        "render",
+                        "update",
+                    ),
+                    render: chain.all(
+                        exportFilters.byCode("_$litPart$", /\i\.insertBefore/),
+                        exportFilters.byParameterCount(3),
+                    ),
+                    css: exportFilters.byCode("Value passed to 'css'"),
+                    // We could directly use Symbol.for(...) but where's the fun in that?
+                    noChange: (e) => e == Symbol.for("lit-noChange"),
+                    nothing: (e) => e == Symbol.for("lit-nothing"),
+                });
+
+                Lit = {
+                    ...litModule,
+                    mangled: litMangled.exports,
+                };
+
+                ({ html, svg, css, LitElement, noChange, nothing, render } =
+                    Lit);
+
+                resolve();
+            },
+        );
+    }),
+    new Promise<void>((resolve) => {
+        waitForModule(
+            chain.all(
+                moduleFilters.byCode("attrs directive", "_$litDirective$"),
+                moduleFilters.byDepsCount(1),
             ),
-            LitElement: exportFilters.byPrototypeKeys("render", "update"),
-            render: chain.all(
-                exportFilters.byCode("_$litPart$", /\i\.insertBefore/),
-                exportFilters.byParameterCount(3),
-            ),
-            css: exportFilters.byCode("Value passed to 'css'"),
-            // We could directly use Symbol.for(...) but where's the fun in that?
-            noChange: (e) => e == Symbol.for("lit-noChange"),
-            nothing: (e) => e == Symbol.for("lit-nothing"),
-        });
+            (mangled) => {
+                const otherExports = mapMangledModule<OtherExports>(mangled, {
+                    Directive: chain.all(
+                        exportFilters.byPrototypeKeys("update"),
+                        chain.none(
+                            exportFilters.byProps("elementProperties"),
+                            exportFilters.byPrototypeKeys("disconnected"),
+                        ),
+                    ),
+                    directive: chain.all(
+                        exportFilters.byCode(/\i(\s?)+=>(\s?)+\(\.{3}\i\)/),
+                        exportFilters.byParameterCount(1),
+                    ),
+                });
 
-        Lit = {
-            ...resolvedLit,
-            mangled: litMangled.exports,
-        };
+                Lit.Directive = otherExports.Directive;
+                Lit.directive = otherExports.directive;
 
-        ({ html, svg, css, LitElement, noChange, nothing, render } = Lit);
-
-        startPluginsFromLifeCycle(PluginLifeCycle.LitReady);
-        defineElements();
-
-        expose(Lit, "readit.modules.common.lit");
-    },
-);
+                ({ directive, Directive } = otherExports);
+                resolve();
+            },
+        );
+    }),
+]).then(() => {
+    startPluginsFromLifeCycle(PluginLifeCycle.LitReady);
+    defineElements();
+    expose(Lit, "readit.modules.common.lit");
+});
