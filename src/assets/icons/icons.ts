@@ -13,4 +13,22 @@ export const InfoIcon: IconDefinition = {
     ],
 };
 
+export const CloseIcon: IconDefinition = {
+    viewBox: "0 0 20 20",
+    nodes: [
+        {
+            tag: "path",
+            attrs: {
+                d: "M11.273 10l5.363-5.363a.9.9 0 10-1.273-1.273L10 8.727 4.637 3.364a.9.9 0 10-1.273 1.273L8.727 10l-5.363 5.363a.9.9 0 101.274 1.273L10 11.273l5.363 5.363a.897.897 0 001.274 0 .9.9 0 000-1.273L11.275 10h-.002z",
+            },
+        },
+    ],
+};
+
 export const ReadItIcon: IconDefinition = svgToIcon(ReadItIconSvg);
+
+export const Icons = {
+    Info: InfoIcon,
+    Close: CloseIcon,
+    ReadIt: ReadItIcon,
+};

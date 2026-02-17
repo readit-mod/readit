@@ -9,6 +9,8 @@ import { PluginLifeCycle } from "@api/plugins";
 import { hookDefineProperty } from "@api/wait";
 import { modulesReady } from "@modules/patches/dm";
 import { initCommonModules } from "@modules/common/init";
+import "@api/utils/lit";
+import "@api/dialog";
 
 expose(__READIT_VERSION__, "readit.version");
 
