@@ -93,7 +93,7 @@ function applyDismissButtonFixes(
 
     const dismissButton = findChild<HTMLButtonElement>(
         dismissButtonContainer,
-        chain.all(elementFilters.byTagName("button")),
+        elementFilters.byTagName("button"),
     );
 
     // Fix button hover color.
