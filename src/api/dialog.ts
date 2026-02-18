@@ -42,7 +42,7 @@ const Button = (
 type Dialog = {
     title: string;
     appearance?: "normal" | "modal";
-    beforeClose?: () => void;
+    beforeCloseButton?: () => void;
     buttons?: {
         primary?: {
             text: string;
@@ -74,14 +74,14 @@ modalStyle.insertRule(`
 
 function buildDialog(dialog: Dialog, close: () => void): TemplateResult {
     const onClose = () => {
-        dialog.beforeClose?.();
+        dialog.beforeCloseButton?.();
         close();
     };
 
     const buttonConfig: Dialog["buttons"] = {
         primary: {
             text: "Done",
-            onClick: onClose,
+            onClick: close,
         },
         ...dialog.buttons,
     };
@@ -91,7 +91,7 @@ function buildDialog(dialog: Dialog, close: () => void): TemplateResult {
             ? Button(
                   buttonConfig.primary.text,
                   "primary",
-                  buttonConfig.primary.onClick.bind(null, onClose),
+                  buttonConfig.primary.onClick.bind(null, close),
                   "primary-button",
               )
             : nothing}
@@ -99,7 +99,7 @@ function buildDialog(dialog: Dialog, close: () => void): TemplateResult {
             ? Button(
                   buttonConfig.secondary.text,
                   "secondary",
-                  buttonConfig.secondary.onClick.bind(null, onClose),
+                  buttonConfig.secondary.onClick.bind(null, close),
                   "secondary-button",
               )
             : nothing}
@@ -107,7 +107,7 @@ function buildDialog(dialog: Dialog, close: () => void): TemplateResult {
             ? Button(
                   buttonConfig.tertiary.text,
                   "tertiary",
-                  buttonConfig.tertiary.onClick.bind(null, onClose),
+                  buttonConfig.tertiary.onClick.bind(null, close),
                   "tertiary-button",
               )
             : nothing}
@@ -156,7 +156,7 @@ type SimpleDialog = {
     title: string;
     id: string;
     content: string | TemplateResult;
-    beforeClose?: () => void;
+    beforeCloseButton?: () => void;
     buttons?: Dialog["buttons"];
     size?: Dialog["size"];
 };
@@ -190,7 +190,7 @@ export function showConfirmationDialog(dialog: ConfirmationDialog) {
         title,
         id,
         content: description,
-        beforeClose() {
+        beforeCloseButton() {
             onResult(false);
         },
         buttons: {
