@@ -1,12 +1,9 @@
-import { readFileSync, rmSync } from "fs";
-import { resolve } from "path";
-import { build, Plugin } from "vite";
-import { tmpdir } from "os";
+import { readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { resolve } from "node:path";
+import { build, type Plugin } from "vite";
 
-export function platformIIFEPlugin(
-    root: string,
-    type: "userscript" | "bundle",
-): Plugin {
+export function platformIIFEPlugin(root: string, type: "userscript" | "bundle"): Plugin {
     const entry = resolve(root, `platforms/readit-${type}/index.ts`);
     const outDir = resolve(tmpdir(), `readit-platform-${type}`);
 
@@ -25,7 +22,9 @@ export function platformIIFEPlugin(
                     lib: {
                         entry,
                         name: "ReadItPlatform",
-                        formats: ["iife"],
+                        formats: [
+                            "iife",
+                        ],
                         fileName: () => "platform.iife.js",
                     },
                     rollupOptions: {
@@ -40,7 +39,10 @@ export function platformIIFEPlugin(
             const file = resolve(outDir, "platform.iife.js");
             iifeCode = readFileSync(file, "utf8");
 
-            rmSync(outDir, { recursive: true, force: true });
+            rmSync(outDir, {
+                recursive: true,
+                force: true,
+            });
         },
 
         renderChunk(code, chunk) {

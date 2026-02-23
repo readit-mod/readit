@@ -1,12 +1,12 @@
+import { expose } from "@api/expose";
 import { logger } from "./logger";
-import {
+import type {
     AfterCallback,
     BeforeCallback,
     InsteadCallback,
-    PatchOverwrite,
     Patch,
+    PatchOverwrite,
 } from "./patcher.d";
-import { expose } from "@api/expose";
 
 export enum PatchType {
     Before = "before",
@@ -108,7 +108,7 @@ export function unpatchAll(caller?: string): void {
 }
 
 function override(patch: PatchOverwrite) {
-    return function () {
+    return function (...args) {
         if (
             !patch?.patches?.before.length &&
             !patch?.patches?.after.length &&
@@ -117,16 +117,15 @@ function override(patch: PatchOverwrite) {
         ) {
             patch.unpatch();
             return new.target
-                ? new (patch.original as Constructor)(
-                      ...(arguments as any as []),
-                  )
-                : patch.original.apply(this, arguments);
+                ? new (patch.original as unknown as Constructor)(...(args as unknown as []))
+                : patch.original.apply(this, args);
         }
 
-        let res;
-        let args = arguments as any;
+        let res: unknown;
 
-        const before = [...patch.patches.before];
+        const before = [
+            ...patch.patches.before,
+        ];
         for (let i = 0; i < before.length; i++) {
             const instance = before[i];
             if (!instance) continue;
@@ -148,12 +147,12 @@ function override(patch: PatchOverwrite) {
             }
         }
 
-        const instead = [...patch.patches.instead];
+        const instead = [
+            ...patch.patches.instead,
+        ];
         if (!instead.length) {
             if (new.target) {
-                res = new (patch.original as Constructor)(
-                    ...(args as any as []),
-                );
+                res = new (patch.original as unknown as Constructor)(...(args as unknown as []));
             } else {
                 res = patch.original.apply(this, args);
             }
@@ -180,7 +179,9 @@ function override(patch: PatchOverwrite) {
             }
         }
 
-        const after = [...patch.patches.after];
+        const after = [
+            ...patch.patches.after,
+        ];
         for (let i = 0; i < after.length; i++) {
             const instance = after[i];
             if (!instance) continue;
@@ -201,10 +202,7 @@ function override(patch: PatchOverwrite) {
     };
 }
 
-function push(
-    mdl: Record<string, any> | Function,
-    func: string,
-): PatchOverwrite {
+function push(mdl: Record<string, unknown> | Fn, func: string): PatchOverwrite {
     const patch = {
         mdl,
         func,
@@ -249,7 +247,7 @@ function push(
     return patch;
 }
 
-function get(mdl: Record<string, any> | Function, func: string) {
+function get(mdl: Record<string, unknown> | Fn, func: string) {
     const patch = patches.find((p) => p.mdl === mdl && p.func === func);
     if (patch) return patch;
 
@@ -260,29 +258,32 @@ function patch<Parent extends Record<string, Fn>, F extends keyof Parent>(
     caller: string,
     mdl: Parent,
     func: F,
-    callback:
-        | BeforeCallback<Parent, F>
-        | InsteadCallback<Parent, F>
-        | AfterCallback<Parent, F>,
+    callback: BeforeCallback<Parent, F> | InsteadCallback<Parent, F> | AfterCallback<Parent, F>,
     type: PatchType = PatchType.After,
     once = false,
 ): () => void {
     if (!caller || typeof caller !== "string") {
         throw new TypeError('first argument "caller" must be of type string');
-    } else if (!mdl || !["function", "object"].includes(typeof mdl)) {
-        throw new TypeError(
-            'second argument "mdl" must be of type function or object',
-        );
+    } else if (
+        !mdl ||
+        ![
+            "function",
+            "object",
+        ].includes(typeof mdl)
+    ) {
+        throw new TypeError('second argument "mdl" must be of type function or object');
     } else if (!func || typeof func !== "string") {
         throw new TypeError('third argument "func" must be of type string');
     } else if (!callback || typeof callback !== "function") {
-        throw new TypeError(
-            'fourth argument "callback" must be of type function',
-        );
+        throw new TypeError('fourth argument "callback" must be of type function');
     } else if (
         !type ||
         typeof type !== "string" ||
-        !["after", "before", "instead"].includes(type)
+        ![
+            "after",
+            "before",
+            "instead",
+        ].includes(type)
     ) {
         throw new TypeError(
             'fifth argument "type" must be of type string and any of the three: after, before, instead',
@@ -299,9 +300,7 @@ function patch<Parent extends Record<string, Fn>, F extends keyof Parent>(
         callback,
         unpatch: () => {
             // Remove the original patch this callback was from
-            const individual = current.patches?.[type].findIndex(
-                (p) => p.id === patch.id,
-            );
+            const individual = current.patches?.[type].findIndex((p) => p.id === patch.id);
             if (~individual) current.patches?.[type].splice(individual, 1);
 
             if (
@@ -313,9 +312,7 @@ function patch<Parent extends Record<string, Fn>, F extends keyof Parent>(
 
             // If no other patches on the module are remaining, completely remove all patches
             // and re-assign the original module to its original place.
-            const module = patches.findIndex(
-                (p) => p.mdl == mdl && p.func == func,
-            );
+            const module = patches.findIndex((p) => p.mdl === mdl && p.func === func);
 
             if (!module) return;
             patches[module]?.unpatch();

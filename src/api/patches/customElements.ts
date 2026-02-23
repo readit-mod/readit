@@ -1,8 +1,8 @@
 import { expose } from "@api/expose";
 import { createPatcher } from "@api/patcher";
-import { LitElement } from "lit";
+import type { LitElement } from "lit";
 
-type RenderPatchCallback = (self: LitElement, args: any[], ret: any) => any;
+type RenderPatchCallback = (self: LitElement, args: unknown[], ret: unknown) => unknown;
 type DOMPatchCallback = (self: LitElement) => void;
 
 interface FaceplatePartialInstance extends HTMLElement {
@@ -15,28 +15,21 @@ interface FaceplatePartialInstance extends HTMLElement {
  * @param element The name of the custom element.
  * @param callback The patch that will be run after the render method, anything returned from here will be the result of the render method.
  */
-export function componentRenderPatch(
-    element: string,
-    callback: RenderPatchCallback,
-): () => void {
+export function componentRenderPatch(element: string, callback: RenderPatchCallback): () => void {
     const patcher = createPatcher(`componentRenderPatcher:${element}`);
     let shouldPatch = true;
 
     customElements.whenDefined(element).then((ElementClass) => {
-        patcher.after(
-            ElementClass.prototype,
-            "render",
-            (self, args, result) => {
-                return shouldPatch ? callback(self, args, result) : result;
-            },
-        );
+        patcher.after(ElementClass.prototype, "render", (self, args, result) => {
+            return shouldPatch ? callback(self, args, result) : result;
+        });
         updateInstances();
     });
     function updateInstances() {
         // Propogate changes in case there are elements already rendered.
-        document
-            .querySelectorAll(element)
-            .forEach((elem: LitElement) => elem.requestUpdate());
+        document.querySelectorAll(element).forEach((elem: LitElement) => {
+            elem.requestUpdate();
+        });
     }
 
     return () => {
@@ -64,9 +57,9 @@ export function componentDOMPatch(element: string, callback: DOMPatchCallback) {
 
     function updateInstances() {
         // Propogate changes in case there are elements already rendered.
-        document
-            .querySelectorAll(element)
-            .forEach((elem: LitElement) => elem.requestUpdate());
+        document.querySelectorAll(element).forEach((elem: LitElement) => {
+            elem.requestUpdate();
+        });
     }
 
     return () => {
@@ -77,7 +70,7 @@ export function componentDOMPatch(element: string, callback: DOMPatchCallback) {
 
 const lazyComponentPatches = new Map<
     (instance: HTMLElement) => boolean,
-    (partial: HTMLElement) => any
+    (partial: HTMLElement) => unknown
 >();
 
 /**
@@ -88,7 +81,7 @@ const lazyComponentPatches = new Map<
  */
 export function lazyComponentPatch(
     filter: (instance: FaceplatePartialInstance) => boolean,
-    callback: (partial: HTMLElement) => any,
+    callback: (partial: HTMLElement) => unknown,
 ): () => void {
     if (!lazyComponentPatches.has(filter)) {
         lazyComponentPatches.set(filter, callback);
@@ -99,34 +92,26 @@ export function lazyComponentPatch(
 
 /** @internal */
 export async function initLazyPatches() {
-    const FaceplatePartial =
-        await customElements.whenDefined("faceplate-partial");
+    const FaceplatePartial = await customElements.whenDefined("faceplate-partial");
     const patcher = createPatcher("lazyComponentPatcher");
 
-    patcher.after(
-        FaceplatePartial.prototype,
-        "_loadContent",
-        async (self, _, resultPromise) => {
-            if (resultPromise === void 0) return;
-            const result = await resultPromise;
+    patcher.after(FaceplatePartial.prototype, "_loadContent", async (self, _, resultPromise) => {
+        if (resultPromise === void 0) return;
+        const result = await resultPromise;
 
-            for (const [filter, callback] of lazyComponentPatches.entries()) {
-                const shouldPatch = filter(self);
+        for (const [filter, callback] of lazyComponentPatches.entries()) {
+            const shouldPatch = filter(self);
 
-                if (shouldPatch) {
-                    const parsedPartial = new DOMParser().parseFromString(
-                        result,
-                        "text/html",
-                    );
-                    callback(parsedPartial.body);
+            if (shouldPatch) {
+                const parsedPartial = new DOMParser().parseFromString(result, "text/html");
+                callback(parsedPartial.body);
 
-                    return parsedPartial.body.innerHTML;
-                }
+                return parsedPartial.body.innerHTML;
             }
+        }
 
-            return result;
-        },
-    );
+        return result;
+    });
 }
 
 export const filters = {
@@ -135,8 +120,7 @@ export const filters = {
 
     byName(name: string) {
         return (instance: FaceplatePartialInstance) => {
-            const [_, instanceName] =
-                /^([^_]+)_/.exec(instance.getAttribute("name")) || [];
+            const [_, instanceName] = /^([^_]+)_/.exec(instance.getAttribute("name")) || [];
 
             return instanceName === name;
         };
@@ -144,6 +128,10 @@ export const filters = {
 };
 
 expose(
-    { componentRenderPatch, lazyComponentPatch, filters },
+    {
+        componentRenderPatch,
+        lazyComponentPatch,
+        filters,
+    },
     "readit.api.patches.customElements",
 );

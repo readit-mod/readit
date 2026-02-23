@@ -1,13 +1,12 @@
 import { createPatcher } from "@api/patcher";
 import { deferredPromise } from "@api/utils/promise";
-import { SML } from "@modules/types";
+import type { SML } from "@modules/types";
 
-export const { promise: modulesReady, resolve: fireModulesReady } =
-    deferredPromise();
+export const { promise: modulesReady, resolve: fireModulesReady } = deferredPromise();
 
 export function installDMPatch(ModuleLoaderClass: typeof SML.ModuleLoader) {
     const patcher = createPatcher("DMPatch");
-    let timer: any;
+    let timer: number;
     let fired = false;
 
     /*

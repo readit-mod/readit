@@ -1,8 +1,8 @@
-import { FilterFn, InternalModule } from "@modules/types";
-import { registry } from "./_internals/registry";
-import { normaliseMatch } from "@api/regexp";
 import { expose } from "@api/expose";
+import { normaliseMatch } from "@api/regexp";
 import { isArrayEqual } from "@api/utils/array";
+import type { FilterFn, InternalModule } from "@modules/types";
+import { registry } from "./_internals/registry";
 
 export const cache = new Map<string, string | null>();
 export const multiCache = new Map<string, string[]>();
@@ -36,7 +36,7 @@ export function find(factory: FilterFn, options: FindOptions) {
     }
 
     if (findAll) {
-        result.length != 0 &&
+        result.length !== 0 &&
             multiCache.set(
                 key,
                 result.map((m) => m.id),
@@ -68,48 +68,54 @@ export const filters = {
     },
 
     byDepsCount(count: number): FilterFn {
-        return (module: InternalModule) => module.deps.length == count;
+        return (module: InternalModule) => module.deps.length === count;
     },
 
     byHasExports(hasExports: boolean): FilterFn {
         return (module: InternalModule) =>
-            (Object.keys(module.exports).length != 0) == hasExports;
+            (Object.keys(module.exports).length !== 0) === hasExports;
     },
     /**
      * Filters modules by their dependencies.
      * @param deps Either a list of included dependencies, or a single array which matches the full list of dependencied.
      * @returns The filter function.
      */
-    byDependecies(...deps: string[] | [string[]]): FilterFn {
+    byDependecies(
+        ...deps:
+            | string[]
+            | [
+                  string[],
+              ]
+    ): FilterFn {
         return (module: InternalModule) =>
-            deps.length == 1 && Array.isArray(deps[0])
+            deps.length === 1 && Array.isArray(deps[0])
                 ? isArrayEqual(module.deps, deps[0])
                 : deps.every((d) => module.deps.includes(d as string));
     },
 
     byAsyncFactory(async: boolean): FilterFn {
-        return (module: InternalModule) => module.isAsync == async;
+        return (module: InternalModule) => module.isAsync === async;
     },
 };
 
 export const finders = {
     findByCode(...code: (RegExp | string)[]): InternalModule {
-        const key = `code:${code
-            .map((c) => (c instanceof RegExp ? c.source : c))
-            .join(",")}`;
+        const key = `code:${code.map((c) => (c instanceof RegExp ? c.source : c)).join(",")}`;
 
-        return find(filters.byCode(...code), { key }) as InternalModule;
+        return find(filters.byCode(...code), {
+            key,
+        }) as InternalModule;
     },
 
     findByProps(...props: string[]): InternalModule {
         const key = `props:${props.join(",")}`;
-        return find(filters.byProps(...props), { key }) as InternalModule;
+        return find(filters.byProps(...props), {
+            key,
+        }) as InternalModule;
     },
 
     findByCodeAll(...code: (RegExp | string)[]): InternalModule {
-        const key = `code:${code
-            .map((c) => (c instanceof RegExp ? c.source : c))
-            .join(",")}`;
+        const key = `code:${code.map((c) => (c instanceof RegExp ? c.source : c)).join(",")}`;
 
         return find(filters.byCode(...code), {
             key,

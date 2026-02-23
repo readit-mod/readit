@@ -1,9 +1,9 @@
-import { Icon, Icons, IconSizes } from "@assets/icons";
+import { Icon, IconSizes, Icons } from "@assets/icons";
 import { html, nothing } from "@modules/common/lit";
 import type { LitElement, TemplateResult } from "lit";
+import { createCustomCssSheet } from "./customcss";
 import { expose } from "./expose";
 import { DOMify } from "./utils/lit";
-import { createCustomCssSheet } from "./customcss";
 
 function CloseButton(onClick: () => void): TemplateResult<1> {
     return html`
@@ -25,12 +25,7 @@ function CloseButton(onClick: () => void): TemplateResult<1> {
     `;
 }
 
-const Button = (
-    text: string,
-    type = "primary",
-    onClick: () => void,
-    slot?: string,
-) =>
+const Button = (text: string, type = "primary", onClick: () => void, slot?: string) =>
     html`<button
         @click="${() => onClick()}"
         class="button-medium px-[calc(var(--rem12)-var(--button-border-width,0px))] button-${type} items-center justify-center button inline-flex"
@@ -87,44 +82,47 @@ function buildDialog(dialog: Dialog, close: () => void): TemplateResult {
     };
 
     const buttons = html`
-        ${buttonConfig.primary
-            ? Button(
-                  buttonConfig.primary.text,
-                  "primary",
-                  buttonConfig.primary.onClick.bind(null, close),
-                  "primary-button",
-              )
-            : nothing}
-        ${buttonConfig.secondary
-            ? Button(
-                  buttonConfig.secondary.text,
-                  "secondary",
-                  buttonConfig.secondary.onClick.bind(null, close),
-                  "secondary-button",
-              )
-            : nothing}
-        ${buttonConfig.tertiary
-            ? Button(
-                  buttonConfig.tertiary.text,
-                  "tertiary",
-                  buttonConfig.tertiary.onClick.bind(null, close),
-                  "tertiary-button",
-              )
-            : nothing}
+        ${
+            buttonConfig.primary
+                ? Button(
+                      buttonConfig.primary.text,
+                      "primary",
+                      buttonConfig.primary.onClick.bind(null, close),
+                      "primary-button",
+                  )
+                : nothing
+        }
+        ${
+            buttonConfig.secondary
+                ? Button(
+                      buttonConfig.secondary.text,
+                      "secondary",
+                      buttonConfig.secondary.onClick.bind(null, close),
+                      "secondary-button",
+                  )
+                : nothing
+        }
+        ${
+            buttonConfig.tertiary
+                ? Button(
+                      buttonConfig.tertiary.text,
+                      "tertiary",
+                      buttonConfig.tertiary.onClick.bind(null, close),
+                      "tertiary-button",
+                  )
+                : nothing
+        }
     `;
 
     return html`
         <rpl-modal-card
-            style="width: ${dialog.size?.width ?? "auto"}; height: ${dialog.size
-                ?.height ?? "auto"}"
+            style="width: ${dialog.size?.width ?? "auto"}; height: ${dialog.size?.height ?? "auto"}"
             appearance="${dialog.appearance ?? "normal"}"
             class="readit-modal-card"
         >
             ${CloseButton(onClose)}
             <div slot="title">${dialog.title}</div>
-            ${typeof dialog.content == "string"
-                ? html`<p>${dialog.content}</p>`
-                : dialog.content}
+            ${typeof dialog.content === "string" ? html`<p>${dialog.content}</p>` : dialog.content}
             ${buttons}
         </rpl-modal-card>
     `;
@@ -213,6 +211,10 @@ export function showConfirmationDialog(dialog: ConfirmationDialog) {
 }
 
 expose(
-    { showDialog, showSimpleDialog, showConfirmationDialog },
+    {
+        showDialog,
+        showSimpleDialog,
+        showConfirmationDialog,
+    },
     "readit.api.dialog",
 );

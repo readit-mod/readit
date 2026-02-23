@@ -1,29 +1,31 @@
 {
-  "name": "@readit-mod/core",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "build": "tsx scripts/build.ts",
-    "serve": "tsx scripts/serve.ts"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "packageManager": "pnpm@10.19.0",
-  "dependencies": {
-    "@marshift/strawberry": "^1.7.3",
-    "lit": "^3.3.1",
-    "matrix-js-sdk": "^40.0.0",
-    "typescript": "^5.9.3"
-  },
-  "devDependencies": {
-    "@types/http-server": "^0.12.4",
-    "@types/node": "^24.10.1",
-    "chokidar": "^5.0.0",
-    "http-server": "^14.1.1",
-    "prettier": "^3.7.3",
-    "tsx": "^4.21.0",
-    "vite": "^7.2.6"
-  }
+    "name": "@readit-mod/core",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "build": "tsx scripts/build.ts",
+        "serve": "tsx scripts/serve.ts"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "packageManager": "pnpm@10.19.0",
+    "dependencies": {
+        "@marshift/strawberry": "^1.7.3",
+        "lit": "^3.3.1",
+        "matrix-js-sdk": "^40.0.0",
+        "type-fest": "^5.4.4",
+        "typescript": "^5.9.3"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "2.4.4",
+        "@types/http-server": "^0.12.4",
+        "@types/node": "^24.10.1",
+        "chokidar": "^5.0.0",
+        "http-server": "^14.1.1",
+        "prettier": "^3.7.3",
+        "tsx": "^4.21.0",
+        "vite": "^7.2.6"
+    }
 }

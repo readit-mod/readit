@@ -1,11 +1,9 @@
-import { stableStringify } from "./object";
 import { expose } from "@api/expose";
 import { directive } from "@modules/common/lit";
 import type { DirectiveClass } from "lit/directive.js";
+import { stableStringify } from "./object";
 
-export function lazyDirective(
-    classFactory: Fn<DirectiveClass>,
-): ReturnType<typeof directive> {
+export function lazyDirective(classFactory: Fn<DirectiveClass>): ReturnType<typeof directive> {
     let wrapped: ReturnType<typeof directive>;
 
     return (...args) => {
@@ -22,7 +20,7 @@ export function memoize<T extends Fn>(func: T): T {
     const cached = {};
 
     return ((...args) => {
-        let key = stableStringify(args);
+        const key = stableStringify(args);
 
         if (!(key in cached)) {
             cached[key] = func(...args);
@@ -32,4 +30,10 @@ export function memoize<T extends Fn>(func: T): T {
     }) as T;
 }
 
-expose({ lazyDirective, memoize }, "readit.api.utils.lazy");
+expose(
+    {
+        lazyDirective,
+        memoize,
+    },
+    "readit.api.utils.lazy",
+);

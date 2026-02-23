@@ -1,8 +1,8 @@
+import { readFileSync, writeFileSync } from "node:fs";
+import path, { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { build } from "vite";
 import packageJSON from "../package.json";
-import path, { resolve } from "path";
-import { readFileSync, writeFileSync } from "fs";
-import { fileURLToPath } from "url";
 import { platformIIFEPlugin } from "./plugins/platform";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -15,8 +15,7 @@ type MetaReplacement = {
     replace: (() => string) | string;
 };
 
-const version =
-    process.argv[3] ?? `${packageJSON.version}-dev-${new Date().toISOString()}`;
+const version = process.argv[3] ?? `${packageJSON.version}-dev-${new Date().toISOString()}`;
 const root = resolve(__dirname, "..");
 
 const replacements: MetaReplacement[] = [
@@ -27,29 +26,18 @@ const replacements: MetaReplacement[] = [
     {
         find: "%icon%",
         replace() {
-            const rawIcon = readFileSync(
-                resolve(root, "src/assets/svg/ReadItIcon.svg"),
-                "utf-8",
-            );
+            const rawIcon = readFileSync(resolve(root, "src/assets/svg/ReadItIcon.svg"), "utf-8");
 
-            return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(
-                rawIcon,
-            )}`;
+            return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(rawIcon)}`;
         },
     },
 ];
 
-function applyReplacements(
-    meta: string,
-    replacements: MetaReplacement[],
-): string {
+function applyReplacements(meta: string, replacements: MetaReplacement[]): string {
     let result = meta;
 
     for (const { find, replace } of replacements) {
-        result = result.replace(
-            find,
-            typeof replace == "function" ? replace() : replace,
-        );
+        result = result.replace(find, typeof replace === "function" ? replace() : replace);
     }
     return result;
 }
@@ -82,11 +70,13 @@ const common: import("vite").InlineConfig = {
 const commonLibConfig: import("vite").LibraryOptions = {
     entry: resolve(root, "./src/index.ts"),
     name: "ReadIt",
-    formats: ["iife"],
+    formats: [
+        "iife",
+    ],
 };
 
 export async function buildReadIt(mode: BuildMode = "userscript") {
-    const isBundle = mode == "bundle";
+    const isBundle = mode === "bundle";
     const manifest = {
         version,
     };
@@ -126,10 +116,7 @@ export async function buildReadIt(mode: BuildMode = "userscript") {
         });
     }
 
-    writeFileSync(
-        resolve(root, "dist/manifest.json"),
-        JSON.stringify(manifest),
-    );
+    writeFileSync(resolve(root, "dist/manifest.json"), JSON.stringify(manifest));
 
     console.log(`Successfully built ${isBundle ? "bundle" : "userscript"}!`);
 }

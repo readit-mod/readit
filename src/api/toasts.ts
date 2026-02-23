@@ -1,6 +1,6 @@
+import { Icon, IconSizes, ReadItIcon } from "@assets/icons";
 import type { TemplateResult } from "lit";
 import { expose } from "./expose";
-import { Icon, IconSizes, ReadItIcon } from "@assets/icons";
 
 type ToastLevel = "info" | "success" | "warning" | "error";
 type Toast = {
@@ -17,7 +17,9 @@ type Toast = {
 export type RawToast = {
     level: number;
     message: string;
-    meta?: { duration?: number };
+    meta?: {
+        duration?: number;
+    };
     namedContent?: {
         icon?: TemplateResult;
     };

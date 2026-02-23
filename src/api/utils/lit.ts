@@ -10,4 +10,9 @@ export function DOMify(template: TemplateResult): HTMLElement {
     return container.firstElementChild as HTMLElement;
 }
 
-expose({ DOMify }, "readit.api.utils.lit");
+expose(
+    {
+        DOMify,
+    },
+    "readit.api.utils.lit",
+);

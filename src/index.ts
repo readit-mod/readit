@@ -1,14 +1,11 @@
 import { expose } from "@api/expose";
 import { initLazyPatches } from "@api/patches/customElements";
-import { initModules } from "@modules/init";
-import {
-    registerPluginDefinitions,
-    startPluginsFromLifeCycle,
-} from "@api/plugins/manager";
 import { PluginLifeCycle } from "@api/plugins";
+import { registerPluginDefinitions, startPluginsFromLifeCycle } from "@api/plugins/manager";
 import { hookDefineProperty } from "@api/wait";
-import { modulesReady } from "@modules/patches/dm";
 import { initCommonModules } from "@modules/common/init";
+import { initModules } from "@modules/init";
+import { modulesReady } from "@modules/patches/dm";
 import "@api/utils/lit";
 import "@api/dialog";
 

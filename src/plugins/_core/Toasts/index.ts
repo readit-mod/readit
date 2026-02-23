@@ -6,12 +6,7 @@ import {
 } from "@api/elements";
 import { chain } from "@api/filters";
 import { defineCorePlugin, PluginLifeCycle } from "@api/plugins";
-import {
-    AlertController,
-    pushQueuedToasts,
-    RawToast,
-    ToastLevels,
-} from "@api/toasts";
+import { type AlertController, pushQueuedToasts, type RawToast, ToastLevels } from "@api/toasts";
 import { addSingleListener } from "@api/utils/events";
 
 export default defineCorePlugin({
@@ -21,9 +16,7 @@ export default defineCorePlugin({
     lifeCycle: PluginLifeCycle.ModulesReady,
     start() {
         waitForElement(() =>
-            document
-                .querySelector("alert-controller")
-                ?.shadowRoot?.querySelector("toaster-lite"),
+            document.querySelector("alert-controller")?.shadowRoot?.querySelector("toaster-lite"),
         ).then(pushQueuedToasts);
 
         document.addEventListener("show-toast", (event: ToastEvent) => {
@@ -35,18 +28,20 @@ export default defineCorePlugin({
              * colors based on the level which is passed in.
              */
             const alertController = event.target as AlertController;
-            const toast = alertController.toaster
-                ?.lastElementChild as HTMLElement;
+            const toast = alertController.toaster?.lastElementChild as HTMLElement;
             if (!toast) return;
 
             const { level = 6, meta, readit = {} } = event.detail;
-            const colorVariables = getColorVariables(level);
+            const [background, foreground] = getColorVariables(level);
 
-            toast.style.backgroundColor = `var(${colorVariables[0]})`;
-            toast.style.color = `var(${colorVariables[1]})`;
+            toast.style.backgroundColor = `var(${background})`;
+            toast.style.color = `var(${foreground})`;
 
             // Fix dismiss button colors.
-            applyDismissButtonFixes(toast, level, colorVariables);
+            applyDismissButtonFixes(toast, level, [
+                background,
+                foreground,
+            ]);
 
             // Fix icon positioning issues.
             applyToastIconFix(toast);
@@ -65,24 +60,41 @@ export default defineCorePlugin({
     },
 });
 
-function getColorVariables(level: number): [string, string] {
+function getColorVariables(level: number): [
+    string,
+    string,
+] {
     switch (ToastLevels[level]) {
         case "error":
-            return ["--color-banner-error", "--color-banner-error-text"];
+            return [
+                "--color-banner-error",
+                "--color-banner-error-text",
+            ];
         case "warning":
-            return ["--color-banner-caution", "--color-banner-caution-text"];
+            return [
+                "--color-banner-caution",
+                "--color-banner-caution-text",
+            ];
         case "success":
-            return ["--color-banner-success", "--color-banner-success-text"];
-        case "info":
+            return [
+                "--color-banner-success",
+                "--color-banner-success-text",
+            ];
         default:
-            return ["--color-banner-plain", "--color-banner-plain-text"];
+            return [
+                "--color-banner-plain",
+                "--color-banner-plain-text",
+            ];
     }
 }
 
 function applyDismissButtonFixes(
     toast: HTMLElement,
     level: number,
-    colorVariables: [string, string],
+    colorVariables: [
+        string,
+        string,
+    ],
 ) {
     const dismissButtonContainer = findInElementTree<HTMLDivElement>(
         toast,
@@ -97,7 +109,7 @@ function applyDismissButtonFixes(
     );
 
     // Fix button hover color.
-    if (ToastLevels[level] != "info") {
+    if (ToastLevels[level] !== "info") {
         dismissButton?.style.setProperty(
             "--button-color-background-hover",
             `color-mix(in srgb, var(${colorVariables[0]}) 100%, #FFFFFF 50%)`,
@@ -128,11 +140,7 @@ function applyToastIconFix(toast: HTMLElement) {
     iconContainer.style.display = "flex";
 }
 
-function applyDurationFix(
-    toast: HTMLElement,
-    level: number,
-    meta: RawToast["meta"],
-) {
+function applyDurationFix(toast: HTMLElement, level: number, meta: RawToast["meta"]) {
     if (
         meta?.duration &&
         // Reddit decides based on the opposite of this.

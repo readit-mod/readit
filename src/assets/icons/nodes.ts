@@ -15,16 +15,13 @@ const renderNode = memoize((node: SvgNode): SVGTemplateResult => {
             .map(([k, v]) => `${k}="${v}"`)
             .join(" ");
 
-        return `<${tag}${attrString ? " " + attrString : ""}>${children.map(makeRaw).join("")}</${tag}>`;
+        return `<${tag}${attrString ? ` ${attrString}` : ""}>${children.map(makeRaw).join("")}</${tag}>`;
     }
 
     return unsafeSvg(makeRaw(node)) as unknown as SVGTemplateResult;
 });
 
-export function Icon(
-    definition: IconDefinition,
-    options: IconOptions = {},
-): SVGTemplateResult {
+export function Icon(definition: IconDefinition, options: IconOptions = {}): SVGTemplateResult {
     const { size = 24, color = "currentColor", styles = "" } = options;
 
     return svg`
@@ -56,12 +53,13 @@ function convertChildren(element: Element): SvgNode[] {
     return Array.from(element.childNodes).map((node) => {
         if (node.nodeType === 3) return (node as Text).data.trim();
 
-        const attributes = Array.from((node as Element).attributes).reduce<
-            Record<string, string>
-        >((acc, attr) => {
-            acc[attr.name] = attr.value;
-            return acc;
-        }, {});
+        const attributes = Array.from((node as Element).attributes).reduce<Record<string, string>>(
+            (acc, attr) => {
+                acc[attr.name] = attr.value;
+                return acc;
+            },
+            {},
+        );
 
         return {
             tag: (node as Element).tagName,
@@ -71,4 +69,10 @@ function convertChildren(element: Element): SvgNode[] {
     });
 }
 
-expose({ Icon, svgToIcon }, "readit.api.icons.nodes");
+expose(
+    {
+        Icon,
+        svgToIcon,
+    },
+    "readit.api.icons.nodes",
+);

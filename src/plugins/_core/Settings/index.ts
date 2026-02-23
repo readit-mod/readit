@@ -1,8 +1,8 @@
 import {
     defineSafeElement,
-    findInElementTree,
     filters as elementFilters,
     findChild,
+    findInElementTree,
 } from "@api/elements";
 import { chain } from "@api/filters";
 import {
@@ -12,9 +12,9 @@ import {
 } from "@api/patches/customElements";
 import { defineCorePlugin, PluginLifeCycle } from "@api/plugins";
 import { showToast } from "@api/toasts";
+import { Icon, IconSizes, ReadItIcon } from "@assets/icons";
 import { html, LitElement, render } from "@modules/common/lit";
 import type { TemplateResult } from "lit";
-import { Icon, IconSizes, ReadItIcon } from "@assets/icons";
 
 function buildReadItItem() {
     return class extends LitElement {
@@ -89,71 +89,61 @@ export default defineCorePlugin({
 function patchUserDrawer() {
     defineSafeElement("readit-li", () => buildReadItItem());
 
-    lazyComponentPatch(
-        lazyComponentFilters.byName("UserDrawerMenu"),
-        (menu) => {
-            const li = document.createElement("readit-li");
+    lazyComponentPatch(lazyComponentFilters.byName("UserDrawerMenu"), (menu) => {
+        const li = document.createElement("readit-li");
 
-            const profileItemFilter = chain.all(
-                elementFilters.byTagName("faceplate-tracker"),
-                elementFilters.byAttribute("noun", "profile"),
-            );
+        const profileItemFilter = chain.all(
+            elementFilters.byTagName("faceplate-tracker"),
+            elementFilters.byAttribute("noun", "profile"),
+        );
 
-            const targetSection = findInElementTree<HTMLUListElement>(
-                menu,
-                chain.all(
-                    elementFilters.byTagName("ul"),
-                    elementFilters.byChild(profileItemFilter),
-                ),
-            );
+        const targetSection = findInElementTree<HTMLUListElement>(
+            menu,
+            chain.all(elementFilters.byTagName("ul"), elementFilters.byChild(profileItemFilter)),
+        );
 
-            const profileItem =
-                targetSection && findChild(targetSection, profileItemFilter);
+        const profileItem = targetSection && findChild(targetSection, profileItemFilter);
 
-            if (profileItem) {
-                profileItem.after(li);
-            } else {
-                const list = menu.querySelector("ul");
-                list?.appendChild(li);
-            }
-        },
-    );
+        if (profileItem) {
+            profileItem.after(li);
+        } else {
+            const list = menu.querySelector("ul");
+            list?.appendChild(li);
+        }
+    });
 }
 
 function patchSidebar() {
-    lazyComponentPatch(
-        lazyComponentFilters.byName("CommonLeftNav"),
-        (sidebar) => {
-            const info = findInElementTree<HTMLAnchorElement>(
-                sidebar,
-                chain.all(
-                    elementFilters.byTagName("a"),
-                    elementFilters.byAttribute("href", "https://redditinc.com"),
-                ),
-            );
+    lazyComponentPatch(lazyComponentFilters.byName("CommonLeftNav"), (sidebar) => {
+        const info = findInElementTree<HTMLAnchorElement>(
+            sidebar,
+            chain.all(
+                elementFilters.byTagName("a"),
+                elementFilters.byAttribute("href", "https://redditinc.com"),
+            ),
+        );
 
-            // because why not
-            const readitIcon = document.createElement("div");
-            readitIcon.classList.add("px-md");
+        // because why not
+        const readitIcon = document.createElement("div");
+        readitIcon.classList.add("px-md");
 
-            render(
-                Icon(ReadItIcon, {
-                    size: IconSizes.Large,
-                }),
-                readitIcon,
-            );
+        render(
+            Icon(ReadItIcon, {
+                size: IconSizes.Large,
+            }),
+            readitIcon,
+        );
 
-            info?.before(readitIcon);
+        info?.before(readitIcon);
 
-            const readitInfo = info.cloneNode(true) as HTMLAnchorElement;
-            readitInfo.setAttribute("href", "#");
-            readitInfo.addEventListener("click", (e) => e.preventDefault());
-            readitInfo.classList.add("pointer-events-none");
-            readitInfo.textContent = `ReadIt Version: ${__READIT_VERSION__}`;
+        const readitInfo = info.cloneNode(true) as HTMLAnchorElement;
+        readitInfo.setAttribute("href", "#");
+        readitInfo.addEventListener("click", (e) => e.preventDefault());
+        readitInfo.classList.add("pointer-events-none");
+        readitInfo.textContent = `ReadIt Version: ${__READIT_VERSION__}`;
 
-            info?.before(readitInfo);
-        },
-    );
+        info?.before(readitInfo);
+    });
 }
 
 function patchHeader() {
@@ -163,16 +153,10 @@ function patchHeader() {
 
         const logo = findInElementTree<HTMLAnchorElement>(
             headerItems,
-            chain.all(
-                elementFilters.byTagName("a"),
-                elementFilters.byChild(logoContainerFilter),
-            ),
+            chain.all(elementFilters.byTagName("a"), elementFilters.byChild(logoContainerFilter)),
         );
 
-        const logoContainer = findChild<HTMLSpanElement>(
-            logo,
-            logoContainerFilter,
-        );
+        const logoContainer = findChild<HTMLSpanElement>(logo, logoContainerFilter);
 
         // Out with the old!
         logoContainer.firstElementChild?.remove();

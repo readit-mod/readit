@@ -11,5 +11,9 @@ export function deferredPromise<T = void>() {
         reject = rej;
     });
 
-    return { promise, resolve, reject };
+    return {
+        promise,
+        resolve,
+        reject,
+    };
 }

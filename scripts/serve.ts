@@ -1,9 +1,9 @@
-import path from "path";
-import { fileURLToPath } from "url";
-import httpServer from "http-server";
+import net from "node:net";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import chokidar from "chokidar";
+import httpServer from "http-server";
 import { buildReadIt } from "./build";
-import net from "net";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,10 +21,7 @@ async function isPortAvailable(port: number): Promise<boolean> {
     });
 }
 
-async function getAvailablePort(
-    defaultPort: number,
-    argvPort?: string,
-): Promise<number> {
+async function getAvailablePort(defaultPort: number, argvPort?: string): Promise<number> {
     let port = argvPort ? parseInt(argvPort, 10) : defaultPort;
     while (!(await isPortAvailable(port))) {
         port++;
@@ -51,7 +48,9 @@ async function serveReadIt(mode: BuildMode) {
     };
 
     chokidar
-        .watch(path.resolve(root, "src"), { ignoreInitial: true })
+        .watch(path.resolve(root, "src"), {
+            ignoreInitial: true,
+        })
         .on("all", build);
 }
 

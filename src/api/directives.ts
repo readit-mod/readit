@@ -6,19 +6,14 @@ import { expose } from "./expose";
 export const unsafeSvg = lazyDirective(
     () =>
         class extends Directive {
-            render(
-                value:
-                    | string
-                    | typeof nothing
-                    | typeof noChange
-                    | undefined
-                    | null,
-            ) {
-                if (!value || value == nothing || value == noChange) {
+            render(value: string | typeof nothing | typeof noChange | undefined | null) {
+                if (!value || value === nothing || value === noChange) {
                     return value;
                 }
 
-                const strings = [value] as unknown as TemplateStringsArray;
+                const strings = [
+                    value,
+                ] as unknown as TemplateStringsArray;
                 (strings as any).raw = value;
 
                 return {
@@ -33,19 +28,15 @@ export const unsafeSvg = lazyDirective(
 export const unsafeHtml = lazyDirective(
     () =>
         class extends Directive {
-            render(
-                value:
-                    | string
-                    | typeof nothing
-                    | typeof noChange
-                    | undefined
-                    | null,
-            ) {
-                if (!value || value == nothing || value == noChange) {
+            render(value: string | typeof nothing | typeof noChange | undefined | null) {
+                if (!value || value === nothing || value === noChange) {
                     return value;
                 }
 
-                const strings = [value] as unknown as TemplateStringsArray;
+                const strings = [
+                    value,
+                ] as unknown as TemplateStringsArray;
+
                 (strings as any).raw = value;
 
                 return {
@@ -62,7 +53,9 @@ type Ref<T = Element> = {
 };
 
 export function createRef<T = Element>(): Ref<T> {
-    return { value: undefined };
+    return {
+        value: undefined,
+    };
 }
 
 export const ref = lazyDirective(
@@ -74,7 +67,12 @@ export const ref = lazyDirective(
                 return;
             }
 
-            update(part: ElementPart, [ref]: [Ref]) {
+            update(
+                part: ElementPart,
+                [ref]: [
+                    Ref,
+                ],
+            ) {
                 const element = part.element;
 
                 if (this._element === element) return;
@@ -87,4 +85,10 @@ export const ref = lazyDirective(
         },
 );
 
-expose({ ref, createRef }, "readit.ref");
+expose(
+    {
+        ref,
+        createRef,
+    },
+    "readit.ref",
+);

@@ -23,26 +23,22 @@ export const filters = {
             const code = fn.toString();
 
             return matches.every((match) =>
-                match instanceof RegExp
-                    ? normaliseMatch(match).test(code)
-                    : code.includes(match),
+                match instanceof RegExp ? normaliseMatch(match).test(code) : code.includes(match),
             );
         };
     },
 
     byProps(...props: string[]): (obj: Record<string, any>) => boolean {
-        return (obj: Record<string, any>) =>
-            props.every((prop) => obj[prop] !== void 0);
+        return (obj: Record<string, any>) => props.every((prop) => obj[prop] !== void 0);
     },
 
     byPrototypeKeys(...props: string[]): (obj: AnyClass) => boolean {
-        return (obj: AnyClass) =>
-            filters.byProps(...props)(obj.prototype ?? {});
+        return (obj: AnyClass) => filters.byProps(...props)(obj.prototype ?? {});
     },
 
     byIsFunctional(functional: boolean): (fn: Fn) => boolean {
         return (fn: Fn) => {
-            return (typeof fn == "function") == functional;
+            return (typeof fn === "function") === functional;
         };
     },
 
@@ -53,8 +49,7 @@ export const filters = {
      * reliably counted.
      */
     byParameterCount(count: number): (fn: Fn) => boolean {
-        return (fn: Fn) =>
-            filters.byIsFunctional(true)(fn) && fn.length == count;
+        return (fn: Fn) => filters.byIsFunctional(true)(fn) && fn.length === count;
     },
 };
 

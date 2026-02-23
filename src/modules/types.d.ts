@@ -2,7 +2,7 @@ export type InternalModule<T = any> = {
     id: string;
     exports?: T;
     deps: string[];
-    factory?: Function;
+    factory?: Fn;
     isAsync: boolean;
     flags: {
         declared: boolean;
@@ -30,7 +30,7 @@ declare namespace SML {
     }
 
     abstract class ModuleLoader {
-        abstract dm(id: ModuleID, deps: ModuleID[], factory: Function): void;
+        abstract dm(id: ModuleID, deps: ModuleID[], factory: Fn): void;
         abstract addModulePromise(id: ModuleID): void;
         abstract moduleRegistry: Record<ModuleID, Module>;
     }

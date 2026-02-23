@@ -11,10 +11,7 @@ waitForModule(
             For whatever reason, Matrix exports are unmangled,
             but just in case, we'll add a fallback. 
         */
-    chain.any(
-        filters.byProps("User", "Room"),
-        filters.byCode("org.matrix", "reEmitter"),
-    ),
+    chain.any(filters.byProps("User", "Room"), filters.byCode("org.matrix", "reEmitter")),
     (matrix) => {
         MatrixModule = matrix.id;
         Matrix = matrix.exports;

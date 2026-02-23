@@ -1,14 +1,10 @@
-import { expose } from "@api/expose";
-import { chain } from "@api/filters";
-import { mapMangledModule } from "@modules/utils";
-import {
-    filters as moduleFilters,
-    waitForModule,
-} from "@modules/loader/lookup";
-import { filters as exportFilters } from "@api/filters";
-import { startPluginsFromLifeCycle } from "@api/plugins/manager";
-import { PluginLifeCycle } from "@api/plugins";
 import { defineElements } from "@api/elements";
+import { expose } from "@api/expose";
+import { chain, filters as exportFilters } from "@api/filters";
+import { PluginLifeCycle } from "@api/plugins";
+import { startPluginsFromLifeCycle } from "@api/plugins/manager";
+import { filters as moduleFilters, waitForModule } from "@modules/loader/lookup";
+import { mapMangledModule } from "@modules/utils";
 
 type LitExports = {
     html: typeof import("lit").html;
@@ -21,7 +17,7 @@ type LitExports = {
     Directive?: typeof import("lit/directive.js").Directive;
     directive?: typeof import("lit/directive.js").directive;
     mangled: {
-        [key: string]: any;
+        [key: string]: unknown;
     };
 };
 
@@ -49,7 +45,7 @@ export let Directive: typeof import("lit/directive.js").Directive;
 function byLitType(type: number): (fn: Fn) => boolean {
     return (e) => {
         try {
-            return (e()._$litType$ ?? 0) == type;
+            return (e()._$litType$ ?? 0) === type;
         } catch {
             return false;
         }
@@ -78,26 +74,17 @@ Promise.all([
                 LitModuleID = litMangled.id;
 
                 const litModule: LitExports = mapMangledModule(litMangled, {
-                    html: chain.all(
-                        exportFilters.byCode(/\(\i,(\s?)+\.{3}\i\)/),
-                        byLitType(1),
-                    ),
-                    svg: chain.all(
-                        exportFilters.byCode(/\(\i,(\s?)+\.{3}\i\)/),
-                        byLitType(2),
-                    ),
-                    LitElement: exportFilters.byPrototypeKeys(
-                        "render",
-                        "update",
-                    ),
+                    html: chain.all(exportFilters.byCode(/\(\i,(\s?)+\.{3}\i\)/), byLitType(1)),
+                    svg: chain.all(exportFilters.byCode(/\(\i,(\s?)+\.{3}\i\)/), byLitType(2)),
+                    LitElement: exportFilters.byPrototypeKeys("render", "update"),
                     render: chain.all(
                         exportFilters.byCode("_$litPart$", /\i\.insertBefore/),
                         exportFilters.byParameterCount(3),
                     ),
                     css: exportFilters.byCode("Value passed to 'css'"),
                     // We could directly use Symbol.for(...) but where's the fun in that?
-                    noChange: (e) => e == Symbol.for("lit-noChange"),
-                    nothing: (e) => e == Symbol.for("lit-nothing"),
+                    noChange: (e) => e === Symbol.for("lit-noChange"),
+                    nothing: (e) => e === Symbol.for("lit-nothing"),
                 });
 
                 Lit = {
@@ -105,8 +92,7 @@ Promise.all([
                     mangled: litMangled.exports,
                 };
 
-                ({ html, svg, css, LitElement, noChange, nothing, render } =
-                    Lit);
+                ({ html, svg, css, LitElement, noChange, nothing, render } = Lit);
 
                 resolve();
             },

@@ -1,4 +1,4 @@
-import { SYM_CORE_PLUGIN, PluginLifeCycle } from ".";
+import { type PluginLifeCycle, SYM_CORE_PLUGIN } from ".";
 
 export type Plugin = {
     name: string;

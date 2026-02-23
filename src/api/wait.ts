@@ -1,12 +1,9 @@
-import { LiteralUnion } from "type-fest";
 import { expose } from "@api/expose";
+import type { LiteralUnion } from "type-fest";
 
 type KeyOfOrAny<P, T extends object> = P extends keyof T ? T[P] : any;
 
-export function hookDefineProperty<
-    T extends object,
-    P extends LiteralUnion<keyof T, PropertyKey>,
->(
+export function hookDefineProperty<T extends object, P extends LiteralUnion<keyof T, PropertyKey>>(
     target: T,
     property: LiteralUnion<keyof T, PropertyKey>,
     cb: (val: KeyOfOrAny<P, T>) => KeyOfOrAny<P, T>,
@@ -18,7 +15,7 @@ export function hookDefineProperty<
         return;
     }
 
-    let value: any;
+    let value: unknown;
 
     Object.defineProperty(targetAsAny, property, {
         get: () => value,

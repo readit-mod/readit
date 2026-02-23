@@ -1,9 +1,6 @@
-import { InternalModule } from "./types";
+import type { InternalModule } from "./types";
 
-export function mapMangledModule<M = any>(
-    module: InternalModule,
-    mappers: Record<string, Fn>,
-): M {
+export function mapMangledModule<M = any>(module: InternalModule, mappers: Record<string, Fn>): M {
     const exports = module.exports;
 
     const mapped: Record<string, any> = {};

@@ -1,4 +1,4 @@
-import { FilterFn, InternalModule } from "@modules/types";
+import type { FilterFn, InternalModule } from "@modules/types";
 
 class InternalModuleRegistry {
     _moduleMap = new Map<string, InternalModule>();
@@ -7,9 +7,7 @@ class InternalModuleRegistry {
     registerModule(module: InternalModule) {
         if (!this._moduleMap.has(module.id)) {
             this._moduleMap.set(module.id, module);
-            for (const [filter, callback] of Array.from(
-                this._moduleWaitersMap,
-            )) {
+            for (const [filter, callback] of Array.from(this._moduleWaitersMap)) {
                 if (filter(module)) {
                     callback(module);
                     this._moduleWaitersMap.delete(filter);
@@ -30,7 +28,7 @@ class InternalModuleRegistry {
         this._moduleWaitersMap.set(filter, cb);
     }
 
-    require(id: string): any {
+    require(id: string): unknown {
         return this.getModuleById(id)?.exports ?? {};
     }
 }

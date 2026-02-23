@@ -2,10 +2,7 @@ import { expose } from "./expose";
 
 const customCssSheets: Map<string, CSSStyleSheet> = new Map();
 
-export function createCustomCssSheet(
-    id: string,
-    initialCssText: string,
-): CSSStyleSheet {
+export function createCustomCssSheet(id: string, initialCssText: string): CSSStyleSheet {
     const sheet = new CSSStyleSheet();
     sheet.replaceSync(initialCssText);
 

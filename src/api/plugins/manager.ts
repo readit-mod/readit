@@ -1,15 +1,20 @@
-import { splitArray } from "@api/utils/array";
-import { InternalPlugin, PluginStates, RawPluginModule } from "./types";
-import { PluginLifeCycle, isCorePlugin } from ".";
-import { logger, Logger } from "@api/logger";
 import { expose } from "@api/expose";
+import { Logger, logger } from "@api/logger";
+import { splitArray } from "@api/utils/array";
+import { isCorePlugin, PluginLifeCycle } from ".";
+import { type InternalPlugin, PluginStates, type RawPluginModule } from "./types";
 
 const pInstances = new Map<string, InternalPlugin>();
 
 export function registerPluginDefinitions() {
     const plugins = import.meta.glob<RawPluginModule>(
-        ["../../plugins/*/index.ts", "../../plugins/_core/*/index.ts"],
-        { eager: true },
+        [
+            "../../plugins/*/index.ts",
+            "../../plugins/_core/*/index.ts",
+        ],
+        {
+            eager: true,
+        },
     );
 
     for (const { default: definition } of Object.values(plugins)) {
@@ -25,7 +30,7 @@ export function getPluginInstances(): InternalPlugin[] {
 
 export function startPluginsFromLifeCycle(lifeCycle: PluginLifeCycle) {
     const pluginsForLifeCycle = getPluginInstances().filter(
-        (plugin) => plugin.lifeCycle == lifeCycle,
+        (plugin) => plugin.lifeCycle === lifeCycle,
     );
     logger.log("Starting plugins for", lifeCycle, pluginsForLifeCycle);
     const [core, regular] = splitArray(pluginsForLifeCycle, isCorePlugin);

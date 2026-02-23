@@ -1,7 +1,10 @@
 export function splitArray<T>(
     array: readonly T[],
     predicate: (item: T) => boolean,
-): [T[], T[]] {
+): [
+    T[],
+    T[],
+] {
     const pass: T[] = [];
     const fail: T[] = [];
 
@@ -9,7 +12,10 @@ export function splitArray<T>(
         (predicate(item) ? pass : fail).push(item);
     }
 
-    return [pass, fail];
+    return [
+        pass,
+        fail,
+    ];
 }
 
 export function isArrayEqual(a: any[], b: any[]): boolean {

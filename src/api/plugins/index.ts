@@ -1,4 +1,4 @@
-import { InternalPlugin, Plugin, CorePlugin, PluginStates } from "./types";
+import { type CorePlugin, type InternalPlugin, type Plugin, PluginStates } from "./types";
 
 export const SYM_CORE_PLUGIN = Symbol("readit-core-plugin");
 
