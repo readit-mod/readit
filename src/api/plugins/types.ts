@@ -8,11 +8,7 @@ export type Plugin = {
     patches?: FactoryPatcher.Patch[];
     [key: string]: any;
     lifeCycle?: PluginLifeCycle;
-    start: () => void;
-    stop: () => void;
-};
-
-export type CorePlugin = Omit<Plugin, "stop"> & {
+    start?: () => void;
     stop?: () => void;
 };
 
@@ -27,7 +23,7 @@ export enum PluginStates {
     Errored = 1 << 3,
 }
 
-export type InternalPlugin = CorePlugin & {
+export type InternalPlugin = Plugin & {
     state: number;
     [SYM_CORE_PLUGIN]?: boolean;
 };

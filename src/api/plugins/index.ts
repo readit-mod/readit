@@ -1,4 +1,4 @@
-import { type CorePlugin, type InternalPlugin, type Plugin, PluginStates } from "./types";
+import { type InternalPlugin, type Plugin, PluginStates } from "./types";
 
 export const SYM_CORE_PLUGIN = Symbol("readit-core-plugin");
 
@@ -16,7 +16,7 @@ export function definePlugin(definition: Plugin): InternalPlugin {
     } satisfies InternalPlugin;
 }
 
-export function defineCorePlugin(definition: CorePlugin): InternalPlugin {
+export function defineCorePlugin(definition: Plugin): InternalPlugin {
     return {
         lifeCycle: PluginLifeCycle.ModulesReady,
         ...definition,

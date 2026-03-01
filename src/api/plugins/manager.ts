@@ -12,6 +12,7 @@ export function registerPluginDefinitions() {
         [
             "../../plugins/*/index.ts",
             "../../plugins/_core/*/index.ts",
+            "../../plugins/_api/*/index.ts",
         ],
         {
             eager: true,
