@@ -23,6 +23,7 @@ export function normaliseMatch(match: RegExp): RegExp {
                 ? `${leadingEscapes}${String.raw`(?:[A-Za-z_$][\w$]*)`}`
                 : match.slice(1),
         ),
+        match.flags,
     );
 }
 

@@ -1,6 +1,7 @@
 import { expose } from "@api/expose";
 import { Logger, logger } from "@api/logger";
 import { splitArray } from "@api/utils/array";
+import { addPatch } from "@modules/patches/factory";
 import { isCorePlugin, PluginLifeCycle } from ".";
 import { type InternalPlugin, PluginStates, type RawPluginModule } from "./types";
 
@@ -20,6 +21,14 @@ export function registerPluginDefinitions() {
     for (const { default: definition } of Object.values(plugins)) {
         if (!pInstances.has(definition.id)) {
             pInstances.set(definition.id, definition);
+
+            if (definition.patches) {
+                const helpersPath = `readit.api.plugins.manager.getPluginInstance("${definition.id}")`;
+
+                for (const patch of definition.patches) {
+                    addPatch(patch, helpersPath);
+                }
+            }
         }
     }
 }
@@ -75,9 +84,14 @@ export function tryStopPluginBulk(ids: string[]) {
     ids.forEach(tryStopPlugin);
 }
 
+export function getPluginInstance(id: string) {
+    return pInstances.get(id);
+}
+
 expose(
     {
         getPluginInstances,
+        getPluginInstance,
         startPluginsFromLifeCycle,
         tryStartPlugin,
         tryStartPluginBulk,

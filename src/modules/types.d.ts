@@ -31,7 +31,23 @@ declare namespace SML {
 
     abstract class ModuleLoader {
         abstract dm(id: ModuleID, deps: ModuleID[], factory: Fn): void;
+        abstract _evaluateModule(id: ModuleID, skipResolve: boolean): Promise<void>;
         abstract addModulePromise(id: ModuleID): void;
         abstract moduleRegistry: Record<ModuleID, Module>;
     }
+}
+
+declare namespace FactoryPatcher {
+    type Replacer = string | ((substring: string, ...args: any[]) => string);
+
+    type Patch = {
+        find: string;
+        replacement: PatchReplacement[];
+    };
+
+    type PatchReplacement = {
+        match: string | RegExp;
+        matchAll?: boolean;
+        replace: Replacer;
+    };
 }

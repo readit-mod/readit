@@ -1,9 +1,12 @@
+import type { FactoryPatcher } from "@modules/types";
 import { type PluginLifeCycle, SYM_CORE_PLUGIN } from ".";
 
 export type Plugin = {
     name: string;
     id: string;
     version: string;
+    patches?: FactoryPatcher.Patch[];
+    [key: string]: any;
     lifeCycle?: PluginLifeCycle;
     start: () => void;
     stop: () => void;
