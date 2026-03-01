@@ -1,10 +1,12 @@
 import { expose } from "@api/expose";
 import { Icon, IconSizes } from "@assets/icons";
 import { html, nothing } from "@modules/common/lit";
-import type { LitElement, TemplateResult } from "lit";
+import type { LitElement, SVGTemplateResult, TemplateResult } from "lit";
 
-function updateInstances() {
-    document.querySelectorAll<LitElement>("shreddit-post").forEach((i) => {
+// TODO: actually type shreddit-post and shreddit-post-overflow-menu elements
+
+function updateInstances(element: string) {
+    document.querySelectorAll<LitElement>(element).forEach((i) => {
         i.requestUpdate();
     });
 }
@@ -21,19 +23,19 @@ const postButtons: PostButtonConfig[] = [];
 export function addPostButton(buttonConfig: PostButtonConfig): () => void {
     postButtons.push(buttonConfig) - 1;
 
-    updateInstances();
+    updateInstances("shreddit-post");
     return () => {
         const idx = postButtons.indexOf(buttonConfig);
 
         if (idx !== -1) {
             postButtons.splice(idx, 1);
-            updateInstances();
+            updateInstances("shreddit-post");
         }
     };
 }
 
 export function getButtonsForPost(post: LitElement): PostButtonConfig[] {
-    return postButtons.filter((button) => (button.predicate ? button.predicate(post) : true));
+    return postButtons.filter((button) => button.predicate?.(post) ?? true);
 }
 
 export function getButtonResult(id: string, button: PostButtonConfig): TemplateResult<1> {
@@ -58,9 +60,66 @@ export function getButtonResult(id: string, button: PostButtonConfig): TemplateR
     `;
 }
 
+export type InternalOverflowMenuItem = {
+    id: string;
+    label: string;
+    leadingIconRenderer: () => SVGTemplateResult;
+    isUserEligible: () => boolean;
+    onClick: () => void;
+    href?: string;
+    description?: string;
+    disabled?: boolean;
+};
+
+export type OverflowMenuItem = {
+    id: string;
+    label: string;
+    description?: string;
+    icon: IconDefinition;
+    predicate?: (post: LitElement) => boolean;
+    onClick: (post: LitElement) => void;
+};
+
+const overflowMenuItems: OverflowMenuItem[] = [];
+
+export function addOverflowMenuItem(item: OverflowMenuItem): () => void {
+    overflowMenuItems.push(item);
+    updateInstances("shreddit-post-overflow-menu");
+
+    return () => {
+        const idx = overflowMenuItems.indexOf(item);
+
+        if (idx !== 0) {
+            overflowMenuItems.splice(idx, 1);
+            updateInstances("shreddit-post-overflow-menu");
+        }
+    };
+}
+
+export function getOverflowMenuItems(menu: LitElement): InternalOverflowMenuItem[] {
+    const post = (menu as any).getParentPost();
+
+    return overflowMenuItems.map((item) => {
+        return {
+            id: item.id,
+            label: item.label,
+            description: item.description,
+            leadingIconRenderer: () =>
+                Icon(item.icon, {
+                    size: IconSizes.Medium,
+                }),
+            isUserEligible: () => item.predicate?.(post) ?? true,
+            onClick() {
+                item.onClick(post);
+            },
+        };
+    });
+}
+
 expose(
     {
         addPostButton,
+        addOverflowMenuItem,
     },
     "readit.api.patches.postButtons",
 );

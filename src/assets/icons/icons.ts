@@ -1,3 +1,4 @@
+import { expose } from "@api/expose";
 import ReadItIconSvg from "@assets/svg/ReadItIcon.svg?raw";
 import { svgToIcon } from "./nodes";
 
@@ -32,3 +33,5 @@ export const Icons = {
     Close: CloseIcon,
     ReadIt: ReadItIcon,
 };
+
+expose(Icons, "readit.assets.icons");

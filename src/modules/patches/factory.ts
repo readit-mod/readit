@@ -64,10 +64,10 @@ export function installFactoryPatches(ModuleLoaderClass: typeof SML.ModuleLoader
         ModuleLoaderClass.prototype,
         "_evaluateModule",
         async (self, [id, skipResolve], _evaluateModule) => {
+            const finalResult = () => _evaluateModule(id, skipResolve);
             const module = self.moduleRegistry[id];
 
-            if (!module.factory || module[SYM_PATCHED_FACTORY])
-                return _evaluateModule(id, skipResolve);
+            if (!module.factory || module[SYM_PATCHED_FACTORY]) return finalResult();
             module[SYM_PATCHED_FACTORY] = true;
 
             let factoryString = module.factory?.toString();
@@ -81,9 +81,7 @@ export function installFactoryPatches(ModuleLoaderClass: typeof SML.ModuleLoader
             });
 
             const hasPatches = !isArrayEqual(patches, []);
-            if (!hasPatches) return _evaluateModule(id, skipResolve);
-
-            console.log(patches, hasPatches);
+            if (!hasPatches) return finalResult();
 
             for (const patch of patches) {
                 let newFactory = factoryString;
@@ -106,7 +104,7 @@ export function installFactoryPatches(ModuleLoaderClass: typeof SML.ModuleLoader
 
             module.factory = newFactory;
             module[SYM_PATCHED_FACTORY] = true;
-            return _evaluateModule(id, skipResolve);
+            return finalResult();
         },
     );
 }
