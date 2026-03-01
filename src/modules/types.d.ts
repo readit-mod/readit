@@ -42,7 +42,11 @@ declare namespace FactoryPatcher {
 
     type Patch = {
         find: string;
-        replacement: PatchReplacement[];
+        replacement: InternalPatchReplacement[];
+    };
+
+    type InternalPatchReplacement = PatchReplacement & {
+        noChangeWarner?: (source: string, moduleId: SML.ModuleID) => void;
     };
 
     type PatchReplacement = {

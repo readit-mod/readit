@@ -1,3 +1,4 @@
+import { logger } from "@api/logger";
 import { createPatcher } from "@api/patcher";
 import { normaliseMatch } from "@api/regexp";
 import { isArrayEqual } from "@api/utils/array";
@@ -21,16 +22,28 @@ export function addDirectPatch(name: string, patch: DirectPatch) {
         });
     }
 
-    addPatch(patch, `__readit_patch_globals__.${name}`);
+    addPatch(patch, `__readit_patch_globals__.${name}`, (source, id) =>
+        logger.warn(`Patch ${source} at ${name} had no effect. Module ID: ${id}.`),
+    );
 }
 
-export function addPatch(patch: FactoryPatcher.Patch, helpersPath: string) {
+function warnNoChange(source: string, moduleId: SML.ModuleID) {
+    logger.warn(`Unnamed patch ${source} had no effect. Module ID: ${moduleId}.`);
+}
+
+export function addPatch(
+    patch: FactoryPatcher.Patch,
+    helpersPath: string,
+    noChangeWarner = warnNoChange,
+) {
     for (const replacement of patch.replacement) {
         if (typeof replacement.replace === "string") {
             const replace = replacement.replace;
 
             replacement.replace = replace.replaceAll("$self", `${helpersPath}`);
         }
+
+        replacement.noChangeWarner = noChangeWarner;
     }
 
     Patches.push(patch);
@@ -73,12 +86,21 @@ export function installFactoryPatches(ModuleLoaderClass: typeof SML.ModuleLoader
             console.log(patches, hasPatches);
 
             for (const patch of patches) {
+                let newFactory = factoryString;
                 const find =
                     typeof patch.match === "string" ? patch.match : normaliseMatch(patch.match);
 
-                factoryString = patch.matchAll
-                    ? factoryString.replaceAll(find, patch.replace as any)
-                    : factoryString.replace(find, patch.replace as any);
+                const source = typeof find === "string" ? find : find.source;
+
+                newFactory = patch.matchAll
+                    ? newFactory.replaceAll(find, patch.replace as any)
+                    : newFactory.replace(find, patch.replace as any);
+
+                if (newFactory === factoryString) {
+                    patch.noChangeWarner(source, id);
+                }
+
+                factoryString = newFactory;
             }
             const newFactory = await functionFromString(factoryString);
 

@@ -4,7 +4,7 @@ import { html } from "@modules/common/lit";
 import type { LitElement } from "lit";
 
 export default defineCorePlugin({
-    name: "Post Buttons API",
+    name: "PostButtonAPI",
     id: "readit.post-buttons",
     version: "1.0.0",
     lifeCycle: PluginLifeCycle.OnInit,

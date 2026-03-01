@@ -24,10 +24,14 @@ export function registerPluginDefinitions() {
             pInstances.set(definition.id, definition);
 
             if (definition.patches) {
-                const helpersPath = `readit.api.plugins.manager.getPluginInstance("${definition.id}")`;
+                const helpersPath = `readit.api.plugins.manager.plugins["${definition.name}"]`;
 
                 for (const patch of definition.patches) {
-                    addPatch(patch, helpersPath);
+                    addPatch(patch, helpersPath, (source, id) =>
+                        logger.warn(
+                            `Patch ${source} at plugin ${definition.name} had no effect. Module ID: ${id}.`,
+                        ),
+                    );
                 }
             }
         }
@@ -89,6 +93,19 @@ export function getPluginInstance(id: string) {
     return pInstances.get(id);
 }
 
+export const plugins = new Proxy(
+    {},
+    {
+        get(target, property, reciever) {
+            if (property in target) return Reflect.get(target, property, reciever);
+
+            const plugin = Array.from(pInstances.values()).find((p) => p.name === property);
+
+            return plugin;
+        },
+    },
+);
+
 expose(
     {
         getPluginInstances,
@@ -98,6 +115,7 @@ expose(
         tryStartPluginBulk,
         tryStopPlugin,
         tryStopPluginBulk,
+        plugins,
         pInstances,
         PluginLifeCycle,
         PluginStates,
