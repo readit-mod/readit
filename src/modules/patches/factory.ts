@@ -1,4 +1,3 @@
-import { expose } from "@api/expose";
 import { createPatcher } from "@api/patcher";
 import { normaliseMatch } from "@api/regexp";
 import { isArrayEqual } from "@api/utils/array";
@@ -12,11 +11,6 @@ type DirectPatch = FactoryPatcher.Patch & {
 };
 
 const Patches: FactoryPatcher.Patch[] = [];
-
-export const stores = {};
-
-expose((name, store) => (stores[name] = store), "readit.api.stores.add");
-expose(stores, "readit.api.stores.obj");
 
 export function addDirectPatch(name: string, patch: DirectPatch) {
     if (patch.globals) {
