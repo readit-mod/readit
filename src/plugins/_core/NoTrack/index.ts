@@ -1,4 +1,3 @@
-import { logger } from "@api/logger";
 import { defineCorePlugin, PluginLifeCycle } from "@api/plugins";
 import { hookDefineProperty } from "@api/wait";
 
@@ -23,7 +22,6 @@ export default defineCorePlugin({
             ],
         },
     ],
-    logger,
 
     start() {
         hookDefineProperty(window, "Sentry", (Sentry) => {
