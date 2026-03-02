@@ -62,8 +62,7 @@ type Dialog = {
 const modalStyle = createCustomCssSheet("modal", "");
 modalStyle.insertRule(`
     .readit-modal-card[appearance=modal] {
-        width: min(95vw, 440px);
-        max-height: min(660px, 90vh);
+        width: 65vw !important;
     }
 `);
 
@@ -142,11 +141,10 @@ export function showDialog(id: string, dialogResult: TemplateResult) {
                 dialog-id="${id}"
                 blocking
                 .litTemplateChildren=${dialogResult}
+                open
             ></rpl-dialog>`,
         ) as RPLDialog,
     );
-
-    modal.showModal();
     return modal;
 }
 

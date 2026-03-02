@@ -1,6 +1,9 @@
+import { showSimpleDialog } from "@api/dialog";
 import { expose } from "@api/expose";
 import { Logger, logger } from "@api/logger";
+import { showToast } from "@api/toasts";
 import { splitArray } from "@api/utils/array";
+import { html } from "@modules/common/lit";
 import { addPatch } from "@modules/patches/factory";
 import { isCorePlugin, PluginLifeCycle } from ".";
 import { type InternalPlugin, PluginStates, type RawPluginModule } from "./types";
@@ -27,11 +30,38 @@ export function registerPluginDefinitions() {
                 const helpersPath = `readit.api.plugins.manager.plugins["${definition.name}"]`;
 
                 for (const patch of definition.patches) {
-                    addPatch(patch, helpersPath, (source, id) =>
+                    addPatch(patch, helpersPath, (source, id) => {
                         logger.warn(
                             `Patch ${source} at plugin ${definition.name} had no effect. Module ID: ${id}.`,
-                        ),
-                    );
+                        );
+
+                        showToast({
+                            level: "warning",
+                            message: `Patch in plugin ${definition.name} had no effect. Click for more information.`,
+                            duration: 8e3,
+                            click() {
+                                showSimpleDialog({
+                                    id: "patch-no-effect-dialog",
+                                    title: `Patch had no effect`,
+                                    content: html`
+                                        <div>
+                                            <p>
+                                                A patch in <strong>${definition.name}</strong> had no effect on the factory it was targeting.
+                                            </p>
+                                            <p>
+                                                <strong>Pattern:</strong><br/>
+                                                <code>/${source}/</code>
+                                            </p>
+                                            <p>
+                                                <strong>Module ID:</strong><br/>
+                                                <code>${id}</code>
+                                            </p>
+                                        </div>
+                                    `,
+                                });
+                            },
+                        });
+                    });
                 }
             }
         }

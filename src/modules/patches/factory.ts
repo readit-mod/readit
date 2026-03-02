@@ -88,7 +88,7 @@ export function installFactoryPatches(ModuleLoaderClass: typeof SML.ModuleLoader
                 const find =
                     typeof patch.match === "string" ? patch.match : normaliseMatch(patch.match);
 
-                const source = typeof find === "string" ? find : find.source;
+                const source = typeof find === "string" ? find : (patch.match as RegExp).source;
 
                 newFactory = patch.matchAll
                     ? newFactory.replaceAll(find, patch.replace as any)
