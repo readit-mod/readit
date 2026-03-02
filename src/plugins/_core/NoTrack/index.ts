@@ -11,17 +11,31 @@ export default defineCorePlugin({
         {
             find: "notifyAndSendMetrics",
             replacement: [
+                // reports
                 {
                     match: /(?<=disabled:\s*)Boolean\(\i\.DISABLE_W3_REPORTING\)/,
                     replace: "true",
                 },
+                // perfMetrics
                 {
                     match: /(?<=notifyAndSendMetrics\(\i\){).{0,50}(?=})/,
                     replace: "",
                 },
+                // events
+                {
+                    match: /(?<=fetch\(\i,\s*{body:s*)(\i)/,
+                    replace: "$self.mutateBody($1)",
+                },
             ],
         },
     ],
+
+    mutateBody(bodyString: string) {
+        const body = JSON.parse(bodyString);
+
+        body.info = [];
+        return JSON.stringify(body);
+    },
 
     start() {
         hookDefineProperty(window, "Sentry", (Sentry) => {
