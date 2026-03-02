@@ -158,16 +158,29 @@ function patchHeader() {
 
         const logoContainer = findChild<HTMLSpanElement>(logo, logoContainerFilter);
 
-        // Out with the old!
-        logoContainer.firstElementChild?.remove();
-
-        // And in with the new!
-        render(
-            Icon(ReadItIcon, {
-                size: IconSizes.Large,
-                styles: "color: var(--shreddit-color-wordmark)",
-            }),
-            logoContainer,
-        );
+        injectReadItLogo(logoContainer);
     });
+
+    componentDOMPatch("reddit-header-small", (header) => {
+        const logoContainerFilter = chain.all(
+            elementFilters.byTagName("faceplate-tracker"),
+            elementFilters.byAttribute("noun", "reddit_logo"),
+        );
+
+        const logoContainer = findInElementTree<HTMLElement>(header, logoContainerFilter);
+
+        injectReadItLogo(logoContainer);
+    });
+}
+function injectReadItLogo(logoContainer: HTMLElement) {
+    logoContainer.firstElementChild?.remove();
+
+    // And in with the new!
+    render(
+        Icon(ReadItIcon, {
+            size: IconSizes.Large,
+            styles: "color: var(--shreddit-color-wordmark)",
+        }),
+        logoContainer,
+    );
 }
