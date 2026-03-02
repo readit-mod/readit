@@ -1,9 +1,4 @@
-import {
-    filters as elementFilters,
-    findChild,
-    findInElementTree,
-    waitForElement,
-} from "@api/elements";
+import { filters as elementFilters, findChild, findInElementTree } from "@api/elements";
 import { chain } from "@api/filters";
 import { defineCorePlugin, PluginLifeCycle } from "@api/plugins";
 import { type AlertController, pushQueuedToasts, type RawToast, ToastLevels } from "@api/toasts";
@@ -14,11 +9,22 @@ export default defineCorePlugin({
     id: "readit.toasts",
     version: "1.0.0",
     lifeCycle: PluginLifeCycle.ModulesReady,
-    start() {
-        waitForElement(() =>
-            document.querySelector("alert-controller")?.shadowRoot?.querySelector("toaster-lite"),
-        ).then(pushQueuedToasts);
 
+    patches: [
+        {
+            find: "_onSwipe",
+            replacement: [
+                {
+                    match: /(?<=})disconnectedCallback(?=.{0,150}_onSwipe)/,
+                    replace: "firstUpdated(){this.updateComplete.then($self.pushQueuedToasts)} $&",
+                },
+            ],
+        },
+    ],
+
+    pushQueuedToasts,
+
+    start() {
         document.addEventListener("show-toast", (event: ToastEvent) => {
             /*
              * Before, the toast even recieved a level property but it would

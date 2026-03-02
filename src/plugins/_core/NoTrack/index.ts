@@ -23,7 +23,7 @@ export default defineCorePlugin({
                 },
                 // events
                 {
-                    match: /(?<=fetch\(\i,\s*{body:s*)(\i)/,
+                    match: /(?<=fetch\(\i,\s*{body:\s*)(\i)/,
                     replace: "$self.mutateBody($1)",
                 },
             ],
