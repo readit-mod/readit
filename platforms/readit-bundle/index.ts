@@ -1,13 +1,6 @@
-import { expose } from "../../src/api/expose";
+import { expose } from "@api/expose";
 
-declare global {
-    const ReadItNative: {
-        meta: {
-            loaderVersion: string;
-            platform: string;
-        };
-    };
-}
+// TODO: maybe rewrite readit-desktop too?
 
 expose(
     {

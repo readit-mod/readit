@@ -1,7 +1,6 @@
 import { lazyDirective } from "@api/utils/lazy";
 import { Directive, noChange, nothing } from "@modules/common/lit";
 import type { ElementPart } from "lit";
-import { expose } from "./expose";
 
 export const unsafeSvg = lazyDirective(
     () =>
@@ -83,12 +82,4 @@ export const ref = lazyDirective(
                 return;
             }
         },
-);
-
-expose(
-    {
-        ref,
-        createRef,
-    },
-    "readit.ref",
 );

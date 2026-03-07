@@ -15,3 +15,15 @@ declare type CodeFilter = string | RegExp;
 interface Window {
     ShredditModuleLoader: import("@modules/types").SML.ModuleLoader;
 }
+
+declare type ReadItPlatform = {
+    info: {
+        version: string;
+        platform: string;
+    };
+
+    settings: {
+        get(): any;
+        set(value: any): Promise<any>;
+    };
+};

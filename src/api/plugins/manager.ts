@@ -1,6 +1,8 @@
-import { showSimpleDialog } from "@api/dialog";
+import { showConfirmationDialog, showSimpleDialog } from "@api/dialog";
 import { expose } from "@api/expose";
+import { chain } from "@api/filters";
 import { Logger, logger } from "@api/logger";
+import { SettingsStore } from "@api/stores/settings";
 import { showToast } from "@api/toasts";
 import { splitArray } from "@api/utils/array";
 import { html } from "@modules/common/lit";
@@ -9,24 +11,29 @@ import { isCorePlugin, PluginLifeCycle } from ".";
 import { type InternalPlugin, PluginStates, type RawPluginModule } from "./types";
 
 const pInstances = new Map<string, InternalPlugin>();
+export let rawPlugins: RawPluginModule[];
 
 export function registerPluginDefinitions() {
-    const plugins = import.meta.glob<RawPluginModule>(
-        [
-            "../../plugins/*/index.ts",
-            "../../plugins/_core/*/index.ts",
-            "../../plugins/_api/*/index.ts",
-        ],
-        {
-            eager: true,
-        },
+    rawPlugins = Object.values(
+        import.meta.glob<RawPluginModule>(
+            [
+                "../../plugins/*/index.ts",
+                "../../plugins/_core/*/index.ts",
+                "../../plugins/_api/*/index.ts",
+            ],
+            {
+                eager: true,
+            },
+        ),
     );
 
-    for (const { default: definition } of Object.values(plugins)) {
+    for (const { default: definition } of rawPlugins) {
         if (!pInstances.has(definition.id)) {
             pInstances.set(definition.id, definition);
 
-            if (definition.patches) {
+            const settings = SettingsStore.getPluginSettings(definition.id);
+
+            if (settings.enabled && definition.patches) {
                 const helpersPath = `readit.api.plugins.manager.plugins["${definition.name}"]`;
 
                 for (const patch of definition.patches) {
@@ -74,7 +81,10 @@ export function getPluginInstances(): InternalPlugin[] {
 
 export function startPluginsFromLifeCycle(lifeCycle: PluginLifeCycle) {
     const pluginsForLifeCycle = getPluginInstances().filter(
-        (plugin) => plugin.lifeCycle === lifeCycle,
+        chain.all(
+            (plugin) => plugin.lifeCycle === lifeCycle,
+            (plugin) => SettingsStore.getPluginSettings(plugin.id).enabled,
+        ),
     );
     logger.log("Starting plugins for", lifeCycle, pluginsForLifeCycle);
     const [core, regular] = splitArray(pluginsForLifeCycle, isCorePlugin);
@@ -136,10 +146,34 @@ export const plugins = new Proxy(
     },
 );
 
+export function enablePlugin(id: string) {
+    const settings = SettingsStore.getPluginSettings(id);
+    if (settings.enabled) return;
+
+    settings.enabled = true;
+    const plugin = getPluginInstance(id);
+
+    if (plugin.patches) {
+        showConfirmationDialog({
+            id: "enable-plugin-with-patches",
+            title: "Are you sure you want to restart?",
+            description: "This plugin has patches, so it requires a restart to enable.",
+            onResult(result) {
+                if (result) {
+                    window.location.reload();
+                }
+            },
+        });
+    } else {
+        tryStartPlugin(id);
+    }
+}
+
 expose(
     {
         getPluginInstances,
         getPluginInstance,
+        enablePlugin,
         startPluginsFromLifeCycle,
         tryStartPlugin,
         tryStartPluginBulk,

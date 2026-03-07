@@ -1,8 +1,9 @@
 import { Icon, IconSizes, Icons } from "@assets/icons";
 import { html, nothing } from "@modules/common/lit";
-import type { LitElement, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { createCustomCssSheet } from "./customcss";
 import { expose } from "./expose";
+import type { TypedLitElement } from "./utils/element";
 import { DOMify } from "./utils/lit";
 
 function CloseButton(onClick: () => void): TemplateResult<1> {
@@ -127,10 +128,10 @@ function buildDialog(dialog: Dialog, close: () => void): TemplateResult {
     `;
 }
 
-type RPLDialog = LitElement & {
+type RPLDialog = TypedLitElement<{
     hide: () => void;
     showModal: () => Promise<void>;
-};
+}>;
 
 export function showDialog(id: string, dialogResult: TemplateResult) {
     const container = document.querySelector("shreddit-app");

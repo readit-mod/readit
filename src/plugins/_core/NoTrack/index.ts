@@ -28,6 +28,16 @@ export default defineCorePlugin({
                 },
             ],
         },
+
+        {
+            find: "alb.reddit.com/track",
+            replacement: [
+                {
+                    match: /fetch.{0,20}alb\.reddit\.com\/track.{0,475}"failed".+?\)}\)[;,]/,
+                    replace: "",
+                },
+            ],
+        },
     ],
 
     mutateBody(bodyString: string) {

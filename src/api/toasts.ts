@@ -1,6 +1,7 @@
 import { Icon, IconSizes, ReadItIcon } from "@assets/icons";
 import type { TemplateResult } from "lit";
 import { expose } from "./expose";
+import type { TypedLitElement } from "./utils/element";
 
 type ToastLevel = "info" | "success" | "warning" | "error";
 type Toast = {
@@ -37,10 +38,10 @@ export enum ToastLevels {
     success = 7,
 }
 
-export type AlertController = HTMLElement & {
+export type AlertController = TypedLitElement<{
     triggerToast: (toast: RawToast) => void;
     toaster?: HTMLElement;
-};
+}>;
 
 const toastQueue: Toast[] = [];
 let toastsPushed = false;

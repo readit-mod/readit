@@ -1,67 +1,64 @@
 import { filters as elementFilters, findChild, findInElementTree } from "@api/elements";
 import { chain } from "@api/filters";
 import { defineCorePlugin, PluginLifeCycle } from "@api/plugins";
-import { type AlertController, pushQueuedToasts, type RawToast, ToastLevels } from "@api/toasts";
+import { pushQueuedToasts, type RawToast, ToastLevels } from "@api/toasts";
 import { addSingleListener } from "@api/utils/events";
 
 export default defineCorePlugin({
     name: "Toasts",
     id: "readit.toasts",
     version: "1.0.0",
-    lifeCycle: PluginLifeCycle.ModulesReady,
+    lifeCycle: PluginLifeCycle.OnInit,
 
     patches: [
         {
-            find: "_onSwipe",
+            find: "this.handleToast=",
             replacement: [
                 {
-                    match: /(?<=})disconnectedCallback(?=.{0,150}_onSwipe)/,
-                    replace: "firstUpdated(){this.updateComplete.then($self.pushQueuedToasts)} $&",
+                    match: /(?<=this\.handleToast=(\i).{0,360})([;,])this\.appendChild\((\i)\)/,
+                    replace: "$2$self.handleToast($1.detail, $3)$&",
                 },
             ],
         },
     ],
 
-    pushQueuedToasts,
+    handleToast(detail: RawToast, toast: HTMLElement) {
+        const { level = 6, meta, readit = {} } = detail;
+        const [background, foreground] = getColorVariables(level);
+
+        toast.style.backgroundColor = `var(${background})`;
+        toast.style.color = `var(${foreground})`;
+
+        // Fix dismiss button colors.
+        applyDismissButtonFixes(toast, level, [
+            background,
+            foreground,
+        ]);
+
+        // Fix icon positioning issues.
+        applyToastIconFix(toast);
+
+        /*
+         * Reddit doesn't dismiss error toasts even when the duration
+         * is set, probably so users don't miss important error messages.
+         * But if the duration was set, obviously the developer expects
+         * the toast to be dimissed.
+         */
+        applyDurationFix(toast, level, meta);
+
+        // Apply our custom toast stuff.
+        applyReadItStuff(toast, readit);
+    },
 
     start() {
-        document.addEventListener("show-toast", (event: ToastEvent) => {
-            /*
-             * Before, the toast even recieved a level property but it would
-             * not be used at all as it was probably a side effect of toasts
-             * and banners being the same type (I'm guessing). To improve
-             * this, here, we listen for new toasts and apply the appropriate
-             * colors based on the level which is passed in.
-             */
-            const alertController = event.target as AlertController;
-            const toast = alertController.toaster?.lastElementChild as HTMLElement;
-            if (!toast) return;
-
-            const { level = 6, meta, readit = {} } = event.detail;
-            const [background, foreground] = getColorVariables(level);
-
-            toast.style.backgroundColor = `var(${background})`;
-            toast.style.color = `var(${foreground})`;
-
-            // Fix dismiss button colors.
-            applyDismissButtonFixes(toast, level, [
-                background,
-                foreground,
-            ]);
-
-            // Fix icon positioning issues.
-            applyToastIconFix(toast);
-
-            /*
-             * Reddit doesn't dismiss error toasts even when the duration
-             * is set, probably so users don't miss important error messages.
-             * But if the duration was set, obviously the developer expects
-             * the toast to be dimissed.
-             */
-            applyDurationFix(toast, level, meta);
-
-            // Apply our custom toast stuff.
-            applyReadItStuff(toast, readit);
+        document.addEventListener("readystatechange", () => {
+            if (document.readyState === "complete") {
+                /*
+                 * If it's pushed too early, it will show up but be removed
+                 * immediately, I'm guessing it's to do with hydration.
+                 */
+                setTimeout(pushQueuedToasts, 0);
+            }
         });
     },
 });

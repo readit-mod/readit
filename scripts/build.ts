@@ -15,13 +15,14 @@ type MetaReplacement = {
     replace: (() => string) | string;
 };
 
-const version = process.argv[3] ?? `${packageJSON.version}-dev-${new Date().toISOString()}`;
+const getVersion = () =>
+    process.argv[3] ?? `${packageJSON.version}-dev-${new Date().toISOString()}`;
 const root = resolve(__dirname, "..");
 
 const replacements: MetaReplacement[] = [
     {
         find: "%version%",
-        replace: version,
+        replace: getVersion(),
     },
     {
         find: "%icon%",
@@ -49,7 +50,7 @@ const meta = applyReplacements(
 
 const common: import("vite").InlineConfig = {
     define: {
-        __READIT_VERSION__: JSON.stringify(version),
+        __READIT_VERSION__: JSON.stringify(getVersion()),
     },
     resolve: {
         alias: {
@@ -78,7 +79,7 @@ const commonLibConfig: import("vite").LibraryOptions = {
 export async function buildReadIt(mode: BuildMode = "userscript") {
     const isBundle = mode === "bundle";
     const manifest = {
-        version,
+        version: getVersion(),
     };
 
     if (isBundle) {
@@ -96,6 +97,8 @@ export async function buildReadIt(mode: BuildMode = "userscript") {
                 },
             },
         });
+
+        writeFileSync(resolve(root, "dist/manifest.json"), JSON.stringify(manifest));
     } else {
         await build({
             ...common,
@@ -115,8 +118,6 @@ export async function buildReadIt(mode: BuildMode = "userscript") {
             },
         });
     }
-
-    writeFileSync(resolve(root, "dist/manifest.json"), JSON.stringify(manifest));
 
     console.log(`Successfully built ${isBundle ? "bundle" : "userscript"}!`);
 }

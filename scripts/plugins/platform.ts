@@ -16,6 +16,11 @@ export function platformIIFEPlugin(root: string, type: "userscript" | "bundle"):
             await build({
                 root,
                 logLevel: "silent",
+                resolve: {
+                    alias: {
+                        "@api": resolve(root, "./src/api"),
+                    },
+                },
                 build: {
                     emptyOutDir: true,
                     outDir,

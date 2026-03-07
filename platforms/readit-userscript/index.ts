@@ -1,19 +1,3 @@
-import { expose } from "../../src/api/expose";
+import { exposePlatform } from "./platform";
 
-declare global {
-    const GM_info: {
-        script: {
-            version: string;
-        };
-    };
-}
-
-expose(
-    {
-        info: {
-            version: GM_info.script.version,
-            platform: "userscript",
-        },
-    },
-    "readit.platform",
-);
+exposePlatform();

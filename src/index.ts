@@ -6,8 +6,6 @@ import { hookDefineProperty } from "@api/wait";
 import { initCommonModules } from "@modules/common/init";
 import { initModules } from "@modules/init";
 import { modulesReady } from "@modules/patches/dm";
-import "@api/utils/lit";
-import "@api/dialog";
 
 expose(__READIT_VERSION__, "readit.version");
 
