@@ -11,14 +11,13 @@ expose(__READIT_VERSION__, "readit.version");
 
 hookDefineProperty(window, "ShredditModuleLoader", (ModuleLoaderClass) => {
     initModules(ModuleLoaderClass);
-    registerPluginDefinitions();
-    startPluginsFromLifeCycle(PluginLifeCycle.OnInit);
-    initLazyPatches();
-    initCommonModules();
     init();
-
-    return ModuleLoaderClass;
 });
+
+initCommonModules();
+initLazyPatches();
+registerPluginDefinitions();
+startPluginsFromLifeCycle(PluginLifeCycle.OnInit);
 
 async function init() {
     await modulesReady;

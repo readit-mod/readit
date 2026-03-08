@@ -11,7 +11,7 @@ export function hookDefineProperty<T extends object, P extends LiteralUnion<keyo
     const targetAsAny = target as any;
 
     if (property in target) {
-        targetAsAny[property] = cb(targetAsAny[property]);
+        targetAsAny[property] = cb(targetAsAny[property]) ?? targetAsAny[property];
         return;
     }
 

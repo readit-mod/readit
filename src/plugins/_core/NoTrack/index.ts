@@ -50,8 +50,6 @@ export default defineCorePlugin({
     start() {
         hookDefineProperty(window, "SENTRY_CONFIG", (config) => {
             config.enabled = false;
-
-            return config;
         });
     },
 });
