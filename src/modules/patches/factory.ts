@@ -59,6 +59,7 @@ export function installFactoryPatches(ModuleLoaderClass: typeof SML.ModuleLoader
     const patcher = createPatcher("ModulePatcher");
 
     const SYM_PATCHED_FACTORY = Symbol.for("readit_patched_factory");
+    const SYM_ORIGINAL_FACTORY = Symbol.for("readit_original_factory");
 
     patcher.instead(
         ModuleLoaderClass.prototype,
@@ -68,7 +69,6 @@ export function installFactoryPatches(ModuleLoaderClass: typeof SML.ModuleLoader
             const module = self.moduleRegistry[id];
 
             if (!module.factory || module[SYM_PATCHED_FACTORY]) return finalResult();
-            module[SYM_PATCHED_FACTORY] = true;
 
             let factoryString = module.factory?.toString();
 
@@ -82,6 +82,8 @@ export function installFactoryPatches(ModuleLoaderClass: typeof SML.ModuleLoader
 
             const hasPatches = !isArrayEqual(patches, []);
             if (!hasPatches) return finalResult();
+
+            module[SYM_ORIGINAL_FACTORY] = module.factory;
 
             for (const patch of patches) {
                 let newFactory = factoryString;

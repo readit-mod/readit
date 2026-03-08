@@ -13,7 +13,8 @@ declare type Constructor<T = any> = new () => T;
 declare type CodeFilter = string | RegExp;
 
 interface Window {
-    ShredditModuleLoader: import("@modules/types").SML.ModuleLoader;
+    ShredditModuleLoader: typeof import("@modules/types").SML.ModuleLoader;
+    SML: import("@modules/types").SML.ModuleLoader;
 }
 
 declare type ReadItPlatform = {
