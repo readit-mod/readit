@@ -48,20 +48,16 @@ export default defineCorePlugin({
     },
 
     start() {
-        hookDefineProperty(window, "Sentry", (Sentry) => {
-            for (const key of Object.keys(Sentry)) {
-                delete Sentry[key];
-            }
+        hookDefineProperty(window, "SENTRY_CONFIG", (config) => {
+            config.enabled = false;
 
-            setTimeout(() => {
-                Reflect.deleteProperty(window, "Sentry");
-            }, 0);
+            return config;
         });
     },
 });
 
 declare global {
     interface Window {
-        Sentry: any;
+        SENTRY_CONFIG: any;
     }
 }

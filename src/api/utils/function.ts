@@ -3,7 +3,7 @@ import { memoize } from "./lazy";
 export const functionFromString = memoize(async (functionString: string): Promise<Fn> => {
     const blob = new Blob(
         [
-            `const func = ${functionString}; export default func;`,
+            `export default ${functionString}`,
         ],
         {
             type: "application/javascript",
