@@ -111,15 +111,17 @@ function applyDismissButtonFixes(
         elementFilters.byTagName("button"),
     );
 
+    if (!dismissButton) return;
+
     // Fix button hover color.
     if (ToastLevels[level] !== "info") {
-        dismissButton?.style.setProperty(
+        dismissButton.style.setProperty(
             "--button-color-background-hover",
             `color-mix(in srgb, var(${colorVariables[0]}) 100%, #FFFFFF 50%)`,
         );
     } else {
-        dismissButton?.classList.remove("button-plain-inverted");
-        dismissButton?.classList.add("button-plain");
+        dismissButton.classList.remove("button-plain-inverted");
+        dismissButton.classList.add("button-plain");
     }
 
     const dismissButtonImageContainer = findChild<HTMLSpanElement>(
@@ -139,6 +141,8 @@ function applyToastIconFix(toast: HTMLElement) {
         toast,
         elementFilters.byAttribute("slot", "icon"),
     );
+
+    if (!iconContainer) return;
 
     iconContainer.style.display = "flex";
 }
