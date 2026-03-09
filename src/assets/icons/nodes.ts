@@ -1,8 +1,8 @@
-import { unsafeSvg } from "@api/directives";
 import { expose } from "@api/expose";
 import { memoize } from "@api/utils/lazy";
 import { svg } from "@modules/common/lit";
 import type { SVGTemplateResult } from "lit";
+import { unsafeSVG } from "lit/directives/unsafe-svg.js";
 
 const renderNode = memoize((node: SvgNode): SVGTemplateResult => {
     if (typeof node === "string") return svg`${node}`;
@@ -18,7 +18,7 @@ const renderNode = memoize((node: SvgNode): SVGTemplateResult => {
         return `<${tag}${attrString ? ` ${attrString}` : ""}>${children.map(makeRaw).join("")}</${tag}>`;
     }
 
-    return unsafeSvg(makeRaw(node)) as unknown as SVGTemplateResult;
+    return unsafeSVG(makeRaw(node)) as unknown as SVGTemplateResult;
 });
 
 export function Icon(definition: IconDefinition, options: IconOptions = {}): SVGTemplateResult {
