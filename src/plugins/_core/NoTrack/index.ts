@@ -11,11 +11,6 @@ export default defineCorePlugin({
         {
             find: "notifyAndSendMetrics",
             replacement: [
-                // reports
-                {
-                    match: /Boolean\(\i\.DISABLE_W3_REPORTING\)/,
-                    replace: "true",
-                },
                 // perfMetrics
                 {
                     match: /notifyAndSendMetrics\(\i\){/,
@@ -51,11 +46,16 @@ export default defineCorePlugin({
         hookDefineProperty(window, "SENTRY_CONFIG", (config) => {
             config.enabled = false;
         });
+
+        hookDefineProperty(window, "CLIENT_CONFIG", (config) => {
+            config.DISABLE_W3_REPORTING = true;
+        });
     },
 });
 
 declare global {
     interface Window {
         SENTRY_CONFIG: any;
+        CLIENT_CONFIG: any;
     }
 }
