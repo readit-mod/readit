@@ -5,7 +5,7 @@ import { registerPluginDefinitions, startPluginsFromLifeCycle } from "@api/plugi
 import { hookDefineProperty } from "@api/wait";
 import { initCommonModules } from "@modules/common/init";
 import { initModules } from "@modules/init";
-import { modulesReady } from "@modules/patches/dm";
+import { modulesReady } from "@modules/patches/modulesready";
 
 expose(__READIT_VERSION__, "readit.version");
 

@@ -4,7 +4,7 @@ import type { SML } from "@modules/types";
 
 export const { promise: modulesReady, resolve: fireModulesReady } = deferredPromise();
 
-export function installDMPatch(ModuleLoaderClass: typeof SML.ModuleLoader) {
+export function installModulesReadyPatch(ModuleLoaderClass: typeof SML.ModuleLoader) {
     const patcher = createPatcher("DMPatch");
     let timer: number;
     let fired = false;
@@ -15,14 +15,20 @@ export function installDMPatch(ModuleLoaderClass: typeof SML.ModuleLoader) {
         new module definition, we decide the modules
         are ready.
     */
-    patcher.after(ModuleLoaderClass.prototype, "dm", () => {
-        clearTimeout(timer);
+    patcher.after(
+        ModuleLoaderClass.prototype,
+        "_evaluateModule",
+        async (_self, _args, resultPromise) => {
+            clearTimeout(timer);
 
-        timer = setTimeout(() => {
-            if (!fired) {
-                fireModulesReady();
-                fired = true;
-            }
-        }, 750);
-    });
+            timer = setTimeout(() => {
+                if (!fired) {
+                    fireModulesReady();
+                    fired = true;
+                }
+            }, 750);
+
+            return await resultPromise;
+        },
+    );
 }
