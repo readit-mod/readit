@@ -1,6 +1,11 @@
-import { filters as elementFilters, findChild, findInElementTree } from "@api/elements";
+import {
+    filters as elementFilters,
+    findChild,
+    findInElementTree,
+    waitForElement,
+} from "@api/elements";
 import { chain } from "@api/filters";
-import { defineCorePlugin, PluginLifeCycle } from "@api/plugins";
+import { defineCorePlugin } from "@api/plugins";
 import { pushQueuedToasts, type RawToast, ToastLevels } from "@api/toasts";
 import { addSingleListener } from "@api/utils/events";
 
@@ -8,7 +13,6 @@ export default defineCorePlugin({
     name: "Toasts",
     id: "readit.toasts",
     version: "1.0.0",
-    lifeCycle: PluginLifeCycle.OnInit,
 
     patches: [
         {
@@ -21,6 +25,17 @@ export default defineCorePlugin({
                 {
                     match: /([;,])this\.appendChild\((\i)\)/,
                     replace: "$1$self.handleToast(details, $2)$&",
+                },
+
+                /*
+                 * Reddit doesn't dismiss error toasts even when the duration
+                 * is set, probably so users don't miss important error messages.
+                 * But if the duration was set, obviously the developer expects
+                 * the toast to be dimissed.
+                 */
+                {
+                    match: /(\i)&&\1.+disableAutoDismiss(?=.{0,40}(\i)\?\.duration)/,
+                    replace: "($2?.duration||($&))",
                 },
             ],
         },
@@ -42,27 +57,15 @@ export default defineCorePlugin({
         // Fix icon positioning issues.
         applyToastIconFix(toast);
 
-        /*
-         * Reddit doesn't dismiss error toasts even when the duration
-         * is set, probably so users don't miss important error messages.
-         * But if the duration was set, obviously the developer expects
-         * the toast to be dimissed.
-         */
-        applyDurationFix(toast, level, meta);
-
         // Apply our custom toast stuff.
         applyReadItStuff(toast, readit);
     },
 
     start() {
-        document.addEventListener("readystatechange", () => {
-            if (document.readyState === "complete") {
-                /*
-                 * If it's pushed too early, it will show up but be removed
-                 * immediately, I'm guessing it's to do with hydration.
-                 */
-                setTimeout(pushQueuedToasts, 0);
-            }
+        waitForElement(() =>
+            document.querySelector("alert-controller")?.shadowRoot?.querySelector("toaster-lite"),
+        ).then(() => {
+            setTimeout(pushQueuedToasts, 0);
         });
     },
 });
@@ -149,18 +152,6 @@ function applyToastIconFix(toast: HTMLElement) {
     if (!iconContainer) return;
 
     iconContainer.style.display = "flex";
-}
-
-function applyDurationFix(toast: HTMLElement, level: number, meta: RawToast["meta"]) {
-    if (
-        meta?.duration &&
-        // Reddit decides based on the opposite of this.
-        (level < ToastLevels.warning || level > ToastLevels.success)
-    ) {
-        setTimeout(() => {
-            toast.setAttribute("_fading", "");
-        }, meta.duration);
-    }
 }
 
 function applyReadItStuff(toast: HTMLElement, readit: RawToast["readit"]) {

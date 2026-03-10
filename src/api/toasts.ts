@@ -45,9 +45,10 @@ export type AlertController = TypedLitElement<{
 
 const toastQueue: Toast[] = [];
 let toastsPushed = false;
-let alertController: AlertController;
 
 function sendToast(toast: Toast) {
+    const alertController = document.querySelector("alert-controller") as AlertController;
+
     const rawToast: RawToast = {
         level: ToastLevels[toast.level ?? "info"],
         message: toast.message,
@@ -81,11 +82,11 @@ function sendToast(toast: Toast) {
     alertController.triggerToast(rawToast);
 }
 
+// FIXME: broken due to timing
 export function pushQueuedToasts() {
     if (toastsPushed) return;
     toastsPushed = true;
 
-    alertController = document.querySelector("alert-controller");
     for (const toast of toastQueue) {
         sendToast(toast);
     }
