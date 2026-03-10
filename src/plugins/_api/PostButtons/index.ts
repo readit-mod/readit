@@ -24,7 +24,7 @@ export default defineCorePlugin({
             find: "get overflowActions",
             replacement: [
                 {
-                    match: /(\i)\.\i(?=]\.filter)/,
+                    match: /\i\.\i(?=]\.filter)/,
                     replace: "$&,...$self.getOverflowMenuItems(this)",
                 },
             ],

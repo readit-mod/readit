@@ -84,6 +84,7 @@ export function installFactoryPatches(ModuleLoaderClass: typeof SML.ModuleLoader
             if (!hasPatches) return finalResult();
 
             module[SYM_ORIGINAL_FACTORY] = module.factory;
+            module[SYM_PATCHED_FACTORY] = true;
 
             for (const patch of patches) {
                 let newFactory = factoryString;
@@ -105,7 +106,6 @@ export function installFactoryPatches(ModuleLoaderClass: typeof SML.ModuleLoader
             const newFactory = await functionFromString(factoryString);
 
             module.factory = newFactory;
-            module[SYM_PATCHED_FACTORY] = true;
             return finalResult();
         },
     );

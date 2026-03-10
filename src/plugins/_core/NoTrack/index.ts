@@ -13,13 +13,13 @@ export default defineCorePlugin({
             replacement: [
                 // reports
                 {
-                    match: /(?<=disabled:\s*)Boolean\(\i\.DISABLE_W3_REPORTING\)/,
+                    match: /Boolean\(\i\.DISABLE_W3_REPORTING\)/,
                     replace: "true",
                 },
                 // perfMetrics
                 {
-                    match: /(?<=notifyAndSendMetrics\(\i\){).{0,50}(?=})/,
-                    replace: "",
+                    match: /notifyAndSendMetrics\(\i\){/,
+                    replace: "$&return;",
                 },
                 // events
                 {

@@ -15,8 +15,12 @@ export default defineCorePlugin({
             find: "this.handleToast=",
             replacement: [
                 {
-                    match: /(?<=this\.handleToast=(\i).{0,360})([;,])this\.appendChild\((\i)\)/,
-                    replace: "$2$self.handleToast($1.detail, $3)$&",
+                    match: /this.handleToast=(\i)=>{const /,
+                    replace: "$&details=$1.detail,",
+                },
+                {
+                    match: /([;,])this\.appendChild\((\i)\)/,
+                    replace: "$1$self.handleToast(details, $2)$&",
                 },
             ],
         },
