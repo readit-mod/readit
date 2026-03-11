@@ -64,6 +64,7 @@ const modalStyle = createCustomCssSheet("modal", "");
 modalStyle.insertRule(`
     .readit-modal-card[appearance=modal] {
         width: 65vw !important;
+        max-height: 70vh !important;
     }
 `);
 
@@ -122,7 +123,9 @@ function buildDialog(dialog: Dialog, close: () => void): TemplateResult {
         >
             ${CloseButton(onClose)}
             <div slot="title">${dialog.title}</div>
-            ${typeof dialog.content === "string" ? html`<p>${dialog.content}</p>` : dialog.content}
+            <rpl-scrollbox>
+                ${typeof dialog.content === "string" ? html`<p>${dialog.content}</p>` : dialog.content}
+            </rpl-scrollbox>
             ${buttons}
         </rpl-modal-card>
     `;
