@@ -6,6 +6,7 @@ import { hookDefineProperty } from "@api/wait";
 import { initCommonModules } from "@modules/common/init";
 import { initModules } from "@modules/init";
 import { modulesReady } from "@modules/patches/modulesready";
+import "./components";
 
 expose(__READIT_VERSION__, "readit.version");
 

@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
         "baseUrl": ".",
+        "experimentalDecorators": true,
         "paths": {
             "@api/*": ["./src/api/*"],
             "@modules/*": ["./src/modules/*"],

@@ -7,6 +7,7 @@ import { showToast } from "@api/toasts";
 import { splitArray } from "@api/utils/array";
 import { html } from "@modules/common/lit";
 import { addPatch } from "@modules/patches/factory";
+import { Text } from "@/components/text";
 import { isCorePlugin, PluginLifeCycle } from ".";
 import { type InternalPlugin, PluginStates, type RawPluginModule } from "./types";
 
@@ -52,15 +53,14 @@ export function registerPluginDefinitions() {
                                     title: `Patch had no effect`,
                                     content: html`
                                         <div>
+                                            <p>A patch in ${Text(definition.name, "sm/bold")} had no effect on the factory it was targeting.</p>
+                                            <hr/>
                                             <p>
-                                                A patch in <strong>${definition.name}</strong> had no effect on the factory it was targeting.
-                                            </p>
-                                            <p>
-                                                <strong>Pattern:</strong><br/>
+                                                ${Text("Patch Source:", "sm/bold")}<br/>
                                                 <code>/${source}/</code>
                                             </p>
                                             <p>
-                                                <strong>Module ID:</strong><br/>
+                                                ${Text("Module ID:", "sm/bold")}<br/>
                                                 <code>${id}</code>
                                             </p>
                                         </div>
