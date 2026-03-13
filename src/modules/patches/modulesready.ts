@@ -10,10 +10,11 @@ export function installModulesReadyPatch(ModuleLoaderClass: typeof SML.ModuleLoa
     let fired = false;
 
     /*
-        `dm` is the method which registers a module,
-        here, once enough time has passed without a
-        new module definition, we decide the modules
-        are ready.
+        `_evaluateModule` is the method which can
+        be called to evaluate a module if it's hasn't
+        been already and get it's exports. Here, if it
+        hasn't been called for some time, we decide 
+        modules are ready.
     */
     patcher.after(
         ModuleLoaderClass.prototype,

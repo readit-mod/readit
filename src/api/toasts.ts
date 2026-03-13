@@ -82,7 +82,6 @@ function sendToast(toast: Toast) {
     alertController.triggerToast(rawToast);
 }
 
-// FIXME: broken due to timing
 export function pushQueuedToasts() {
     if (toastsPushed) return;
     toastsPushed = true;

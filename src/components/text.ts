@@ -20,19 +20,12 @@ const Sizes: { [key in TextSize]: string } = {
 const Styles: { [key in TextStyle]: string } = {
     normal: "",
     italic: "font-style:italic;",
-    bold: "font-weight:bold",
+    bold: "font-weight:bold;",
 };
 
 export function Text(text: string, variant: TextVariant = "sm/normal") {
-    const [size, style] = variant.split("/") as [
-        TextSize,
-        TextStyle,
-    ];
-
-    const sizePx = size in Sizes ? Sizes[size] : `${size}px`;
-
     return html`
-        <span style="font-size:${sizePx};${Styles[style]}">${text}</span>
+        <readit-text variant="${variant}">${text}</readit-text>
     `;
 }
 
@@ -48,8 +41,11 @@ defineSafeElement("readit-text", () => {
                 TextSize,
                 TextStyle,
             ];
+
+            const sizePx = size in Sizes ? Sizes[size] : `${size}px`;
+
             return html`
-                <span style="font-size:${Sizes[size]};${Styles[style]}">
+                <span style="font-size:${sizePx};${Styles[style]}">
                     <slot></slot>
                 </span>
             `;
