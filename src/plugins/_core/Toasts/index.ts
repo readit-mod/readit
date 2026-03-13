@@ -24,7 +24,8 @@ export default defineCorePlugin({
                 },
                 {
                     match: /([;,])this\.appendChild\((\i)\)/,
-                    replace: "$1$self.handleToast(details, $2)$&",
+                    replace: (match, commaOrSemi, toast) =>
+                        `${commaOrSemi}$self.handleToast(details, ${toast})${match}`,
                 },
 
                 /*
@@ -34,8 +35,8 @@ export default defineCorePlugin({
                  * the toast to be dimissed.
                  */
                 {
-                    match: /(\i)&&\1.+disableAutoDismiss(?=.{0,40}(\i)\?\.duration)/,
-                    replace: "($2?.duration||($&))",
+                    match: /(\i)&&\1.{0,60}(?=&&window.{0,40}(\i)\?\.duration)/,
+                    replace: (match, _, meta) => `(${meta}?.duration||(${match}))`,
                 },
             ],
         },
