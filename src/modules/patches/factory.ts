@@ -37,11 +37,9 @@ export function addPatch(
     noChangeWarner = warnNoChange,
 ) {
     for (const replacement of patch.replacement) {
-        if (typeof replacement.replace === "string") {
-            const replace = replacement.replace;
+        const replace = replacement.replace;
 
-            replacement.replace = replace.replaceAll("$self", `${helpersPath}`);
-        }
+        replacement.replace = normaliseReplace(replace, helpersPath);
 
         replacement.noChangeWarner = noChangeWarner;
     }
@@ -53,6 +51,17 @@ declare global {
     interface Window {
         __readit_patch_globals__: Record<string, any>;
     }
+}
+
+function normaliseReplace(replace: FactoryPatcher.Replacer, helpersPath: string) {
+    let normalised: FactoryPatcher.Replacer;
+
+    if (typeof replace !== "function") normalised = replace.replaceAll("$self", helpersPath);
+    else
+        normalised = (...args: any[]) =>
+            (replace as (...args: any[]) => string)(...args).replaceAll("$self", helpersPath);
+
+    return normalised;
 }
 
 export function installFactoryPatches(ModuleLoaderClass: typeof SML.ModuleLoader) {
