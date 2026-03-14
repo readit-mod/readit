@@ -1,3 +1,4 @@
+import { logger } from "@api/logger";
 import type { Route } from "@api/navigation";
 import { maybeGetRoute, navigateTo } from "@api/navigation";
 import { defineCorePlugin, PluginLifeCycle } from "@api/plugins";
@@ -38,6 +39,8 @@ export default defineCorePlugin({
 
             const route = maybeGetRoute(routeId);
             if (!route) {
+                logger.warn(`ReadIt Route "${routeId}" could not be found.`);
+
                 showToast({
                     message: `ReadIt Route "${routeId}" could not be found.`,
                     level: "warning",
