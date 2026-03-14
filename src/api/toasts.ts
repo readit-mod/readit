@@ -1,4 +1,4 @@
-import { Icon, IconSizes, ReadItIcon } from "@assets/icons";
+import { Icon, IconSizes, Icons } from "@assets/icons";
 import type { TemplateResult } from "lit";
 import { expose } from "./expose";
 import type { TypedLitElement } from "./utils/element";
@@ -65,9 +65,28 @@ function sendToast(toast: Toast) {
             icon: toast.icon,
         };
     } else {
+        let icon: IconDefinition;
+
+        switch (toast.level) {
+            case "error":
+                icon = Icons.Error;
+                break;
+
+            case "warning":
+                icon = Icons.Warning;
+                break;
+
+            case "success":
+                icon = Icons.Success;
+                break;
+
+            default:
+                icon = Icons.ReadIt;
+                break;
+        }
+
         rawToast.namedContent = {
-            // So its obvious it came from ReadIt.
-            icon: Icon(ReadItIcon, {
+            icon: Icon(icon, {
                 size: IconSizes.Toast,
             }),
         };
