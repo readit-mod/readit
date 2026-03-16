@@ -64,7 +64,7 @@ export default defineCorePlugin({
         const route = params.get("readit-route");
 
         if (route) {
-            navigateTo("");
+            navigateTo(window.location.pathname);
         }
     },
 });
@@ -74,6 +74,10 @@ function prepareRouteFragment(route: Route, params: URLSearchParams): DocumentFr
     const routeContents = DOMify(route.render(params));
 
     fragment.appendChild(routeContents);
+
+    const alertController = document.createElement("alert-controller");
+    fragment.appendChild(alertController);
+
     return fragment;
 }
 
