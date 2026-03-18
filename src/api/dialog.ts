@@ -137,7 +137,8 @@ type RPLDialog = TypedLitElement<{
 }>;
 
 export function showDialog(id: string, dialogResult: TemplateResult) {
-    const container = document.querySelector("shreddit-app");
+    const shredditApp = document.querySelector("shreddit-app");
+    const container = shredditApp.appendChild(document.createElement("div"));
     const sheetRef = createRef<RPLDialog>();
 
     const content = html`<rpl-dialog-sheet
@@ -175,6 +176,7 @@ export function showSimpleDialog(dialog: SimpleDialog) {
     );
 
     const modal = showDialog(dialog.id, dialogResult);
+    console.log(modal);
 }
 
 type ConfirmationDialog = {
