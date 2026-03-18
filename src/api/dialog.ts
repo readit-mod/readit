@@ -1,10 +1,10 @@
 import { Icon, IconSizes, Icons } from "@assets/icons";
-import { html, nothing } from "@modules/common/lit";
+import { html, nothing, render } from "@modules/common/lit";
 import type { TemplateResult } from "lit";
+import { createRef, ref } from "lit/directives/ref.js";
 import { createCustomCssSheet } from "./customcss";
 import { expose } from "./expose";
 import type { TypedLitElement } from "./utils/element";
-import { DOMify } from "./utils/lit";
 
 function CloseButton(onClick: () => void): TemplateResult<1> {
     return html`
@@ -138,18 +138,19 @@ type RPLDialog = TypedLitElement<{
 
 export function showDialog(id: string, dialogResult: TemplateResult) {
     const container = document.querySelector("shreddit-app");
+    const sheetRef = createRef<RPLDialog>();
 
-    const modal = container.appendChild(
-        DOMify(
-            html`<rpl-dialog
+    const content = html`<rpl-dialog-sheet
                 dialog-id="${id}"
-                blocking
+                ${ref(sheetRef)}
                 .litTemplateChildren=${dialogResult}
-                open
-            ></rpl-dialog>`,
-        ) as RPLDialog,
-    );
-    return modal;
+            ></rpl-dialog-sheet>`;
+
+    render(content, container as HTMLElement);
+
+    setTimeout(() => sheetRef.value?.showModal(), 0);
+
+    return sheetRef.value;
 }
 
 type SimpleDialog = {
@@ -169,7 +170,7 @@ export function showSimpleDialog(dialog: SimpleDialog) {
         },
         () => {
             modal.hide();
-            modal.remove();
+            setTimeout(() => modal.remove(), 0);
         },
     );
 
