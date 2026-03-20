@@ -176,7 +176,6 @@ export function showSimpleDialog(dialog: SimpleDialog) {
     );
 
     const modal = showDialog(dialog.id, dialogResult);
-    console.log(modal);
 }
 
 type ConfirmationDialog = {
