@@ -1,5 +1,5 @@
 import { defineSafeElement } from "@api/elements";
-import { html, LitElement } from "@modules/common/lit";
+import { LitElement } from "@modules/common/lit";
 import type { TemplateResult } from "lit";
 import { property } from "lit/decorators.js";
 
@@ -23,10 +23,14 @@ const Styles: { [key in TextStyle]: string } = {
     bold: "font-weight:bold;",
 };
 
-export function Text(text: string, variant: TextVariant = "sm/normal") {
-    return html`
-        <readit-text variant="${variant}">${text}</readit-text>
-    `;
+export function Text({
+    children,
+    variant,
+}: {
+    variant: TextVariant;
+    children: string;
+}) {
+    return <readit-text variant={variant}>{children}</readit-text>;
 }
 
 defineSafeElement("readit-text", () => {
@@ -44,11 +48,11 @@ defineSafeElement("readit-text", () => {
 
             const sizePx = size in Sizes ? Sizes[size] : `${size}px`;
 
-            return html`
-                <span style="font-size:${sizePx};${Styles[style]}">
+            return (
+                <span attr:style={`font-size:${sizePx};${Styles[style]}`}>
                     <slot></slot>
                 </span>
-            `;
+            );
         }
     }
 

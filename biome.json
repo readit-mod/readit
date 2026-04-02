@@ -19,6 +19,9 @@
             },
             "complexity": {
                 "noUselessEscapeInRegex": "off"
+            },
+            "a11y": {
+                "useButtonType": "off"
             }
         }
     },

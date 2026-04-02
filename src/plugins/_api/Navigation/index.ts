@@ -4,6 +4,7 @@ import { maybeGetRoute, navigateTo } from "@api/navigation";
 import { defineCorePlugin, PluginLifeCycle } from "@api/plugins";
 import { showToast } from "@api/toasts";
 import { DOMify } from "@api/utils/lit";
+import type { LitElement } from "lit";
 
 type CachedRoute = {
     fragment: DocumentFragment;
@@ -31,8 +32,14 @@ export default defineCorePlugin({
     ],
 
     getRoute(url: string, original: CachedRoute) {
+        const shredditApp = document.querySelector("shreddit-app") as LitElement;
+
         const params = new URL(url).searchParams;
         const routeId = params.get("readit-route");
+
+        const updatePadding = (isOriginal = true) => {
+            shredditApp.style.paddingTop = isOriginal ? "var(--page-y-padding)" : "0px";
+        };
 
         if (routeId) {
             params.delete("readit-route");
@@ -47,15 +54,20 @@ export default defineCorePlugin({
                     duration: 8e3,
                 });
 
+                updatePadding();
                 return original;
             }
 
             const routeFragment = prepareRouteFragment(route, params);
             const injectedRoute = prepareRoute(routeFragment);
 
+            // Reddit adds a margin to the top of the page to make space
+            // for the header bar, so we remove it.
+            updatePadding(false);
             return injectedRoute;
         }
 
+        updatePadding();
         return original;
     },
 

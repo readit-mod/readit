@@ -1,6 +1,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import path, { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import minifyHTML from "rollup-plugin-minify-html-literals";
 import { build } from "vite";
 import packageJSON from "../package.json";
 import { platformIIFEPlugin } from "./plugins/platform";
@@ -60,11 +61,22 @@ const common: import("vite").InlineConfig = {
             "@": resolve(root, "./src"),
         },
     },
-    plugins: [],
+    plugins: [
+        minifyHTML({
+            exclude: [
+                "src/assets/icons/**",
+                "src/api/jsx-runtime/**",
+            ],
+        }),
+    ],
     build: {
         target: "esnext",
         outDir: "dist",
         emptyOutDir: false,
+    },
+    esbuild: {
+        jsxImportSource: "@api",
+        jsx: "automatic",
     },
 };
 

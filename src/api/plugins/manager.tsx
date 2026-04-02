@@ -5,11 +5,14 @@ import { Logger, logger } from "@api/logger";
 import { SettingsStore } from "@api/stores/settings";
 import { showToast } from "@api/toasts";
 import { splitArray } from "@api/utils/array";
-import { html } from "@modules/common/lit";
 import { addPatch } from "@modules/patches/factory";
 import { Text } from "@/components/text";
 import { isCorePlugin, PluginLifeCycle } from ".";
-import { type InternalPlugin, PluginStates, type RawPluginModule } from "./types";
+import {
+    type InternalPlugin,
+    PluginStates,
+    type RawPluginModule,
+} from "./types";
 
 const pInstances = new Map<string, InternalPlugin>();
 export let rawPlugins: RawPluginModule[];
@@ -18,9 +21,9 @@ export function registerPluginDefinitions() {
     rawPlugins = Object.values(
         import.meta.glob<RawPluginModule>(
             [
-                "../../plugins/*/index.ts",
-                "../../plugins/_core/*/index.ts",
-                "../../plugins/_api/*/index.ts",
+                "../../plugins/*/index.ts{,x}",
+                "../../plugins/_core/*/index.ts{,x}",
+                "../../plugins/_api/*/index.ts{,x}",
             ],
             {
                 eager: true,
@@ -51,20 +54,33 @@ export function registerPluginDefinitions() {
                                 showSimpleDialog({
                                     id: "patch-no-effect-dialog",
                                     title: `Patch had no effect`,
-                                    content: html`
+                                    content: (
                                         <div>
-                                            <p>A patch in ${Text(definition.name, "sm/bold")} had no effect on the factory it was targeting.</p>
-                                            <hr/>
                                             <p>
-                                                ${Text("Patch Source:", "sm/bold")}<br/>
-                                                <code>/${source}/</code>
+                                                A patch in{" "}
+                                                <Text variant={"sm/bold"}>
+                                                    {definition.name}
+                                                </Text>{" "}
+                                                had no effect on the factory it
+                                                was targeting.
+                                            </p>
+                                            <hr />
+                                            <p>
+                                                <Text variant={"sm/bold"}>
+                                                    Patch Source:
+                                                </Text>
+                                                {`\n`}
+                                                <code>/{source}/</code>
                                             </p>
                                             <p>
-                                                ${Text("Module ID:", "sm/bold")}<br/>
-                                                <code>${id}</code>
+                                                <Text variant={"sm/bold"}>
+                                                    Module ID:
+                                                </Text>
+                                                {`\n`}
+                                                <code>{id}</code>
                                             </p>
                                         </div>
-                                    `,
+                                    ),
                                 });
                             },
                         });
@@ -137,9 +153,12 @@ export const plugins = new Proxy(
     {},
     {
         get(target, property, reciever) {
-            if (property in target) return Reflect.get(target, property, reciever);
+            if (property in target)
+                return Reflect.get(target, property, reciever);
 
-            const plugin = Array.from(pInstances.values()).find((p) => p.name === property);
+            const plugin = Array.from(pInstances.values()).find(
+                (p) => p.name === property,
+            );
 
             return plugin;
         },
@@ -157,7 +176,8 @@ export function enablePlugin(id: string) {
         showConfirmationDialog({
             id: "enable-plugin-with-patches",
             title: "Are you sure you want to restart?",
-            description: "This plugin has patches, so it requires a restart to enable.",
+            description:
+                "This plugin has patches, so it requires a restart to enable.",
             onResult(result) {
                 if (result) {
                     window.location.reload();

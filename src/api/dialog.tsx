@@ -1,39 +1,39 @@
-import { Icon, IconSizes, Icons } from "@assets/icons";
-import { html, nothing, render } from "@modules/common/lit";
+import { IconSizes } from "@assets/icons";
+import { render } from "@modules/common/lit";
 import type { TemplateResult } from "lit";
-import { createRef, ref } from "lit/directives/ref.js";
+import { createRef } from "lit/directives/ref.js";
+import { Icon } from "@/components/icon";
 import { createCustomCssSheet } from "./customcss";
 import { expose } from "./expose";
 import type { TypedLitElement } from "./utils/element";
 
-function CloseButton(onClick: () => void): TemplateResult<1> {
-    return html`
+function CloseButton({ onClick }): TemplateResult<1> {
+    return (
         <button
-            rpl=""
-            aria-label="Close dialog"
-            class="button-small px-[calc(var(--rem10)-var(--button-border-width,0px))] button-secondary icon items-center justify-center button inline-flex"
-            @click="${() => onClick()}"
-            slot="close-button"
+            attr:rpl=""
+            attr:aria-label="Close dialog"
+            attr:class="button-small px-[calc(var(--rem10)-var(--button-border-width,0px))] button-secondary icon items-center justify-center button inline-flex"
+            on:click={onClick}
+            attr:slot="close-button"
         >
-            <span class="flex items-center justify-center">
-                <span class="flex">
-                    ${Icon(Icons.Close, {
-                        size: IconSizes.Small,
-                    })}
+            <span attr:class="flex items-center justify-center">
+                <span attr:class="flex">
+                    <Icon icon="Close" size={IconSizes.Small} />
                 </span>
             </span>
         </button>
-    `;
+    );
 }
 
-const Button = (text: string, type = "primary", onClick: () => void, slot?: string) =>
-    html`<button
-        @click="${() => onClick()}"
-        class="button-medium px-[calc(var(--rem12)-var(--button-border-width,0px))] button-${type} items-center justify-center button inline-flex"
-        slot="${slot ?? ""}"
+const Button = ({ text, type = "primary", onClick, slot = "" }) => (
+    <button
+        on:click={() => onClick()}
+        attr:class={`button-medium px-[calc(var(--rem12)-var(--button-border-width,0px))] button-${type} items-center justify-center button inline-flex`}
+        attr:slot={slot}
     >
-        ${text}
-    </button>`;
+        {text}
+    </button>
+);
 
 type Dialog = {
     title: string;
@@ -82,53 +82,55 @@ function buildDialog(dialog: Dialog, close: () => void): TemplateResult {
         ...dialog.buttons,
     };
 
-    const buttons = html`
-        ${
-            buttonConfig.primary
-                ? Button(
-                      buttonConfig.primary.text,
-                      "primary",
-                      buttonConfig.primary.onClick.bind(null, close),
-                      "primary-button",
-                  )
-                : nothing
-        }
-        ${
-            buttonConfig.secondary
-                ? Button(
-                      buttonConfig.secondary.text,
-                      "secondary",
-                      buttonConfig.secondary.onClick.bind(null, close),
-                      "secondary-button",
-                  )
-                : nothing
-        }
-        ${
-            buttonConfig.tertiary
-                ? Button(
-                      buttonConfig.tertiary.text,
-                      "tertiary",
-                      buttonConfig.tertiary.onClick.bind(null, close),
-                      "tertiary-button",
-                  )
-                : nothing
-        }
-    `;
+    const buttons = (
+        <>
+            {buttonConfig.primary && (
+                <Button
+                    text={buttonConfig.primary.text}
+                    type="primary"
+                    onClick={buttonConfig.primary.onClick.bind(null, close)}
+                    slot="primary-button"
+                />
+            )}
+            {buttonConfig.secondary && (
+                <Button
+                    text={buttonConfig.secondary.text}
+                    type="secondary"
+                    onClick={buttonConfig.secondary.onClick.bind(null, close)}
+                    slot="secondary-button"
+                />
+            )}
+            {buttonConfig.tertiary && (
+                <Button
+                    text={buttonConfig.tertiary.text}
+                    type="tertiary"
+                    onClick={buttonConfig.tertiary.onClick.bind(null, close)}
+                    slot="tertiary-button"
+                />
+            )}
+        </>
+    );
 
-    return html`
+    return (
         <rpl-modal-card
-            style="width: ${dialog.size?.width ?? "auto"}; height: ${dialog.size?.height ?? "auto"}"
-            appearance="${dialog.appearance ?? "normal"}"
-            class="readit-modal-card"
+            attr:style={`width: ${dialog.size?.width ?? "auto"}; height: ${
+                dialog.size?.height ?? "auto"
+            }`}
+            attr:appearance={dialog.appearance ?? "normal"}
+            attr:class="readit-modal-card"
         >
-            ${CloseButton(onClose)}
-            <div slot="title">${dialog.title}</div>
+            <CloseButton onClick={onClose} />
+            <div attr:slot="title">{dialog.title}</div>
             <rpl-scrollbox>
-                ${typeof dialog.content === "string" ? html`<p>${dialog.content}</p>` : dialog.content}
+                {typeof dialog.content === "string" ? (
+                    <p>{dialog.content}</p>
+                ) : (
+                    dialog.content
+                )}
             </rpl-scrollbox>
-            ${buttons}
+            {buttons}
         </rpl-modal-card>
-    `;
+    );
 }
 
 type RPLDialog = TypedLitElement<{
@@ -141,11 +143,13 @@ export function showDialog(id: string, dialogResult: TemplateResult) {
     const container = shredditApp.appendChild(document.createElement("div"));
     const sheetRef = createRef<RPLDialog>();
 
-    const content = html`<rpl-dialog-sheet
-                dialog-id="${id}"
-                ${ref(sheetRef)}
-                .litTemplateChildren=${dialogResult}
-            ></rpl-dialog-sheet>`;
+    const content = (
+        <rpl-dialog-sheet
+            attr:dialog-id={id}
+            ref={sheetRef}
+            litTemplateChildren={dialogResult}
+        ></rpl-dialog-sheet>
+    );
 
     render(content, container as HTMLElement);
 

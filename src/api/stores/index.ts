@@ -21,7 +21,7 @@ export class Store<T, M extends StoreMethods<T> = {}> {
 
         if (methods) {
             for (const [name, fn] of Object.entries(methods)) {
-                (this as any)[name] = (args: any) => fn(this.store, this.plain, args);
+                (this as any)[name] = (...args: any) => fn(this.store, this.plain, args);
             }
         }
     }

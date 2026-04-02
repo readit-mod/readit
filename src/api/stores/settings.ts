@@ -20,7 +20,7 @@ export const SettingsStore = createStore(
         ...stored,
     },
     {
-        getPluginSettings(store, _plain, pluginId) {
+        getPluginSettings(store, _plain, [pluginId]) {
             const pluginSettings = store.plugins[pluginId];
             const plugin = rawPlugins.find((p) => p.default.id === pluginId);
             const isRequired = isCorePlugin(plugin.default);

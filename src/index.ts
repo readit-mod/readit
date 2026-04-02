@@ -7,6 +7,7 @@ import { initCommonModules } from "@modules/common/init";
 import { initModules } from "@modules/init";
 import { modulesReady } from "@modules/patches/modulesready";
 import "./components";
+import "@api/jsx-runtime";
 
 expose(__READIT_VERSION__, "readit.version");
 

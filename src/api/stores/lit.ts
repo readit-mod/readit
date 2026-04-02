@@ -1,6 +1,7 @@
 import type { ReactiveController, ReactiveControllerHost } from "lit";
 import type { Store } from ".";
 import "./settings";
+import type { StoreInstance, StoreMethods } from "./types";
 
 class StoreController implements ReactiveController {
     private unsubscribe?: () => void;
@@ -34,7 +35,10 @@ class StoreController implements ReactiveController {
     }
 }
 
-export function makeReactiveStore<T = any>(store: Store<T>, host: ReactiveControllerHost): T {
+export function makeReactiveStore<T = any, M extends StoreMethods<T> = any>(
+    store: StoreInstance<T, M>,
+    host: ReactiveControllerHost,
+): T & M {
     const controller = new StoreController(host, store);
 
     return controller.value;

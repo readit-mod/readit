@@ -1,3 +1,8 @@
-import.meta.glob("./*.ts", {
-    eager: true,
-});
+import.meta.glob(
+    [
+        "./*.ts{,x}",
+    ],
+    {
+        eager: true,
+    },
+);
