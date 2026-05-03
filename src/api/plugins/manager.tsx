@@ -6,6 +6,7 @@ import { SettingsStore } from "@api/stores/settings";
 import { showToast } from "@api/toasts";
 import { splitArray } from "@api/utils/array";
 import { addPatch } from "@modules/patches/factory";
+import { CodeBlock } from "@/components/codeblock";
 import { Text } from "@/components/text";
 import { isCorePlugin, PluginLifeCycle } from ".";
 import {
@@ -58,7 +59,10 @@ export function registerPluginDefinitions() {
                                         <div>
                                             <p>
                                                 A patch in{" "}
-                                                <Text variant={"sm/bold"}>
+                                                <Text
+                                                    variant={"body-sm/bold"}
+                                                    onSameLine={true}
+                                                >
                                                     {definition.name}
                                                 </Text>{" "}
                                                 had no effect on the factory it
@@ -66,17 +70,17 @@ export function registerPluginDefinitions() {
                                             </p>
                                             <hr />
                                             <p>
-                                                <Text variant={"sm/bold"}>
+                                                <Text variant={"body-sm/bold"}>
                                                     Patch Source:
                                                 </Text>
-                                                {`\n`}
-                                                <code>/{source}/</code>
+                                                <CodeBlock>
+                                                    /{source}/
+                                                </CodeBlock>
                                             </p>
                                             <p>
-                                                <Text variant={"sm/bold"}>
+                                                <Text variant={"body-sm/bold"}>
                                                     Module ID:
                                                 </Text>
-                                                {`\n`}
                                                 <code>{id}</code>
                                             </p>
                                         </div>

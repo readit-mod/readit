@@ -1,4 +1,8 @@
-import { getButtonResult, getButtonsForPost, getOverflowMenuItems } from "@api/patches/postButtons";
+import {
+    getActionButtonsForPost,
+    getButtonResult,
+    getOverflowMenuItems,
+} from "@api/patches/postButtons";
 import { defineCorePlugin, PluginLifeCycle } from "@api/plugins";
 import { html } from "@modules/common/lit";
 import type { LitElement } from "lit";
@@ -16,7 +20,7 @@ export default defineCorePlugin({
                 {
                     match: /(?<=renderReportButton.{0,10})<div/,
                     // biome-ignore lint/suspicious/noTemplateCurlyInString: we are modifying the template literal
-                    replace: "${$self.renderPostButtons(this)} $&",
+                    replace: "${$self.renderActionButtons(this)} $&",
                 },
             ],
         },
@@ -31,10 +35,12 @@ export default defineCorePlugin({
         },
     ],
 
-    renderPostButtons(post: LitElement) {
-        const buttons = getButtonsForPost(post);
+    renderActionButtons(post: LitElement) {
+        const buttons = getActionButtonsForPost(post);
 
-        return html`${buttons.map((button) => getButtonResult((post as any).id, button))}`;
+        return html`${buttons.map((button) =>
+            getButtonResult((post as any).id, button),
+        )}`;
     },
 
     getOverflowMenuItems,

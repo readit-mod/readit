@@ -1,8 +1,17 @@
 import { expose } from "./expose";
+import { memoize } from "./utils/lazy";
 
 const customCssSheets: Map<string, CSSStyleSheet> = new Map();
 
-export function createCustomCssSheet(id: string, initialCssText: string): CSSStyleSheet {
+export const ensureStyles = memoize((styles: string) => {
+    const style = document.head.appendChild(document.createElement("style"));
+    style.textContent = styles;
+});
+
+export function createCustomCssSheet(
+    id: string,
+    initialCssText: string,
+): CSSStyleSheet {
     const sheet = new CSSStyleSheet();
     sheet.replaceSync(initialCssText);
 

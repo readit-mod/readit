@@ -23,12 +23,16 @@ export function addDirectPatch(name: string, patch: DirectPatch) {
     }
 
     addPatch(patch, `__readit_patch_globals__.${name}`, (source, id) =>
-        logger.warn(`Patch ${source} at ${name} had no effect. Module ID: ${id}.`),
+        logger.warn(
+            `Patch ${source} at ${name} had no effect. Module ID: ${id}.`,
+        ),
     );
 }
 
 function warnNoChange(source: string, moduleId: SML.ModuleID) {
-    logger.warn(`Unnamed patch ${source} had no effect. Module ID: ${moduleId}.`);
+    logger.warn(
+        `Unnamed patch ${source} had no effect. Module ID: ${moduleId}.`,
+    );
 }
 
 export function addPatch(
@@ -53,18 +57,27 @@ declare global {
     }
 }
 
-function normaliseReplace(replace: FactoryPatcher.Replacer, helpersPath: string) {
+function normaliseReplace(
+    replace: FactoryPatcher.Replacer,
+    helpersPath: string,
+) {
     let normalised: FactoryPatcher.Replacer;
 
-    if (typeof replace !== "function") normalised = replace.replaceAll("$self", helpersPath);
+    if (typeof replace !== "function")
+        normalised = replace.replaceAll("$self", helpersPath);
     else
         normalised = (...args: any[]) =>
-            (replace as (...args: any[]) => string)(...args).replaceAll("$self", helpersPath);
+            (replace as (...args: any[]) => string)(...args).replaceAll(
+                "$self",
+                helpersPath,
+            );
 
     return normalised;
 }
 
-export function installFactoryPatches(ModuleLoaderClass: typeof SML.ModuleLoader) {
+export function installFactoryPatches(
+    ModuleLoaderClass: typeof SML.ModuleLoader,
+) {
     const patcher = createPatcher("ModulePatcher");
 
     const SYM_PATCHED_FACTORY = Symbol.for("readit_patched_factory");
@@ -77,12 +90,18 @@ export function installFactoryPatches(ModuleLoaderClass: typeof SML.ModuleLoader
             const finalResult = () => _evaluateModule(id, skipResolve);
             const module = self.moduleRegistry[id];
 
-            if (!module.factory || module[SYM_PATCHED_FACTORY]) return finalResult();
+            if (!module.factory || module[SYM_PATCHED_FACTORY])
+                return finalResult();
 
             let factoryString = module.factory?.toString();
 
             const patches = Patches.flatMap((patch) => {
-                if (factoryString.includes(patch.find)) {
+                const isAppliable =
+                    typeof patch.find === "string"
+                        ? factoryString.includes(patch.find)
+                        : normaliseMatch(patch.find).test(factoryString);
+
+                if (isAppliable) {
                     return patch.replacement;
                 } else {
                     return [];
@@ -98,9 +117,14 @@ export function installFactoryPatches(ModuleLoaderClass: typeof SML.ModuleLoader
             for (const patch of patches) {
                 let newFactory = factoryString;
                 const find =
-                    typeof patch.match === "string" ? patch.match : normaliseMatch(patch.match);
+                    typeof patch.match === "string"
+                        ? patch.match
+                        : normaliseMatch(patch.match);
 
-                const source = typeof find === "string" ? find : (patch.match as RegExp).source;
+                const source =
+                    typeof find === "string"
+                        ? find
+                        : (patch.match as RegExp).source;
 
                 newFactory = patch.matchAll
                     ? newFactory.replaceAll(find, patch.replace as any)

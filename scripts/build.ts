@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import minifyHTML from "rollup-plugin-minify-html-literals";
 import { build } from "vite";
 import packageJSON from "../package.json";
+import { inlineCss } from "./plugins/css";
 import { platformIIFEPlugin } from "./plugins/platform";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -28,18 +29,27 @@ const replacements: MetaReplacement[] = [
     {
         find: "%icon%",
         replace() {
-            const rawIcon = readFileSync(resolve(root, "src/assets/svg/ReadItIcon.svg"), "utf-8");
+            const rawIcon = readFileSync(
+                resolve(root, "src/assets/svg/ReadItIcon.svg"),
+                "utf-8",
+            );
 
             return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(rawIcon)}`;
         },
     },
 ];
 
-function applyReplacements(meta: string, replacements: MetaReplacement[]): string {
+function applyReplacements(
+    meta: string,
+    replacements: MetaReplacement[],
+): string {
     let result = meta;
 
     for (const { find, replace } of replacements) {
-        result = result.replace(find, typeof replace === "function" ? replace() : replace);
+        result = result.replace(
+            find,
+            typeof replace === "function" ? replace() : replace,
+        );
     }
     return result;
 }
@@ -63,11 +73,9 @@ const common: import("vite").InlineConfig = {
     },
     plugins: [
         minifyHTML({
-            exclude: [
-                "src/assets/icons/**",
-                "src/api/jsx-runtime/**",
-            ],
+            exclude: ["src/assets/icons/**", "src/api/jsx-runtime/**"],
         }),
+        inlineCss(),
     ],
     build: {
         target: "esnext",
@@ -83,9 +91,7 @@ const common: import("vite").InlineConfig = {
 const commonLibConfig: import("vite").LibraryOptions = {
     entry: resolve(root, "./src/index.ts"),
     name: "ReadIt",
-    formats: [
-        "iife",
-    ],
+    formats: ["iife"],
 };
 
 export async function buildReadIt(mode: BuildMode = "userscript") {
@@ -110,7 +116,10 @@ export async function buildReadIt(mode: BuildMode = "userscript") {
             },
         });
 
-        writeFileSync(resolve(root, "dist/manifest.json"), JSON.stringify(manifest));
+        writeFileSync(
+            resolve(root, "dist/manifest.json"),
+            JSON.stringify(manifest),
+        );
     } else {
         await build({
             ...common,

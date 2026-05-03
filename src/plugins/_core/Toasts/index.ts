@@ -36,24 +36,22 @@ export default defineCorePlugin({
                  */
                 {
                     match: /(\i)&&\1.{0,60}(?=&&window.{0,40}(\i)\?\.duration)/,
-                    replace: (match, _, meta) => `(${meta}?.duration||(${match}))`,
+                    replace: (match, _, meta) =>
+                        `(${meta}?.duration||(${match}))`,
                 },
             ],
         },
     ],
 
     handleToast(detail: RawToast, toast: HTMLElement) {
-        const { level = 6, meta, readit = {} } = detail;
+        const { level = 6, readit = {} } = detail;
         const [background, foreground] = getColorVariables(level);
 
         toast.style.backgroundColor = `var(${background})`;
         toast.style.color = `var(${foreground})`;
 
         // Fix dismiss button colors.
-        applyDismissButtonFixes(toast, level, [
-            background,
-            foreground,
-        ]);
+        applyDismissButtonFixes(toast, level, [background, foreground]);
 
         // Fix icon positioning issues.
         applyToastIconFix(toast);
@@ -64,48 +62,32 @@ export default defineCorePlugin({
 
     start() {
         waitForElement(() =>
-            document.querySelector("alert-controller")?.shadowRoot?.querySelector("toaster-lite"),
+            document
+                .querySelector("alert-controller")
+                ?.shadowRoot?.querySelector("toaster-lite"),
         ).then(() => {
             setTimeout(pushQueuedToasts, 0);
         });
     },
 });
 
-function getColorVariables(level: number): [
-    string,
-    string,
-] {
+function getColorVariables(level: number): [string, string] {
     switch (ToastLevels[level]) {
         case "error":
-            return [
-                "--color-banner-error",
-                "--color-banner-error-text",
-            ];
+            return ["--color-banner-error", "--color-banner-error-text"];
         case "warning":
-            return [
-                "--color-banner-caution",
-                "--color-banner-caution-text",
-            ];
+            return ["--color-banner-caution", "--color-banner-caution-text"];
         case "success":
-            return [
-                "--color-banner-success",
-                "--color-banner-success-text",
-            ];
+            return ["--color-banner-success", "--color-banner-success-text"];
         default:
-            return [
-                "--color-banner-plain",
-                "--color-banner-plain-text",
-            ];
+            return ["--color-banner-plain", "--color-banner-plain-text"];
     }
 }
 
 function applyDismissButtonFixes(
     toast: HTMLElement,
     level: number,
-    colorVariables: [
-        string,
-        string,
-    ],
+    colorVariables: [string, string],
 ) {
     const dismissButtonContainer = findInElementTree<HTMLDivElement>(
         toast,
@@ -161,5 +143,3 @@ function applyReadItStuff(toast: HTMLElement, readit: RawToast["readit"]) {
         toast.classList.add("cursor-pointer");
     }
 }
-
-type ToastEvent = CustomEvent<RawToast>;

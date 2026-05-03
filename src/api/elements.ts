@@ -46,7 +46,9 @@ export function findInElementTree<T extends Element>(
 ): T | null {
     const walker = document.createTreeWalker(element, NodeFilter.SHOW_ELEMENT, {
         acceptNode(node) {
-            return filter(node as Element) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
+            return filter(node as Element)
+                ? NodeFilter.FILTER_ACCEPT
+                : NodeFilter.FILTER_SKIP;
         },
     });
 
@@ -57,7 +59,9 @@ export function findChild<T extends Element>(
     element: Element,
     childFilter: ElementFilter,
 ): T | null {
-    return (Array.from(element.children).find((c) => childFilter(c)) as T) ?? null;
+    return (
+        (Array.from(element.children).find((c) => childFilter(c)) as T) ?? null
+    );
 }
 
 export const filters = {
@@ -71,7 +75,9 @@ export const filters = {
 
     byAttribute(attr: string, value?: string): ElementFilter {
         return (element) =>
-            value === undefined ? element.hasAttribute(attr) : element.getAttribute(attr) === value;
+            value === undefined
+                ? element.hasAttribute(attr)
+                : element.getAttribute(attr) === value;
     },
 
     byChild(childFilter: ElementFilter): ElementFilter {

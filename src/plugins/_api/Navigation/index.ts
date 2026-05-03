@@ -32,13 +32,17 @@ export default defineCorePlugin({
     ],
 
     getRoute(url: string, original: CachedRoute) {
-        const shredditApp = document.querySelector("shreddit-app") as LitElement;
+        const shredditApp = document.querySelector(
+            "shreddit-app",
+        ) as LitElement;
 
         const params = new URL(url).searchParams;
         const routeId = params.get("readit-route");
 
         const updatePadding = (isOriginal = true) => {
-            shredditApp.style.paddingTop = isOriginal ? "var(--page-y-padding)" : "0px";
+            shredditApp.style.paddingTop = isOriginal
+                ? "var(--page-y-padding)"
+                : "0px";
         };
 
         if (routeId) {
@@ -77,11 +81,14 @@ export default defineCorePlugin({
 
         if (route) {
             navigateTo(window.location.pathname);
-        }
+        } else navigateTo(window.location.href);
     },
 });
 
-function prepareRouteFragment(route: Route, params: URLSearchParams): DocumentFragment {
+function prepareRouteFragment(
+    route: Route,
+    params: URLSearchParams,
+): DocumentFragment {
     const fragment = new DocumentFragment();
     const routeContents = DOMify(route.render(params));
 

@@ -20,7 +20,9 @@ type PostButtonConfig = {
 
 const postButtons: PostButtonConfig[] = [];
 
-export function addPostButton(buttonConfig: PostButtonConfig): () => void {
+export function addPostActionButton(
+    buttonConfig: PostButtonConfig,
+): () => void {
     postButtons.push(buttonConfig) - 1;
 
     updateInstances("shreddit-post");
@@ -34,27 +36,32 @@ export function addPostButton(buttonConfig: PostButtonConfig): () => void {
     };
 }
 
-export function getButtonsForPost(post: LitElement): PostButtonConfig[] {
+export function getActionButtonsForPost(post: LitElement): PostButtonConfig[] {
     return postButtons.filter((button) => button.predicate?.(post) ?? true);
 }
 
-export function getButtonResult(id: string, button: PostButtonConfig): TemplateResult<1> {
+export function getButtonResult(
+    id: string,
+    button: PostButtonConfig,
+): TemplateResult<1> {
     return html`
-        <button class="button border-md overflow-visible flex flex-row justify-center items-center h-xl font-semibold relative text-caption-1 button-secondary  inline-flex items-center px-sm" style="height: var(--size-button-sm-h); font: var(--font-button-sm)" type="button" @click=${() => button.onClick?.(id)}>
+        <button
+            class="button border-md overflow-visible flex flex-row justify-center items-center h-xl font-semibold relative text-caption-1 button-secondary  inline-flex items-center px-sm"
+            style="height: var(--size-button-sm-h); font: var(--font-button-sm)"
+            type="button"
+            @click=${() => button.onClick?.(id)}
+        >
             <span class="flex items-center">
-                
-                    ${
-                        button.icon
-                            ? html`
-                                <span class="flex text-body-1 me-[var(--rem6)]">
-                                    ${Icon(button.icon, {
-                                        size: IconSizes.Small,
-                                    })}
-                                </span>
-                              `
-                            : nothing
-                    }
-                <span> ${button.label} </span> 
+                ${button.icon
+                    ? html`
+                          <span class="flex text-body-1 me-[var(--rem6)]">
+                              ${Icon(button.icon, {
+                                  size: IconSizes.Small,
+                              })}
+                          </span>
+                      `
+                    : nothing}
+                <span> ${button.label} </span>
             </span>
         </button>
     `;
@@ -96,7 +103,9 @@ export function addOverflowMenuItem(item: OverflowMenuItem): () => void {
     };
 }
 
-export function getOverflowMenuItems(menu: LitElement): InternalOverflowMenuItem[] {
+export function getOverflowMenuItems(
+    menu: LitElement,
+): InternalOverflowMenuItem[] {
     const post = (menu as any).getParentPost();
 
     return overflowMenuItems.map((item) => {
@@ -118,7 +127,7 @@ export function getOverflowMenuItems(menu: LitElement): InternalOverflowMenuItem
 
 expose(
     {
-        addPostButton,
+        addPostButton: addPostActionButton,
         addOverflowMenuItem,
     },
     "readit.api.patches.postButtons",

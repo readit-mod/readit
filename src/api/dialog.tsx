@@ -1,39 +1,23 @@
-import { IconSizes } from "@assets/icons";
 import { render } from "@modules/common/lit";
 import type { TemplateResult } from "lit";
 import { createRef } from "lit/directives/ref.js";
-import { Icon } from "@/components/icon";
-import { createCustomCssSheet } from "./customcss";
+import { Button, IconButton } from "@/components/button";
+import { ensureStyles } from "./css";
+import styles from "./dialog.css";
 import { expose } from "./expose";
 import type { TypedLitElement } from "./utils/element";
 
 function CloseButton({ onClick }): TemplateResult<1> {
     return (
-        <button
-            attr:rpl=""
-            attr:aria-label="Close dialog"
-            attr:class="button-small px-[calc(var(--rem10)-var(--button-border-width,0px))] button-secondary icon items-center justify-center button inline-flex"
-            on:click={onClick}
+        <IconButton
+            size="sm"
+            variant="tertiary"
+            icon="Close"
+            onClick={onClick}
             attr:slot="close-button"
-        >
-            <span attr:class="flex items-center justify-center">
-                <span attr:class="flex">
-                    <Icon icon="Close" size={IconSizes.Small} />
-                </span>
-            </span>
-        </button>
+        />
     );
 }
-
-const Button = ({ text, type = "primary", onClick, slot = "" }) => (
-    <button
-        on:click={() => onClick()}
-        attr:class={`button-medium px-[calc(var(--rem12)-var(--button-border-width,0px))] button-${type} items-center justify-center button inline-flex`}
-        attr:slot={slot}
-    >
-        {text}
-    </button>
-);
 
 type Dialog = {
     title: string;
@@ -60,13 +44,7 @@ type Dialog = {
     content: string | TemplateResult;
 };
 
-const modalStyle = createCustomCssSheet("modal", "");
-modalStyle.insertRule(`
-    .readit-modal-card[appearance=modal] {
-        width: 65vw !important;
-        max-height: 70vh !important;
-    }
-`);
+ensureStyles(styles);
 
 function buildDialog(dialog: Dialog, close: () => void): TemplateResult {
     const onClose = () => {
@@ -85,28 +63,31 @@ function buildDialog(dialog: Dialog, close: () => void): TemplateResult {
     const buttons = (
         <>
             {buttonConfig.primary && (
-                <Button
-                    text={buttonConfig.primary.text}
-                    type="primary"
+                <IconButton
                     onClick={buttonConfig.primary.onClick.bind(null, close)}
-                    slot="primary-button"
-                />
+                    icon="Info"
+                    attr:slot="primary-button"
+                >
+                    {buttonConfig.primary.text}
+                </IconButton>
             )}
             {buttonConfig.secondary && (
                 <Button
-                    text={buttonConfig.secondary.text}
-                    type="secondary"
+                    variant="secondary"
                     onClick={buttonConfig.secondary.onClick.bind(null, close)}
-                    slot="secondary-button"
-                />
+                    attr:slot="secondary-button"
+                >
+                    {buttonConfig.secondary.text}
+                </Button>
             )}
             {buttonConfig.tertiary && (
                 <Button
-                    text={buttonConfig.tertiary.text}
-                    type="tertiary"
+                    variant="tertiary"
                     onClick={buttonConfig.tertiary.onClick.bind(null, close)}
-                    slot="tertiary-button"
-                />
+                    attr:slot="tertiary-button"
+                >
+                    {buttonConfig.tertiary.text}
+                </Button>
             )}
         </>
     );
