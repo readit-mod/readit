@@ -1,19 +1,20 @@
 {
     "compilerOptions": {
         "baseUrl": ".",
+        "experimentalDecorators": true,
         "paths": {
-            "@modules/*": ["./src/core/modules/*"],
-            "@components/*": ["./src/core/components/*"],
-            "@lib/*": ["./src/lib/*"],
-            "@utils": ["./src/core/utils.ts"],
-            "@/*": ["./*"]
+            "@api/*": ["./src/api/*"],
+            "@modules/*": ["./src/modules/*"],
+            "@assets/*": ["./src/assets/*"],
+            "@/*": ["./src/*"]
         },
+        "jsx": "react-jsx",
+        "jsxImportSource": "@api",
         "lib": ["ES2022", "DOM"],
-        "target": "es2015",
+        "target": "es2017",
         "module": "es2022",
         "moduleResolution": "bundler",
-        "jsx": "react-jsx",
-        "jsxImportSource": "preact",
+        "types": ["vite/client"]
     },
-    "include": ["src", "src/lib/types.d.ts"]
+    "include": ["src", "platforms"]
 }

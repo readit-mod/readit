@@ -1,0 +1,6 @@
+/** biome-ignore-all lint/complexity/noImportantStyles: we need it */
+
+.readit-modal-card[appearance="modal"] {
+    width: 65vw !important;
+    max-height: 70vh !important;
+}

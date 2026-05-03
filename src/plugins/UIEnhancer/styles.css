@@ -1,0 +1,18 @@
+/** biome-ignore-all lint/complexity/noImportantStyles: we need it */
+* {
+    &::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 4px;
+        border: 2px solid #1a1a1a;
+    }
+
+    &::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+}
+
+#user-drawer-content {
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+}
